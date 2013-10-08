@@ -1226,13 +1226,13 @@
 
 				$.ajax({
 					type : 'GET',
-					cache : DEBUG ? false : !!c.ajaxcache,
-					url : DEBUG ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
+					cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxcache,
+					url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
 					data : arrurl[2],
 					timeout : 20000,
 					success : function(h){
 						// 如果是 debug状态，随机取一页测试数据
-						DEBUG && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
+						typeof DEBUG !== 'undefined' && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
 
 						if( pg.halting && !direct ) return;
 						if( direct ){

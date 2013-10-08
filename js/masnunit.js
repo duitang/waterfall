@@ -187,7 +187,7 @@ if(!String.prototype.cut){
 		// RENDER[1] 设为 null，其依赖的 TEMPLATES[1] 也设为 null
 		// EXTRADATA 没有初始值，只在需要的时候使用
 		function (h){
-			DEBUG && (h = {"data":{"count":8907,"has_next":true,"albums":[/*测试用*/]},"success":true},h.data.albums[23]=0);
+			typeof DEBUG !== 'undefined' && DEBUG && (h = {"data":{"count":8907,"has_next":true,"albums":[/*测试用*/]},"success":true},h.data.albums[23]=0);
 
 			var strrt = _strReturn(h);
 			if( strrt ){
