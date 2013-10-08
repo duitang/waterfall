@@ -84,7 +84,6 @@
 			if( typeof opts.fn === 'function' ){
 				opts.fn($trigs,$conts,ci,prei,b);
 			}
-			//aaa('-------------')
 		}
 
 		return $t;

@@ -1,5 +1,5 @@
 /*
-@说明：瀑布流 Woo (Waterfall Oh Oh)
+@说明：瀑布流 Woo (Waterfall O O)
 */
 
 ;(function(window, undefined){
@@ -39,13 +39,13 @@
 			"frame" : ['#woo-holder','.woo-swa','.woo-swb','.woo-pcont','.woo-pager','.woo-masned'],
 
 			// 向前、向后的翻页按钮(区别于底部数字翻页器)
-			"$gopre" : $(null),
-			"$gonext" : $(null),
+			"gopre" : null,
+			"gonext" : null,
 			// 回到顶部按钮
-			"$gotop" : $(null),
+			"gotop" : null,
 
 			// 页面的尾部，所有在瀑布流翻页器之下的均可视为footer
-			"$footer" : $(null),
+			"footer" : null,
 
 			// 单元节点dom选择器
 			"unit" : '.woo',
@@ -55,12 +55,20 @@
 			// 相对于 name="woo-anchor" 锚记的垂直方向偏移，可解决顶部fixed nav遮盖问题
 			"anchordiff" : 70,
 
-			// 左边第一列占位区块高度，也可用在最右侧一列
-			// sinkheight 如果为正值，可将外部区块嵌入进瀑布流
+			// 带 * 号的为特殊配置项
+			// 同一页面不同瀑布流可通过在.woo-pcont节点上设置 data- 的形式覆盖全局配置
+			// * 要插入到瀑布流左侧第一个位置或右侧第一个位置的节点
+			"sink" : $(null),
+			// * 左(右)边第一列占位区块高度。sinkheight 如果为正值才有效
 			"sinkheight" : 0, 
-			// 是否在右侧 sink 将外部区块嵌入进瀑布流，
-			// 否则是在左侧嵌入，总前提是 sinkheight 为正值
+			// * 是否在右侧 sink 嵌入外部区块，否则是在左侧嵌入，前提是 sinkheight 为正值
 			"sinkright" : false,
+
+			// * 每页的单元数
+			"unitsnum" : 24,
+
+			// * 每一大页子页数量
+			"subpagenum" : 4,
 
 			// scroll lock状态持续时间
 			"scrollwait" : 100,
@@ -79,19 +87,19 @@
 			"batchnum" : 2,
 
 
+
+
 			// 当前页码前后显示的页码数
 			"nearbypagenum" : 3,
 
 			// ajax 请求是否缓存
 			"ajaxcache" : false,
 
-			// 带 * 号的为特殊配置项
-			// 同一页面不同瀑布流可通过在.woo-pcont节点上设置 data- 的形式覆盖全局配置
-			// * 每页的单元数
-			"unitsnum" : 24,
 
-			// * 每一大页子页数量
-			"subpagenum" : 4,
+			// scroll 过程中执行的方法
+			"onScroll" : function (tp){
+				// tp 为当前的scrolltop
+			},
 
 			// 每次请求后都要执行的方法
 			"requestAlways" : function (idx){
@@ -156,6 +164,12 @@
 			// 如果没有相应dom，则返回
 			if( !$HOLDER.length || !$trigs.length || !$conts.length ) return;
 
+			// 初始化 $gonext $gopre $gopre $footer
+			this.$gonext = $(conf.gonext)
+			this.$gopre = $(conf.gopre)
+			this.$gotop = $(conf.gotop)
+			this.$footer = $(conf.footer)
+
 
 			// WooTemp 对象
 			WOOTEMP = Woo.WooTemp;
@@ -185,9 +199,9 @@
 					num = parseInt(tmphash[1]) || 1;
 				// 当满足条件出现上翻页
 				if( num > 1 ){
-					Woo.conf.$gopre.css("display","block")
+					Woo.$gopre.css("display","block")
 				}else{
-					Woo.conf.$gopre.css("display","none")
+					Woo.$gopre.css("display","none")
 				}
 
 			});
@@ -209,7 +223,7 @@
 
 
 				var tp = $W.scrollTop()
-				Woo.conf.$gotop.css('visibility',tp > 100 ? 'visible' : 'hidden')
+				Woo.$gotop.css('visibility',tp > 100 ? 'visible' : 'hidden')
 			})
 
 
@@ -282,8 +296,8 @@
 				return;
 			}
 			// fn 必须返回一个数组
-			console.log(123)
-			console.log(arr[0])
+
+
 			arr = fn.apply(null,arr);
 			if( arr[0].length ){
 				window.setTimeout(function (){
@@ -336,7 +350,7 @@
 		@说明：设置 gotop 键返回页顶的click 事件
 		*/
 		setClickGoTop : function (){
-			Woo.conf.$gotop.click(function (e){
+			Woo.$gotop.click(function (e){
 				e.preventDefault(),
 				e.stopPropagation();
 
@@ -361,7 +375,7 @@
 		@说明：设置 gopre 键向前翻一页的click 事件
 		*/
 		setClickGoPre : function (){
-			Woo.conf.$gopre.click(function (e){
+			Woo.$gopre.click(function (e){
 				e.preventDefault();
 				Woo._clickGo.call(this,-1)
 			})
@@ -374,7 +388,7 @@
 		@说明：设置 gonext 键向后翻一页的click 事件
 		*/
 		setClickGoNext : function (){
-			Woo.conf.$gonext.click(function (e){
+			Woo.$gonext.click(function (e){
 				e.preventDefault();
 				Woo._clickGo.call(this,1)
 			})
@@ -486,6 +500,7 @@
 				arrmasnw = conf.arrmasnw,
 				arrmargin = conf.arrmargin,
 				arrfmasnw = conf.arrfmasnw,
+				splitstr =  arrsplit[n] || '',
 				$ccont = $conts.eq(n),
 				$pg_cont = $ccont.find(frame[3]).not('.woo-tmpmasn'),
 				$pg_pager = $ccont.find(frame[4]),
@@ -502,7 +517,10 @@
 				// conf 里配置的 unitsnum 为全局配置
 				// 不同瀑布流可能有不同的配置需求，可在各自.woo-pcont节点上设置 data-unitsnum
 				unitsnum = $pg_cont.data('unitsnum') || conf.unitsnum,
-				splitstr =  arrsplit[n] || '',
+				sink = $pg_cont.data('sink') ? $($pg_cont.data('sink')) : $(conf.sink),
+				sinkheight = $pg_cont.data('sinkheight') || conf.sinkheight,
+				sinkright = !!$pg_cont.data('sinkright') || conf.sinkright,
+
 
 				// 总子页码数
 				pcount = pageunknown ? 2 : Math.ceil(ucount/unitsnum),
@@ -522,7 +540,7 @@
 
 
 			// 总共只有1个子页不隐藏 footer，否则隐藏之
-			this.conf.$footer.css("display", pcount == 1 ? "block" : "none");
+			this.$footer.css("display", pcount == 1 ? "block" : "none");
 
 			if( !PAGINE[n] ){
 				var pgcache,
@@ -550,8 +568,9 @@
 						Woo._onscroll()
 					},
 					initAppendCounts : unitsnum,
-					rightAlignFirstBlock : conf.sinkright,
-					firstHeight : conf.sinkheight,
+					sinkWhat : sink,
+					firstHeight : sinkheight,
+					rightAlignFirstBlock : sinkright,
 					columnWidth : wdt,
 					columnMargin : mgn,
 					batchOpen : conf.batchopen,
@@ -567,12 +586,6 @@
 
 					// 请求分页数据，请求结束后 always 执行
 					requestAlways : conf.requestAlways,
-
-					$footer : conf.$footer,
-
-					$gopre : conf.$gopre,
-
-					$gonext : conf.$gonext,
 
 					// ajax 请求是否缓存
 					ajaxcache : conf.ajaxcache,
@@ -640,7 +653,7 @@
 
 							Woo._onscroll()
 						}else{
-							Woo.conf.$footer.css("display","none")
+							Woo.$footer.css("display","none")
 							$loadingsm.css('visibility','visible')
 						}
 					},
@@ -699,12 +712,15 @@
 						}
 
 
-
+						// Start = new Date().getTime()
 						// 这里生成的jonhtml 可能是 string 类型
 						// 也可能是 [<jQuery对象>] 数组
 						// 这两种情况均需要 $() 后再使用
 						var jonhtml = WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
 						MASN[n].appendContents($madd,jonhtml,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
+
+						// End = new Date().getTime()
+						// console.log(End - Start)
 
 							if( rnum <= 0 ){
 								// pg 指代 Pagine 对象实例
@@ -758,7 +774,7 @@
 			// 为了避免在loading 过程中hash change 导致的无法准确回退
 			USERCLICK = false
 
-			Woo.conf.$gonext.css('visibility', 'hidden');
+			Woo.$gonext.css('visibility', 'hidden');
 		},
 
 
@@ -819,10 +835,13 @@
 
 				// 如果滚动轴scrollbar 没有在滚动
 				if( !BARSCROLL ){
+					// 外部配置的onScroll 方法
+					Woo.conf.onScroll(tp)
+
 					if( $HOLDER.length ){
 						var conf = Woo.conf,
-							$gopre = conf.$gopre,
-							$gonext = conf.$gonext,
+							$gopre = Woo.$gopre,
+							$gonext = Woo.$gonext,
 							$pagerv = $HOLDER.find(conf.frame[4]+':visible'),
 							cond1 = $pagerv.find(':first-child').length,
 							cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextPage();
@@ -843,7 +862,6 @@
 		$u				- (obj) 单元节点
 		*/
 		_doLoadImage : function($u){
-			console.log($u)
 			// 设置了 srcd 的情况下
 			$u.find('img[srcd]').each(function (i,e){
 				var $e = $(e),
@@ -1289,11 +1307,10 @@
 		@说明：最后一个子页加载完后执行，显示footer 用
 		*/
 		showFooter : function (){
-			var pg = this,
-				c = pg.config;
+			var pg = this;
 
 			pg.$pager.css({"height" : "auto"}),
-			c.$footer.css("display","block"),
+			Woo.$footer.css("display","block"),
 			// 移除底部的loading 状态条
 			$('#woo-loading').remove();
 
@@ -1361,7 +1378,7 @@
 				pg.isEventSetting = true;
 			}
 
-			var $gonext = c.$gonext;
+			var $gonext = Woo.$gonext;
 			$gonext.css('display','block');
 			if( pg.$pager.find(':first-child').length ){
 				$gonext.css('visibility', pg.hasNextPage() ? 'visible' : 'hidden');
@@ -1548,15 +1565,14 @@
 				$d = masn.$dom,
 				c = masn.opts,
 				anum = c.initAppendCounts,
-				snum = masn.firstHeight ? anum : anum,
 				$c;
 
 			$c = $d.children().filter(c.unit);
 			if( $c.length ){
-				//先加载 snum 个unit，剩下的交给 onArrage 方法处理
-				var $madd = $c.slice(0,snum);
-				$c = $c.slice(snum).addClass('woo-spec'),
-				masn.appendContents($madd,null,false,anum,$.noop);
+				//先加载 anum 个unit，剩下的交给 onArrage 方法处理
+				var $madd = $c.slice(0,anum);
+				$c = $c.slice(anum).addClass('woo-spec'),
+				masn.appendContents($madd,null,!!c.firstHeight,anum,$.noop);
 			}
 
 			// 初始状态，$dom 对应的主内容节点是 hidden 状态
@@ -1566,8 +1582,6 @@
 				c.onArrange($c);
 			}
 		},
-
-
 
 		/*
 		@说明：分批依次处理数组数据
@@ -1582,7 +1596,6 @@
 			var masn = this,
 				c = masn.opts,
 				$d = masn.$dom,
-				f = addfirst && masn.firstHeight,
 				colY = $d.data('colY'),
 				nm = nm || c.batchNum,
 				minI,minY;
@@ -1591,94 +1604,35 @@
 			// lastscreen 设置为上一次的screen 值
 			masn.lastscreen = masn.screen;
 
-console.log($data)
-console.log(htmlp)
-			var arr = masn._optimizeResponse($data.add(htmlp).removeClass('woo-spec')),
+
+			// 最后一个参数判定是否添加左(右)侧第一个位置节点
+			var arr = masn._placeEachUnit(masn,c,$d,$data,htmlp,addfirst && masn.firstHeight),
 				$u = arr[0],
 				inner = arr[1];
 
-			if( f && !c.rightAlignFirstBlock ){
-				// 待处理的节点数缓存到 $u
-				$u = $('<div class="woo-f" style="position:absolute;overflow:hidden;line-height:0;font-size:0;width:'+masn.firstWidth+'px;height:'+masn.firstHeight+'px"></div>').add($u);
-			}else if( f ){
+			$u.appendTo($d);
 
-				// 待处理的节点数缓存到 $u
-				var $part1 = $u.filter(':lt('+(masn.colCount-1)+')'),
-					$part2 = $u.filter(':gt('+(masn.colCount-2)+')'),
-					$tmp;
-				$tmp = $('<div class="woo-f" style="position:absolute;overflow:hidden;line-height:0;font-size:0;width:'+masn.firstWidth+'px;height:'+masn.firstHeight+'px"></div>').add($part2),
-				$u = $part1.add($tmp);
-			}
-
-			masn.appending = true;
-
-			$u.each(function (i,e){
-				var $e = $(e),
-					ht = parseInt($e.data('ht'));
-
-				minY = Math.min.apply(Math, colY);
-
-				var i = colY.length,
-					position = {
-						"top" : minY
-					};
-
-				// 计算minY 所在的序号数
-				while (i--){
-					if( colY[i] == minY ){
-						minI = i;
-					}
-				}
-
-				position["left"] = masn.colw * minI + masn.left0 + ( minI ? masn.colw0 - masn.colw : 0 );
-
-				$e.css(position).appendTo($d);
-
-				// 设置单列的高度
-				try{
-					ht = ht ? ht : $e.outerHeight(true);
-				}catch(e){
-					
-				}
-
-				// 存储 ht left top 等重要信息到
-				var eid = $e.data('id') + '',
-					munits;
-				if( eid && (munits=WOOTEMP.masnUnits) && munits[eid] ){
-					munits[eid].ht = ht,
-					munits[eid].top = position["top"],
-					munits[eid].left = position["left"];
-				}
-
-				colY[minI] += ht,
-				$d.data('colY',colY),
-				//设置screen 位置编号
-				masn.screen = Math.ceil( (minY + ht) / WH ),
-				$e.addClass('sc' + masn.screen + ' co' + minI);
-			})
-
-
-
-			if( c.batchOpen && 1 ){
+			// 使用 batchOpen 每批加载耗时会变长，但是整体效果会更平滑，请斟酌使用
+			if( c.batchOpen ){
 				// 递归添加节点，以达到时间利用的最佳效果
 				Woo.recurseDo(function (b,inner){
 					var m = 0;
-					b.not('.woo-f').append(function (i){
+					b.append(function (i){
 						m++;
 						return inner.eq(i).children();
 					})
+					c.onAppend(b),
 					b = b.slice(nm),
 					inner = inner.slice(m),
 					//设置大容器的高度
-					masn.setContHeight(),
-					c.onAppend(b);
+					masn.setContHeight();
 
 					return [b,inner];
 				},[$u,inner],Math.ceil($u.length/nm),c.batchDelay,function (){
 					callback(masn.lastscreen,masn.screen);
 				});
 			}else{
-				$u.not('.woo-f').append(function (i){
+				$u.append(function (i){
 					return inner.eq(i).children();
 				})
 				//设置大容器的高度
@@ -1688,33 +1642,118 @@ console.log(htmlp)
 			}
 		},
 
-		_optimizeResponse : function(htmlp){
-			var masn = this,
-				c = masn.opts,
-				$d = masn.$dom,
-				$pre = $d.prev(),
+		_placeEachUnit : function(masn,c,$d,$data,htmlp,f){
+			var $pre = $d.prev(),
 				haspre = !!$pre.length,
 				strwrap = '',
-				$htmlp = $(null);
+				$htmlp = $(null),
+				colY = $d.data('colY'),
+				colc = masn.colCount,
+				len,
+				ht,
+				minI,
+				minY,
+				left,
+				top,
+				mm = 0,
+				addf,
+				$addfc;
+
+
+			var $lame = $data.add(htmlp).removeClass('woo-spec');
+
 			if( !haspre || haspre && !$pre.hasClass('woo-tmpmasn') ){
 				var frame = Woo.conf.frame,
 					clss = (frame[3].indexOf(0) == '.' ? frame[3].substr(1) : '') +' '+(frame[5].indexOf(0) == '.' ? frame[5].substr(1) : '')+' woo-loading';
 				$pre = $('<div class="woo-tmpmasn '+$d.attr('class')+'" style="position:relative;height:0;overflow:hidden;margin:0;padding:0;"></div>').removeClass(clss),
 				$d.before($pre);
 			}
-console.log(htmlp)
-			$htmlp = $pre.append(htmlp).find(c.unit).each(function (i,e){
-				var $e = $(e),
-					id = $e.data('id'),
-					ht = $e.data('ht') || $e.outerHeight(true);
 
-				strwrap += '<div class="'+c.unit.substr(1)+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'"></div>';
+			$htmlp = $pre.append($lame).find(c.unit).each(function (i,e){
+				var $e = $(e),
+					id = $e.data('id');
+
+				// 在左(右)侧第一个位置增加占位节点
+				if( i === 0 && f && !c.rightAlignFirstBlock || i === colc - 1 && f && c.rightAlignFirstBlock ){
+					minY = Math.min.apply(Math, colY),
+					len = colc;
+					// 计算minY 所在的序号数
+					while (len--){
+						if( colY[len] == minY ){
+							minI = len;
+						}
+					}
+
+					// top 值由最小colY 决定
+					top = minY,
+					// left 值需要先计算 minI 即最小colY 所在的列数
+					left = masn.colw * minI + masn.left0 + ( minI ? masn.colw0 - masn.colw : 0 ),
+
+					ht = masn.firstHeight,
+
+					// 计算所在的screen 值
+					masn.screen = Math.ceil( (minY + ht) / WH ),
+
+					// 添加此节点后 colY 的minI 列高度随之改变
+					colY[minI] += ht,
+
+					// 要添加的节点外层和内容
+					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+'" style="position:absolute;overflow:hidden;top:'+top+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
+					$addfc = $(addf).append(c.sinkWhat),
+					mm = i,
+					strwrap += addf;
+
+				}
+
+
+
+				minY = Math.min.apply(Math, colY),
+				len = colc;
+				// 计算minY 所在的序号数
+				while (len--){
+					if( colY[len] == minY ){
+						minI = len;
+					}
+				}
+
+				// top 值由最小colY 决定
+				top = minY,
+				// left 值需要先计算 minI 即最小colY 所在的列数
+				left = masn.colw * minI + masn.left0 + ( minI ? masn.colw0 - masn.colw : 0 ),
+
+				// 高度计算优先取值 data-ht 可大大缩减计算时间
+				ht = $e.data('ht') || $e.outerHeight(true),
+
+				// 计算所在的screen 值
+				masn.screen = Math.ceil( (minY + ht) / WH ),
+
+				// 添加此节点后 colY 的minI 列高度随之改变
+				colY[minI] += ht,
+
+				// 计算所在的screen 值
+				masn.screen = Math.ceil( (minY + ht) / WH ),
+
+
+				strwrap += '<div class="'+c.unit.substr(1)+' sc'+masn.screen+' co'+minI+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+top+'px;left:'+left+'px;"></div>';
+
+
+				$e.css({
+					"top" : top,
+					"left" : left
+				})
+
 			})
 
+			// 遍历结束后保存最终的 colY
+			$d.data('colY',colY);
+
+			if( f ){
+				var arrp = $htmlp.toArray();
+				$htmlp = $(arrp.slice(0,mm).concat($addfc.toArray(),arrp.slice(mm)))
+			}
+
 			$pre.empty();
-			console.log('wrap:')
-			console.log($(strwrap))
-			console.log($htmlp)
+
 			return [$(strwrap),$htmlp];
 		}
 	}

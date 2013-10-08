@@ -101,14 +101,14 @@ if(!String.prototype.cut){
 	<% var u = list[i],indx = $unit(u.id,u),olnk = $outlnk(u); %> \
 	<% if(!indx) continue; %> \
 <div class="woo"><div class="j"> \
-	<div class="mbpho" style="height:<%=u.iht > 800 ? 800 : u.iht%>px;"><a target="_blank" class="a" href="<%=olnk%>"><img <%=srcd ? "srcd" : "src"%>="<%=u.isrc%>" height="<%=u.iht%>" /><%= u.iht > 800 ? "<u style=\'margin-top:-"+(u.iht-720)+"px\'></u>" : ""%></a> \
+	<div class="mbpho" style="height:<%=u.iht > 800 ? 800 : u.iht%>px;"><a target="_blank" class="a" href="http://www.duitang.com/people/mblog/<%=u.id%>/detail/"><img <%=srcd ? "srcd" : "src"%>="<%=u.isrc%>" height="<%=u.iht%>" /><%= u.iht > 800 ? "<u style=\'margin-top:-"+(u.iht-720)+"px\'></u>" : ""%></a> \
 	</div> \
 	<div class="d"><span class="d1 d1-done"><%=u.favc%></span><span class="d2 d2-done"><%=u.zanc%></span><span class="d3"><%=u.repc%></span></div> \
 	<div class="g"><%=u.msg%><% if(olnk){ %>&nbsp;<%=$price(u,olnk)%><% } %></div> \
 	<ul> \
-	<li class="f"><a target="_blank" href=""><img width="24" height="24" src="<%=u.ava%>"></a><p><a class="p" target="_blank" href=""><%=$cut(u.unm,16)%></a>&nbsp;收集到&nbsp;<% if(u.albid){ %><a target="_blank" href=""><%=$cut(u.albnm,12)%></a>&nbsp;专辑中<% }else{ %><a target="_blank" href="">默认专辑</a><% } %></p></li> \
+	<li class="f"><a target="_blank" href="http://www.duitang.com/topics/"><img width="24" height="24" src="<%=u.ava%>"></a><p><a class="p" target="_blank" href="http://www.duitang.com/topics/"><%=$cut(u.unm,16)%></a>&nbsp;收集到&nbsp;<% if(u.albid){ %><a target="_blank" href="http://www.duitang.com/topics/"><%=$cut(u.albnm,12)%></a>&nbsp;专辑中<% }else{ %><a target="_blank" href="http://www.duitang.com/topics/">默认专辑</a><% } %></p></li> \
 <% for(var j=0,l=hasrp?u.cmts.length:0; j<l; j++){ %> \
-	<li><a target="_blank" href=""><img width="24" height="24" src="<%=u.cmts[j].ava%>"></a><p><a target="_blank" href=""><%=$cut(u.cmts[j].name,16)%></a>&nbsp;<%=u.cmts[j].cont%></p></li> \
+	<li><a target="_blank" href="http://www.duitang.com/topics/"><img width="24" height="24" src="<%=u.cmts[j].ava%>"></a><p><a target="_blank" href="http://www.duitang.com/topics/"><%=$cut(u.cmts[j].name,16)%></a>&nbsp;<%=u.cmts[j].cont%></p></li> \
 <% } %>' +
 
 '</div></div>' +
@@ -207,7 +207,7 @@ if(!String.prototype.cut){
 					dat = jsn.data;
 				for(var i=0,d=dat.albums,l=d.length; i<l; i++){
 					var unt = [
-							'<div class="woo"  data-ht="328"> <div class="albbigimg"> <p class="lev2"></p> <p class="lev1"></p> <a class="lev0" href="" target="_blank" ><img src="http://cdn.duitang.com/uploads/item/201208/07/20120807235954_URvcE.thumb.200_200_c.jpeg" alt="动漫集 ."></a> <p class="lev3"></p> <div>动漫集 .</div> </div> <ul> <li><span>3736个收集 | 103人喜欢</span></li> <li class="clr"><a href="" target="_blank" ><img src="http://cdn.duitang.com/uploads/people/201309/15/20130915021315_kyMMu.thumb.24_24_c.jpeg" />笑我作茧自缚还…</a></li> <li>有壁纸也有男男.</li> </ul> </div>'
+							'<div class="woo"  data-ht="328"> <div class="albbigimg"> <p class="lev2"></p> <p class="lev1"></p> <a class="lev0" href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/item/201208/07/20120807235954_URvcE.thumb.200_200_c.jpeg" alt="动漫集 ."></a> <p class="lev3"></p> <div>动漫集 .</div> </div> <ul> <li><span>3736个收集 | 103人喜欢</span></li> <li class="clr"><a href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/people/201309/15/20130915021315_kyMMu.thumb.24_24_c.jpeg" />笑我作茧自缚还…</a></li> <li>有壁纸也有男男.</li> </ul> </div>'
 						].join('')
 
 					$rt = $rt.add($(unt))

@@ -82,18 +82,18 @@ div div.my-album{visibility:visible}
 
 
 /* switch holder */
-#switchholder{zoom:1;margin:16px 0;padding-left:100px;border-bottom:1px solid #ebebeb;}
+#switchholder{zoom:1;margin:0 0 16px;padding-left:100px;border-bottom:1px solid #ebebeb;}
 #switchholder:after{content:"\0020";display:block;height:0;overflow:hidden;clear:both;}
 #switchholder li{float:left;margin:0 4px 0 0;list-style:none;}
 #switchholder li a{float:left;line-height:19px;padding:5px 16px 4px;+padding:6px 16px 3px;margin-top:2px;background-color:#f7f7f7;}
 #switchholder li.woo-cur a:link,
 #switchholder li.woo-cur a:visited{position:relative;bottom:-1px;margin-top:0;border:1px solid #ebebeb;border-bottom:1px solid #fff;background-color:#fff;}
 
-h1 a{display:block;width:140px;height:80px;text-indent:-9999px;background:url(http://img4.duitang.com/uploads/files/201309/25/20130925232523_YSTKT.gif) center center no-repeat;}
+/* 堆糖 logo */
+h1 a{display:block;width:140px;height:96px;text-indent:-9999px;background:url(http://img4.duitang.com/uploads/files/201309/25/20130925232523_YSTKT.gif) center center no-repeat;}
 #footer{height:40px;padding:16px 0 0 16px;margin:0 0 0;border-top:1px solid #f7f7f7}
 
 /* 文本说明 */
-
 #preserve{display:none;}
 #preserve h2{line-height:31px;margin:16px 0 0;padding:0 0 0 16px;font-weight:bold;font-family:'\5FAE\8F6F\96C5\9ED1';font-size:16px;}
 #preserve ul{margin:8px 0 0;}
@@ -103,4 +103,11 @@ h1 a{display:block;width:140px;height:80px;text-indent:-9999px;background:url(ht
 #preserve li p{float:left;}
 #preserve li u{float:left;width:200px;}
 
+
+
+
+/* 外部插入进瀑布流区块 标签词 */
+#mytags{padding:8px 4px 4px 8px;background-color:#f7f7f7;border-radius:5px;border:1px solid #E5E5E5;}
+#mytags a{display:inline-block;display:-moz-inline-box;-moz-box-align:stretch;+display:inline-block;line-height:21px;padding:2px 8px 0;margin:0 2px 4px 0;border:1px solid #e6e6e6;border-radius:3px;background-color:#fff;font-family:'\5B8B\4F53';}
+#mytags a{+display:inline}
 
