@@ -26,7 +26,9 @@
 <strong>o)</strong> 灵活的参数设置，比如：子页数量、子页内单元数量、瀑布流单元宽度和间距 等等等等。
 
 
-### [纯静态demo演示地址](http://www.duitang.com/)
+### [纯静态demo演示地址1](http://www.duitang.com/app/woo/examples/main.html)
+### [纯静态demo演示地址2](http://www.duitang.com/app/woo/examples/sinkleft.html)
+### [纯静态demo演示地址3](http://www.duitang.com/app/woo/examples/sinkright.html)
 
 
 ### 一些保留命名 >>
