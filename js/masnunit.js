@@ -207,7 +207,7 @@ if(!String.prototype.cut){
 					dat = jsn.data;
 				for(var i=0,d=dat.albums,l=d.length; i<l; i++){
 					var unt = [
-							'<div class="woo"  data-ht="328"> <div class="albbigimg"> <p class="lev2"></p> <p class="lev1"></p> <a class="lev0" href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/item/201208/07/20120807235954_URvcE.thumb.200_200_c.jpeg" alt="动漫集 ."></a> <p class="lev3"></p> <div>动漫集 .</div> </div> <ul> <li><span>3736个收集 | 103人喜欢</span></li> <li class="clr"><a href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/people/201309/15/20130915021315_kyMMu.thumb.24_24_c.jpeg" />笑我作茧自缚还…</a></li> <li>有壁纸也有男男.</li> </ul> </div>'
+							'<div class="woo"  data-ht="328"> <div class="albbigimg"> <p class="lev2"></p> <p class="lev1"></p> <a class="lev0" href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/item/201208/07/20120807235954_URvcE.thumb.200_200_c.jpeg" alt="动漫集 ."></a> <p class="lev3"></p> <div>动漫集 .</div> </div> <ul> <li><span>3736个收集 | 103人喜欢</span></li> <li class="clr"><a href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/people/201309/15/20130915021315_kyMMu.thumb.24_24_c.jpeg" />笑我作茧自缚还…</a></li> <li>有壁纸.</li> </ul> </div>'
 						].join('')
 
 					$rt = $rt.add($(unt))

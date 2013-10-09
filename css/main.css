@@ -49,7 +49,7 @@ div.my-pic .mbpho .k img{float:left;+display:inline;margin:0 4px 4px 0;}
 
 
 /* 专辑单元 */
-div.my-album{width:1000px;}
+div.my-album-w{width:1000px;}
 div div.my-album{visibility:visible}
 .my-album .dym{float:left;+display:inline;width:230px;height:308px;padding:0 0 0 1px;overflow:hidden;margin:0 19px 18px 0;}
 .my-album .albbigimg{position:relative;height:208px;}
