@@ -90,8 +90,12 @@ div div.my-album{visibility:visible}
 #switchholder li.woo-cur a:visited{position:relative;bottom:-1px;margin-top:0;border:1px solid #ebebeb;border-bottom:1px solid #fff;background-color:#fff;}
 
 /* 堆糖 logo */
-h1 a{display:block;width:140px;height:96px;text-indent:-9999px;background:url(http://img4.duitang.com/uploads/files/201309/25/20130925232523_YSTKT.gif) center center no-repeat;}
+h1 a{display:block;width:140px;height:96px;text-indent:-9999px;background:url(http://img4.duitang.com/uploads/files/201309/25/20130925232523_YSTKT.gif) center 12px no-repeat;}
 #footer{height:40px;padding:16px 0 0 16px;margin:0 0 0;border-top:1px solid #f7f7f7}
+
+/* 链接引导 */
+.lattern{float:right;}
+.lattern a{margin:0 8px;}
 
 /* 文本说明 */
 #preserve{display:none;}
