@@ -20,7 +20,7 @@
 <body>
 
 <div id="header">
-<div class="lattern"><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
+<div class="lattern"><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
 <h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流(Waterfall O O)</a></h1>
 </div>
 
@@ -30,14 +30,14 @@
 		<!-- 具体代码在 scrollTo() 方法中 -->
 		<a name="woo-anchor"></a>
 		<ul id="switchholder">
-		<li class="woo-swa woo-cur"><a href="javascript:;">我的图片</a></li>
+		<li class="woo-swa"><a href="javascript:;">我的图片</a></li>
 		<li class="woo-swa"><a href="javascript:;">我喜欢的专辑</a></li>
 		<li class="woo-swa"><a href="javascript:;">我的专辑</a></li>
-		<li class="woo-swa"><a href="javascript:;">我的收集</a></li>
+		<li class="woo-swa  woo-cur"><a href="javascript:;">我的收集</a></li>
 		</ul>
 
 		<div class="woo-swb">
-			<div class="woo-pcont woo-masned my-pic" data-sink="#mytags" data-sinkheight="140" data-sinkright="1">
+			<div class="woo-pcont woo-masned my-pic">
 			
 			</div>
 			<div class="woo-pager"></div>
@@ -51,7 +51,7 @@
 			<div class="woo-pager"></div>
 		</div>
 		<div class="woo-swb">
-			<div class="woo-pcont woo-masned my-pic"></div>
+			<div class="woo-pcont woo-masned my-pic" data-sink="#mytags" data-sinkheight="140" data-sinkright="1"></div>
 			<div class="woo-pager"></div>
 		</div>
 
@@ -185,13 +185,13 @@ $(function (){
 		// arrform 不适用这一简化规则，原因不解释。
 		"arrfmasnw" : 0,
 
+		/////////////////// 【上方各参数必须填写，否则后果自负】
+
 		// 要插入的区块，只能插在左侧或右侧第一个位置，默认插左侧
 		// 此demo sink sinkheight sinkright 被 data- 覆盖，因此只作用在第一个不瀑流
 //		"sink" : '#mytags',
 //		"sinkheight" : 140, 
 //		"sinkright" : true,
-
-		/////////////////// 【上方各参数必须填写，否则后果自负】
 
 		// 可自由选择安装 $gopre $gonext $gotop 等操作键。
 		"gopre" : '#gopre',
