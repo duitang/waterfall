@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="../css/woo.css" />
 <link rel="stylesheet" href="../css/gotop.css" />
 <link rel="stylesheet" href="../css/pagine.css" />
+<link rel="stylesheet" href="../css/resize.css" />
 <script src="../js/jquery-1.6.1.min.js"></script>
 <script src="../js/browser.js"></script>
 <script src="../js/history.js"></script>
@@ -22,6 +23,7 @@
 <div class="lattern"><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
 <h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流(Waterfall O O)</a></h1>
 </div>
+
 
 <div id="content">
 	<div id="woo-holder">
@@ -94,7 +96,8 @@
 			<div class="woo-pager"></div>
 		</div>
 		<div class="woo-swb">
-			<div class="woo-pcont woo-masned my-album my-album-w" data-wootemp="1" data-subpagenum="6"></div>
+			
+			<div class="woo-pcont woo-masned my-album" data-domwidth="1000" data-wootemp="1" data-subpagenum="6"></div>
 			<div class="woo-pager"></div>
 		</div>
 		<div class="woo-swb">
@@ -234,6 +237,9 @@ $(function (){
 		// footer 选择器，只要处于瀑布流翻页器下方的都可视为 footer。
 		// 它的隐藏和显示将会受到控制。
 		"footer" : '#footer,#preserve',
+
+		// window resize 时，是否重绘瀑布流，默认不重绘。此功能打开，resize.css 才有意义
+		"resize" : true,
 
 		// scroll 过程中触发的方法，可用于登录弹出框等
 		"onScroll" : function (tp){

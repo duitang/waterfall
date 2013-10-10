@@ -1,0 +1,12 @@
+/*
+@说明：单元块的位置变化使用 transition. 开启了resize 重绘功能，此css 才有意义，此文件完全可以不使用。
+*/
+
+.woo{
+transition: top 10s ease-in,left 10s ease-in;
+-webkit-transition: top 1s ease-out,left 1s ease-out;
+-moz-transition: top 10s ease-in,left 10s ease-in;
+-o-transition: top 10s ease-in,left 10s ease-in;
+}
+
+

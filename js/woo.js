@@ -2,6 +2,7 @@
 @说明：瀑布流 Woo (Waterfall O O)
 */
 
+
 ;(function(window, undefined){
 
 
@@ -9,7 +10,10 @@
 		$W = $(window),
 		// window窗口的高度，在初始方法中获得
 		WH,
+		// window窗口的宽度，只在resize 开启的情况下有用，用于判断resize前后宽度是否变化
+		WW,
 		H = $.History,
+		// 当前瀑布流在所有瀑布流中的序号
 		IDX = 0,
 		// 是否用户有点击进行翻页
 		USERCLICK = false,
@@ -80,7 +84,7 @@
 			"appendnum" : 12,
 
 			// (逐个添加)是否逐个添加单元节点
-			"batchopen" : true,
+			"batchopen" : false,
 			// (逐个添加) 每次插入节点的时间延迟，batchopen 开启后有效
 			"batchdelay" : 6,
 			// (逐个添加) 每次插入dom的节点数，batchopen 开启后有效
@@ -94,6 +98,9 @@
 
 			// ajax 请求是否缓存
 			"ajaxcache" : false,
+
+			// resize 为 false 则 window resize 时不重绘，否则会调用默认的 resize 方法
+			"resize" : false,
 
 
 			// scroll 过程中执行的方法
@@ -165,10 +172,11 @@
 			if( !$HOLDER.length || !$trigs.length || !$conts.length ) return;
 
 			// 初始化 $gonext $gopre $gopre $footer
-			this.$gonext = $(conf.gonext)
-			this.$gopre = $(conf.gopre)
-			this.$gotop = $(conf.gotop)
-			this.$footer = $(conf.footer)
+			this.$conts = $conts,
+			this.$gonext = $(conf.gonext),
+			this.$gopre = $(conf.gopre),
+			this.$gotop = $(conf.gotop),
+			this.$footer = $(conf.footer);
 
 
 			// WooTemp 对象
@@ -228,8 +236,14 @@
 
 
 			// 处理 window resize 事件，重新计算window 高度
-			$W.bind('resize',function (){
+			$W.bind('resize',function (e){
 				WH = $W.height();
+
+				var w;
+				// 是否执行 resize 方法由 conf.resize 决定
+				if( conf.resize && (w=WW) != (WW=$W.width()) ){
+					Woo.resize();
+				}
 			})
 		},
 
@@ -278,7 +292,25 @@
 			}
 		},
 
-		
+		/*
+		@说明：窗口resize 时重绘
+		*/
+		resize : function (){
+			// 重置所有MASN 的dom width
+			for( var i=0; i<MASN.length; i++ ){
+				var msni = MASN[i]
+				if( i === IDX && msni ){
+					msni.setCols(),
+					// 重绘当前瀑布流， IDX 为全局变量保存当前瀑布流的序号
+					msni.figure(),
+					// true 表示一次性排列所有预置单元
+					msni.arrangeContents(true);
+				}else if( msni ){
+					msni.resetDomWidth();
+				}
+			}
+		},
+
 		/*
 		@说明：分批依次处理数组数据
 		@参数：
@@ -490,9 +522,6 @@
 		_pageInit : function($conts,n,gtoupg){
 			IDX = n;
 
-
-
-
 			var conf = this.conf,
 				frame = conf.frame,
 				arrform = conf.arrform,
@@ -694,7 +723,7 @@
 
 
 						if( emp && MASN[n] ){
-							MASN[n].resetCols(),
+							MASN[n].clearColY(),
 							addfirst = true;
 						}
 
@@ -717,7 +746,7 @@
 						// 也可能是 [<jQuery对象>] 数组
 						// 这两种情况均需要 $() 后再使用
 						var jonhtml = WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
-						MASN[n].appendContents($madd,jonhtml,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
+						MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
 
 						// End = new Date().getTime()
 						// console.log(End - Start)
@@ -767,6 +796,7 @@
 					PAGINE[n].lazyAdding = true,
 					PAGINE[n].scrollLoading = true;
 
+					MASN[n].setCols();
 					// 第二次点击时重新取得数据，保证数据得到及时更新，默认刷新当前页
 					PAGINE[n].refreshPage(gtoupg);
 				}
@@ -788,7 +818,7 @@
 		},
 
 		/*
-		@说明：内部方法，获取当前tab 的index 序号数
+		@说明：内部方法，获取当前tab triger 的序号数
 		@参数：
 		$trigs			- (obj) 切换触发节点
 		*/
@@ -1489,17 +1519,19 @@
 		*/
 		init: function ($cont,opts){
 			this.opts = $.extend({}, opts)
-			var masn = this,
-				c = masn.opts;
+			var masn = this;
 
 			masn.$dom = $($cont),
-			masn._setFirstTime(),
+			masn.domWidth = masn.$dom.data('domwidth') || 'auto',
+			masn.figure(),
 			masn.arrangeContents();
 		},
-		_setFirstTime : function (){
+		figure : function (){
 			var masn = this,
 				colY = [],
 				$d = masn.$dom,
+				// 主容器的宽度，如果有通过css 设置宽度，这一宽度会一直保持
+				dw = $d.width(),
 				c = masn.opts,
 				exlen = 0,
 				$cursor = $('<div>');
@@ -1508,16 +1540,15 @@
 				"position" : "relative"
 			});
 
+
 			// 计算列宽和列数
 			masn.colw0 = masn.colw = c.columnWidth;
 			if( c.firstColumnWidth ){
-				masn.colw0 = c.firstColumnWidth,
-				exlen = masn.colw0 - masn.colw;
+				masn.colw0 = c.firstColumnWidth;
 			}
 
-			masn.colCount = Math.max( Math.floor( ($d.width() - masn.colw0 + masn.colw) / masn.colw ), 1 ),
-			$d.css('width',masn.colCount*masn.colw + exlen - c.columnMargin + 2*(parseInt($d.css('paddingLeft')) || 0));
 
+			masn.setCols();
 
 			// 设置每列的初始高度为0
 			for( var i=0; i<masn.colCount; i++ ){
@@ -1539,7 +1570,7 @@
 				masn.firstHeight = c.firstHeight;
 			}
 		},
-		resetCols : function (){
+		clearColY : function (){
 			var masn = this,
 				colY = [];
 
@@ -1559,20 +1590,57 @@
 			.data('colY',colY)
 		},
 
+		/*
+		@说明：重置 $dom 容器的宽度和列数
+		*/
+		setCols : function (){
+			var masn = this,
+				c = masn.opts,
+				$dom = masn.$dom,
+				dw;
 
-		arrangeContents : function (){
+			masn.resetDomWidth(),
+			dw = $dom.width();
+
+			masn.colCount = Math.max( Math.floor( (dw - masn.colw0 + masn.colw) / masn.colw ), 1 ),
+			$dom.css('width',masn.colCount*masn.colw + masn.colw0 - masn.colw - c.columnMargin);
+		},
+
+		/*
+		@说明：重置 $dom 容器的宽度为初始状态，resize时需要重置所有 MASN 的dom width
+		*/
+		resetDomWidth : function (){
+			var masn = this;
+
+			masn.$dom
+			.css("width",masn.domWidth)
+		},
+
+
+		/*
+		@说明：预先置入的内容通过此方法排列
+		@参数：
+		all				- (Bool) 为真则一次性排列所有预置内容，否则只排列一部分，其它的延迟处理
+		*/
+		arrangeContents : function (all){
 			var masn = this,
 				$d = masn.$dom,
 				c = masn.opts,
 				anum = c.initAppendCounts,
-				$c;
+				$c,
+				clen;
 
-			$c = $d.children().filter(c.unit);
-			if( $c.length ){
-				//先加载 anum 个unit，剩下的交给 onArrage 方法处理
+			$c = $d.children().filter(c.unit),
+			clen = $c.length;
+			if( clen ){
+				// all 参数决定是否将所有预先填入的内容一次性加载
+				all && (anum = clen);
+
+				// 先加载 anum 个unit，剩下的交给 onArrage 方法处理
 				var $madd = $c.slice(0,anum);
 				$c = $c.slice(anum).addClass('woo-spec'),
-				masn.appendContents($madd,null,!!c.firstHeight,anum,$.noop);
+				// all 参数这里用来判断是在进行 resize 
+				masn.appendContents($madd,null,true,all,!!c.firstHeight,anum,$.noop);
 			}
 
 			// 初始状态，$dom 对应的主内容节点是 hidden 状态
@@ -1588,11 +1656,13 @@
 		@参数：
 		$data			- (Obj) 带处理的 jQuery 数据
 		htmlp			- (Str) html 字符串，将被加入到 $data
+		indom			- (Bool) 为真表示待添加的 $data 已经在dom中，不需要重新append，同时htmlp 强制设为空
+		resize			- (Bool) 是否resize 中
 		addfirst		- (Num) 是否要在左侧(右侧)第一个位置添加占位区块
 		nm				- (Num) 分批添加功能开启条件下，每批次的单元个数
 		callback		- (Fun) 分批添加功能开启条件下，递归结束后执行的方法
 		*/
-		appendContents : function ($data,htmlp,addfirst,nm,callback){
+		appendContents : function ($data,htmlp,indom,resize,addfirst,nm,callback){
 			var masn = this,
 				c = masn.opts,
 				$d = masn.$dom,
@@ -1606,43 +1676,46 @@
 
 
 			// 最后一个参数判定是否添加左(右)侧第一个位置节点
-			var arr = masn._placeEachUnit(masn,c,$d,$data,htmlp,addfirst && masn.firstHeight),
+			var arr = masn._placeEachUnit(masn,c,$d,$data,htmlp,indom,resize,addfirst && masn.firstHeight),
 				$u = arr[0],
 				inner = arr[1];
 
-			$u.appendTo($d);
+			// indom为真表示待添加的 $data 已经在dom中，不需要重新append
+			if( !indom ){
+				$u.appendTo($d);
 
-			// 使用 batchOpen 每批加载耗时会变长，但是整体效果会更平滑，请斟酌使用
-			if( c.batchOpen ){
-				// 递归添加节点，以达到时间利用的最佳效果
-				Woo.recurseDo(function (b,inner){
-					var m = 0;
-					b.append(function (i){
-						m++;
+				// 使用 batchOpen 每批加载耗时会变长，但是整体效果会更平滑，请斟酌使用
+				if( c.batchOpen ){
+					// 递归添加节点，以达到时间利用的最佳效果
+					Woo.recurseDo(function (b,inner){
+						var m = 0;
+						b.append(function (i){
+							m++;
+							return inner.eq(i).children();
+						})
+						c.onAppend(b),
+						b = b.slice(nm),
+						inner = inner.slice(m),
+						//设置大容器的高度
+						masn.setContHeight();
+
+						return [b,inner];
+					},[$u,inner],Math.ceil($u.length/nm),c.batchDelay,function (){
+						callback(masn.lastscreen,masn.screen);
+					});
+				}else{
+					$u.append(function (i){
 						return inner.eq(i).children();
 					})
-					c.onAppend(b),
-					b = b.slice(nm),
-					inner = inner.slice(m),
 					//设置大容器的高度
-					masn.setContHeight();
-
-					return [b,inner];
-				},[$u,inner],Math.ceil($u.length/nm),c.batchDelay,function (){
+					masn.setContHeight(),
+					c.onAppend($u),
 					callback(masn.lastscreen,masn.screen);
-				});
-			}else{
-				$u.append(function (i){
-					return inner.eq(i).children();
-				})
-				//设置大容器的高度
-				masn.setContHeight(),
-				c.onAppend($u),
-				callback(masn.lastscreen,masn.screen);
+				}
 			}
 		},
 
-		_placeEachUnit : function(masn,c,$d,$data,htmlp,f){
+		_placeEachUnit : function(masn,c,$d,$data,htmlp,indom,resize,f){
 			var $pre = $d.prev(),
 				haspre = !!$pre.length,
 				strwrap = '',
@@ -1657,10 +1730,10 @@
 				top,
 				mm = 0,
 				addf,
+				// 是否是resize 中，并且是要插入节点，可以断定resize前已经有插入节点
+				resf = resize && f,
+				// 要添加的节点，同时可用于判断是否有做添加(或移动)动作
 				$addfc;
-
-
-			var $lame = $data.add(htmlp).removeClass('woo-spec');
 
 			if( !haspre || haspre && !$pre.hasClass('woo-tmpmasn') ){
 				var frame = Woo.conf.frame,
@@ -1669,12 +1742,16 @@
 				$d.before($pre);
 			}
 
-			$htmlp = $pre.append($lame).find(c.unit).each(function (i,e){
+			// indom 为true 时，  $data所有单元都已经在dom 树上，并且 htmlp 一定为空
+			var $lame = $data.add(htmlp).removeClass('woo-spec'),
+				$drawer = indom ? $lame.parent() : $pre.append($lame);
+
+			$htmlp = $drawer.find(c.unit).not('.woo-f').each(function (i,e){
 				var $e = $(e),
 					id = $e.data('id');
 
-				// 在左(右)侧第一个位置增加占位节点
-				if( i === 0 && f && !c.rightAlignFirstBlock || i === colc - 1 && f && c.rightAlignFirstBlock ){
+				// 在左(右)侧第一个位置增加占位节点，之前如果有添加过(resize时)则删除
+				if( (i === 0 && f && !c.rightAlignFirstBlock || i === colc - 1 && f && c.rightAlignFirstBlock) ){
 					minY = Math.min.apply(Math, colY),
 					len = colc;
 					// 计算minY 所在的序号数
@@ -1697,14 +1774,23 @@
 					// 添加此节点后 colY 的minI 列高度随之改变
 					colY[minI] += ht,
 
-					// 要添加的节点外层和内容
-					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+'" style="position:absolute;overflow:hidden;top:'+top+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
-					$addfc = $(addf).append(c.sinkWhat),
-					mm = i,
+					// 要添加的节点外层字符串
+					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+top+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
+
 					strwrap += addf;
 
-				}
+					// 如果是resize 中，并且已经有插入过节点
+					if( resf ){
+						$addfc = $drawer.find('.woo-f:first').css({
+							"left" : left,
+							"top" : top
+						});
+					}else{
+						$addfc = $(addf).append(c.sinkWhat);
+					}
 
+					mm = i;
+				}
 
 
 				minY = Math.min.apply(Math, colY),
@@ -1747,7 +1833,8 @@
 			// 遍历结束后保存最终的 colY
 			$d.data('colY',colY);
 
-			if( f ){
+			// resf 判断是否resize 中
+			if( !resf && f ){
 				var arrp = $htmlp.toArray();
 				$htmlp = $(arrp.slice(0,mm).concat($addfc.toArray(),arrp.slice(mm)))
 			}
