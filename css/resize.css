@@ -3,10 +3,10 @@
 */
 
 .woo{
-transition: top 10s ease-in,left 10s ease-in;
+transition: top 1s ease-out,left 1s ease-out;
 -webkit-transition: top 1s ease-out,left 1s ease-out;
--moz-transition: top 10s ease-in,left 10s ease-in;
--o-transition: top 10s ease-in,left 10s ease-in;
+-moz-transition: top 1s ease-out,left 1s ease-out;
+-o-transition: top 1s ease-out,left 1s ease-out;
 }
 
 
