@@ -1,7 +1,21 @@
 /*
 @说明：瀑布流 Woo (Waterfall O O)
 */
+function aaa(s){
+/*merge start*/
+	if( typeof(console)==='object' && console.log ){
+		console.log(s)
+	}
 
+	var $dbug = $('#debug-cont')
+	if(!$dbug.length){
+		$dbug = $('<div id="debug-cont" style="position:fixed;left:0;bottom:0;width:200px;height:200px;padding:8px;border:2px solid #f00;background:#fff;overflow:scroll;overflow-x:hidden;"><p><b style="color:#f00">1:// </b>'+s+'</p></div>')
+		.appendTo('body')
+	}else{
+		$dbug.append('<p><b style="color:#f00">'+($dbug.find('p').length+1)+':// </b>'+s+'</p>').scrollTop($dbug[0].scrollHeight);
+	}
+/*merge end*/
+}
 
 ;(function(window, undefined){
 
@@ -237,13 +251,14 @@
 
 			// 处理 window resize 事件，重新计算window 高度
 			$W.bind('resize',function (e){
-				WH = $W.height();
+				Woo.throttle(function (){
+					WH = $W.height();
 
-				var w;
-				// 是否执行 resize 方法由 conf.resize 决定
-				if( conf.resize && (w=WW) != (WW=$W.width()) ){
-					Woo.resize();
-				}
+					// 是否执行 resize 方法由 conf.resize 决定
+					if( conf.resize && WW != (WW=$W.width()) ){
+						Woo.resize();
+					}
+				}, 100);
 			})
 		},
 
@@ -290,6 +305,16 @@
 					}
 				})
 			}
+		},
+
+		/*
+		@说明：节流控制函数，应用与窗口resize 
+		*/
+		throttle : function(method, delay){
+			window.clearTimeout(Woo.throttle.timer);
+			Woo.throttle.timer = setTimeout(function(){
+				method.call(this);
+			},delay);
 		},
 
 		/*
@@ -1530,8 +1555,6 @@
 			var masn = this,
 				colY = [],
 				$d = masn.$dom,
-				// 主容器的宽度，如果有通过css 设置宽度，这一宽度会一直保持
-				dw = $d.width(),
 				c = masn.opts,
 				exlen = 0,
 				$cursor = $('<div>');
@@ -1707,11 +1730,15 @@
 					$u.append(function (i){
 						return inner.eq(i).children();
 					})
+
 					//设置大容器的高度
 					masn.setContHeight(),
 					c.onAppend($u),
 					callback(masn.lastscreen,masn.screen);
 				}
+			}else{
+				//设置大容器的高度
+				masn.setContHeight();
 			}
 		},
 
@@ -1822,12 +1849,16 @@
 
 				strwrap += '<div class="'+c.unit.substr(1)+' sc'+masn.screen+' co'+minI+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+top+'px;left:'+left+'px;"></div>';
 
+				
 
 				$e.css({
 					"top" : top,
 					"left" : left
 				})
-
+				.removeClass(function (i,cls){
+					return (cls.match(/(co|sc)\d+/ig) || []).join(' ')
+				})
+				.addClass('sc'+masn.screen+' co'+minI);
 			})
 
 			// 遍历结束后保存最终的 colY
