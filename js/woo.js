@@ -1849,9 +1849,9 @@
 					"left" : left
 				})
 				.removeClass(function (i,cls){
-					return (cls.match(/(co|sc)\d+/ig) || []).join(' ')
+					return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
 				})
-				.addClass('sc'+masn.screen+' co'+minI);
+				.addClass((colwf ? 'woo-spcol ' : '')+'sc'+masn.screen+' co'+minI);
 			})
 
 			// 遍历结束后保存最终的 colY
