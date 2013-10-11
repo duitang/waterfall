@@ -1635,8 +1635,7 @@ function aaa(s){
 		resetDomWidth : function (){
 			var masn = this;
 
-			masn.$dom
-			.css("width",masn.domWidth)
+			masn.$dom.css("width",masn.domWidth)
 		},
 
 
@@ -1864,8 +1863,8 @@ function aaa(s){
 			// 遍历结束后保存最终的 colY
 			$d.data('colY',colY);
 
-			// resf 判断是否resize 中
-			if( !resf && f ){
+			// resf 判断是否resize 中，并且已经插入好节点
+			if( !resf ){
 				var arrp = $htmlp.toArray();
 				$htmlp = $(arrp.slice(0,mm).concat($addfc.toArray(),arrp.slice(mm)))
 			}
