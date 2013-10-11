@@ -1864,7 +1864,7 @@ function aaa(s){
 			$d.data('colY',colY);
 
 			// resf 判断是否resize 中，并且已经插入好节点
-			if( !resf ){
+			if( !resf && f ){
 				var arrp = $htmlp.toArray();
 				$htmlp = $(arrp.slice(0,mm).concat($addfc.toArray(),arrp.slice(mm)))
 			}
