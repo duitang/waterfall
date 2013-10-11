@@ -82,3 +82,6 @@
 > 10) 请仔细研究 masnunit.js。
 
  
+## License
+
+duitang/waterfall is published under the terms of the MIT License.
