@@ -2,6 +2,8 @@
 @说明：瀑布流 Woo (Waterfall O O)
 */
 
+
+
 ;(function(window, undefined){
 
 
@@ -1743,18 +1745,16 @@
 
 			// 判断minI 所在列是 woo-spcol 特殊列
 			if( (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) && masn.colwf != masn.colw ){
-				colwf = masn.colwf,
-				$e.addClass('woo-spcol')
+				colwf = masn.colwf;
+				!f && ($e.addClass('woo-spcol'))
 			}
 
 
 			// left 值需要先计算 minI 即最小colY 所在的列数
 			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 );
 
-
-
 			// 高度计算优先取值 data-ht 可大大缩减计算时间
-			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true),
+			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true);
 
 			// 添加此节点后 colY 的minI 列高度随之改变
 			colY[minI] += ht,
