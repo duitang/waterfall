@@ -1,21 +1,6 @@
 /*
 @说明：瀑布流 Woo (Waterfall O O)
 */
-function aaa(s){
-/*merge start*/
-	if( typeof(console)==='object' && console.log ){
-		console.log(s)
-	}
-
-	var $dbug = $('#debug-cont')
-	if(!$dbug.length){
-		$dbug = $('<div id="debug-cont" style="position:fixed;left:0;bottom:0;width:200px;height:200px;padding:8px;border:2px solid #f00;background:#fff;overflow:scroll;overflow-x:hidden;"><p><b style="color:#f00">1:// </b>'+s+'</p></div>')
-		.appendTo('body')
-	}else{
-		$dbug.append('<p><b style="color:#f00">'+($dbug.find('p').length+1)+':// </b>'+s+'</p>').scrollTop($dbug[0].scrollHeight);
-	}
-/*merge end*/
-}
 
 ;(function(window, undefined){
 
@@ -625,6 +610,7 @@ function aaa(s){
 					sinkWhat : sink,
 					firstHeight : sinkheight,
 					rightAlignFirstBlock : sinkright,
+					firstColumnWidth : fwdt,
 					columnWidth : wdt,
 					columnMargin : mgn,
 					batchOpen : conf.batchopen,
@@ -1565,9 +1551,9 @@ function aaa(s){
 
 
 			// 计算列宽和列数
-			masn.colw0 = masn.colw = c.columnWidth;
+			masn.colwf = masn.colw = c.columnWidth;
 			if( c.firstColumnWidth ){
-				masn.colw0 = c.firstColumnWidth;
+				masn.colwf = c.firstColumnWidth;
 			}
 
 
@@ -1589,7 +1575,7 @@ function aaa(s){
 
 			// 根据 firstHeight 参数插入初始占位块
 			if( c.firstHeight ){
-				masn.firstWidth = masn.colw0,
+				masn.firstWidth = masn.colwf,
 				masn.firstHeight = c.firstHeight;
 			}
 		},
@@ -1625,8 +1611,8 @@ function aaa(s){
 			masn.resetDomWidth(),
 			dw = $dom.width();
 
-			masn.colCount = Math.max( Math.floor( (dw - masn.colw0 + masn.colw) / masn.colw ), 1 ),
-			$dom.css('width',masn.colCount*masn.colw + masn.colw0 - masn.colw - c.columnMargin);
+			masn.colCount = Math.max( Math.floor( (dw - masn.colwf + masn.colw) / masn.colw ), 1 ),
+			$dom.css('width',masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin);
 		},
 
 		/*
@@ -1741,6 +1727,44 @@ function aaa(s){
 			}
 		},
 
+		_placeCall : function ($e, colY, colc, f){
+			var masn = this,
+				c = masn.opts,
+				len = colc,
+				minY, minI, left, ht, colwf;
+
+			minY = Math.min.apply(Math, colY);
+			// 计算minY 所在的序号数
+			while (len--){
+				if( colY[len] == minY ){
+					minI = len;
+				}
+			}
+
+			// 判断minI 所在列是 woo-spcol 特殊列
+			if( (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) && masn.colwf != masn.colw ){
+				colwf = masn.colwf,
+				$e.addClass('woo-spcol')
+			}
+
+
+			// left 值需要先计算 minI 即最小colY 所在的列数
+			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 );
+
+
+
+			// 高度计算优先取值 data-ht 可大大缩减计算时间
+			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true),
+
+			// 添加此节点后 colY 的minI 列高度随之改变
+			colY[minI] += ht,
+
+			// 计算所在的screen 值
+			masn.screen = Math.ceil( (minY + ht) / WH );
+
+			return [minY, minI, left, ht, colwf];
+		},
+
 		_placeEachUnit : function(masn,c,$d,$data,htmlp,indom,resize,f){
 			var $pre = $d.prev(),
 				haspre = !!$pre.length,
@@ -1748,12 +1772,12 @@ function aaa(s){
 				$htmlp = $(null),
 				colY = $d.data('colY'),
 				colc = masn.colCount,
-				len,
-				ht,
-				minI,
+				ars,
 				minY,
+				minI,
 				left,
-				top,
+				ht,
+				colwf,
 				mm = 0,
 				addf,
 				// 是否是resize 中，并且是要插入节点，可以断定resize前已经有插入节点
@@ -1778,30 +1802,19 @@ function aaa(s){
 
 				// 在左(右)侧第一个位置增加占位节点，之前如果有添加过(resize时)则删除
 				if( (i === 0 && f && !c.rightAlignFirstBlock || i === colc - 1 && f && c.rightAlignFirstBlock) ){
-					minY = Math.min.apply(Math, colY),
-					len = colc;
-					// 计算minY 所在的序号数
-					while (len--){
-						if( colY[len] == minY ){
-							minI = len;
-						}
-					}
+					// 计算 minY minI left
+					ars = masn._placeCall($e, colY, colc, f);
 
-					// top 值由最小colY 决定
-					top = minY,
-					// left 值需要先计算 minI 即最小colY 所在的列数
-					left = masn.colw * minI + masn.left0 + ( minI ? masn.colw0 - masn.colw : 0 ),
+					minY = ars[0],
+					minI = ars[1],
+					left = ars[2],
+					ht = ars[3],
+					colwf = ars[4],
 
-					ht = masn.firstHeight,
 
-					// 计算所在的screen 值
-					masn.screen = Math.ceil( (minY + ht) / WH ),
-
-					// 添加此节点后 colY 的minI 列高度随之改变
-					colY[minI] += ht,
 
 					// 要添加的节点外层字符串
-					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+top+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
+					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
 
 					strwrap += addf;
 
@@ -1809,7 +1822,7 @@ function aaa(s){
 					if( resf ){
 						$addfc = $drawer.find('.woo-f:first').css({
 							"left" : left,
-							"top" : top
+							"top" : minY
 						});
 					}else{
 						$addfc = $(addf).append(c.sinkWhat);
@@ -1818,40 +1831,21 @@ function aaa(s){
 					mm = i;
 				}
 
+				// 计算 minY minI left
+				ars = masn._placeCall($e, colY, colc);
 
-				minY = Math.min.apply(Math, colY),
-				len = colc;
-				// 计算minY 所在的序号数
-				while (len--){
-					if( colY[len] == minY ){
-						minI = len;
-					}
-				}
-
-				// top 值由最小colY 决定
-				top = minY,
-				// left 值需要先计算 minI 即最小colY 所在的列数
-				left = masn.colw * minI + masn.left0 + ( minI ? masn.colw0 - masn.colw : 0 ),
-
-				// 高度计算优先取值 data-ht 可大大缩减计算时间
-				ht = $e.data('ht') || $e.outerHeight(true),
-
-				// 计算所在的screen 值
-				masn.screen = Math.ceil( (minY + ht) / WH ),
-
-				// 添加此节点后 colY 的minI 列高度随之改变
-				colY[minI] += ht,
-
-				// 计算所在的screen 值
-				masn.screen = Math.ceil( (minY + ht) / WH ),
+				minY = ars[0],
+				minI = ars[1],
+				left = ars[2],
+				ht = ars[3],
+				colwf = ars[4],
 
 
-				strwrap += '<div class="'+c.unit.substr(1)+' sc'+masn.screen+' co'+minI+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+top+'px;left:'+left+'px;"></div>';
+				strwrap += '<div class="'+c.unit.substr(1)+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
 
-				
 
 				$e.css({
-					"top" : top,
+					"top" : minY,
 					"left" : left
 				})
 				.removeClass(function (i,cls){
