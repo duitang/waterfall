@@ -17,7 +17,7 @@
 
 <strong>o)</strong> 至页底时，会预加载下一页第一子页内容。
 
-<strong>o)</strong> 根据当前环境自动控制瀑布流列数，可自适应屏幕宽度，也可通过css 设置固定宽度。
+<strong>o)</strong> 根据当前环境自动控制瀑布流列数，可自适应屏幕宽度，也可通过 data-domwidth 设置固定宽度。
 
 <strong>o)</strong> 可采用 sink 模式，在瀑布流左侧或右侧第一列嵌入外部区块。
 
