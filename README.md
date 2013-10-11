@@ -71,7 +71,7 @@
 
 > 5) 一个页面可以有多个瀑布流，不同瀑布流的配置可以差异化。通过在各自.woo-pcont节点上设置 data- 属性，例如：data-subpagenum data-unitsnum data-sink来覆盖全局配置。
 
-> 6) .woo-pcont节点上目前支持的data- 配置有：data-subpagenum data-unitsnum data-totalunits data-wootemp data-sink data-sinkheight data-sinkright。
+> 6) .woo-pcont节点上目前支持的data- 配置有：data-domwidth data-subpagenum data-unitsnum data-totalunits data-wootemp data-sink data-sinkheight data-sinkright。
 
 > 7) data-wootemp 取值为从0开始的整数，对应 masnunit.js 文件里定义的不同类型瀑布流。
 
