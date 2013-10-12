@@ -35,7 +35,7 @@
 ### [纯静态demo演示地址1](http://www.duitang.com/app/woo/examples/main.html)
 ### [纯静态demo演示地址2](http://www.duitang.com/app/woo/examples/sinkleft.html)
 ### [纯静态demo演示地址3](http://www.duitang.com/app/woo/examples/sinkright.html)
-### [纯静态demo演示地址3](http://www.duitang.com/app/woo/examples/specialcol.html)
+### [纯静态demo演示地址4](http://www.duitang.com/app/woo/examples/specialcol.html)
 
 
 ### 一些保留命名 >>
