@@ -84,6 +84,9 @@
 
 > 10) 请仔细研究 masnunit.js。
 
+### 如果对本产品感兴趣，请关注博客：
+
+[http://blog.duitang.com/2013/10/woo/](http://blog.duitang.com/2013/10/woo/)
  
 ## License
 
