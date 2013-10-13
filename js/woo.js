@@ -3,7 +3,6 @@
 */
 
 
-
 ;(function(window, undefined){
 
 
@@ -113,6 +112,13 @@
 			// scroll 过程中执行的方法
 			"onScroll" : function (tp){
 				// tp 为当前的scrolltop
+			},
+
+			// 每一大页加载完毕之后执行
+			"onOnePageOver" : function (pg, $pager){
+				// pg 为 Pagine 实例，$pager 为底部翻页容器
+				// 可以使用 pg.hasNextUpperPage()  pg.isLastSub()
+
 			},
 
 			// 每次请求后都要执行的方法
@@ -345,9 +351,8 @@
 				}
 				return;
 			}
+
 			// fn 必须返回一个数组
-
-
 			arr = fn.apply(null,arr);
 			if( arr[0].length ){
 				window.setTimeout(function (){
@@ -457,8 +462,8 @@
 			$(this).css('display','none');
 			if( PAGINE && PAGINE[IDX] && MASN && MASN[IDX]){
 				var $pagerv = $HOLDER.find(conf.frame[4]+':visible'),
-					cond1 = $pagerv.find(':first-child').length,
-					cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextPage(),
+					cond1 = $pagerv.find('.woo-pbr').length,
+					cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextUpperPage,
 					f = cond1 && cond2 ? false : true;
 
 				// 如果upper page 只有1页
@@ -636,6 +641,8 @@
 					// 请求分页数据，请求结束后 always 执行
 					requestAlways : conf.requestAlways,
 
+					onOnePageOver : conf.onOnePageOver,
+
 					// ajax 请求是否缓存
 					ajaxcache : conf.ajaxcache,
 					
@@ -679,12 +686,16 @@
 						if( !$loadingsm.length ){
 							$loadingsm = $('<div id="woo-loading" class="woo-loading"></div>').appendTo('body')
 						}
-						$loadingsm.css('visibility','hidden');
+
+
+						Woo.$footer.css("display","none")
 
 						// 如果主内容区块有被清空
-						if(c){ 
+						if(c){
 							// 内容区域loading 进度条展示
-							$pg_cont.addClass('woo-loading')
+							$pg_cont.addClass('woo-loading'),
+
+							$loadingsm.css('visibility','hidden'),
 
 							// 清除内存 WooTemp 对象，主要是MASNUNITS
 							WOOTEMP.reset();
@@ -702,7 +713,6 @@
 
 							Woo._onscroll()
 						}else{
-							Woo.$footer.css("display","none")
 							$loadingsm.css('visibility','visible')
 						}
 					},
@@ -824,7 +834,7 @@
 			// 为了避免在loading 过程中hash change 导致的无法准确回退
 			USERCLICK = false
 
-			Woo.$gonext.css('visibility', 'hidden');
+			Woo.$gonext.css('display', 'none');
 		},
 
 
@@ -893,9 +903,9 @@
 							$gopre = Woo.$gopre,
 							$gonext = Woo.$gonext,
 							$pagerv = $HOLDER.find(conf.frame[4]+':visible'),
-							cond1 = $pagerv.find(':first-child').length,
-							cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextPage();
-						$gopre.add($gonext).css('visibility',tp > $HOLDER.position().top && ( !cond1 || cond1 && cond2 ) ? 'visible' : 'hidden')
+							cond1 = $pagerv.find('.woo-pbr').length,
+							cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextUpperPage;
+						$gopre.add($gonext).css('display',tp > $HOLDER.position().top && ( !cond1 || cond1 && cond2 ) ? 'block' : 'none')
 					}
 				}
 			}
@@ -967,11 +977,13 @@
 				spn = c.subPageNum,
 				undefined;
 
+			pg.hasNextUpperPage = true,
 			pg.caching = c.caching,
 			pg.$data = c.$data || $(null),
 			pg.idata = [],
 			pg.$dom = id[0],
 			pg.$pager = id[1],
+			pg.unitsPerSub = c.unitsPerSub,
 			pg.totalPageNum = c.totalPageNum,
 			pg.currentUpperPage = upg,
 			pg.currentPage = (upg-1)*spn + 1;
@@ -1006,6 +1018,7 @@
 				isFirstSub = sub && ( cp % spn === 1 || spn == 1 ),
 				clear = false,
 				undefined;
+
 
 			!sub && pg.scrollToAnchor(),
 
@@ -1107,7 +1120,6 @@
 			var pg = this,
 				cp = pg.currentPage;
 
-			
 			pg.clearCont = true,
 			pg.loadPage(cp+dir,1);
 		},
@@ -1148,7 +1160,7 @@
 				isFirstSub = cp % spn === 1, //第一子页
 				undefined;
 
-			
+			pg.hasNoMore = !hasnext,
 			// currentPage 当前子页码数
 			pg.currentPage = cp,
 			pg.caching = 2;
@@ -1175,7 +1187,7 @@
 			// 主内容区块消除正在加载的标识
 			pg.$dom.removeClass('woo-loading');
 
-			// 如果已经是最后一个子页，则删除 #woo-loading 节点
+			// 如果已经是最后一个子页
 			if( !pg.isLastSub() ){
 				$loadingsm.css('visibility','hidden');
 			}
@@ -1217,7 +1229,7 @@
 					"height" : 0,
 					"overflow" : "hidden"
 				})
-			}else{
+			}else if( pg.isLastSub() ){
 				pg.$pager.css({
 					"display" : "block",
 					"height" : "auto"
@@ -1260,7 +1272,7 @@
 				pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
 				pg.prepare = null,
 				// 延迟两秒后执行 always 以便设置 pg.loading=false
-				$({}).delay(2000).queue(function (){
+				$({}).delay(100).queue(function (){
 					pg._requestAlways()
 				}),
 				pg.scrollLoading = false;
@@ -1293,6 +1305,7 @@
 						// resp = [cont, hasnext, totalcount]
 						// 前两个数值必须有，最后的totalcount 可选
 						var resp =  c.analyzeResponse(h);
+
 
 						if(prepare){
 							pg.prepare = [cp,resp[0],resp[1],resp[2]];
@@ -1336,12 +1349,10 @@
 		/*
 		@说明：是否还有下一大页
 		*/
-		hasNextPage : function (){
-			var pg = this,
-				cup = pg.currentUpperPage,
-				tn = pg.totalPageNum;
+		hasNextUpperPage : function (){
+			var pg = this;
 
-			return cup < tn;
+			return pg.hasNextUpperPage;
 		},
 
 		/*
@@ -1371,6 +1382,9 @@
 					window.clearTimeout(TIMERINTERVAL)
 				}
 			},200);
+
+			// call onOnePageOver
+			pg.config.onOnePageOver(pg);
 		},
 
 		/*
@@ -1389,7 +1403,9 @@
 
 			tn = Math.floor((tn-.1)/spn) + 1;
 
-
+			if( c.nextMode && cup >= tn && pg.hasNoMore || !c.nextMode && cup >= tn ){
+				pg.hasNextUpperPage = false;
+			}
 
 			if( pg.isLastSub() ){
 				// 以下是配置普通翻页器的html 字符串
@@ -1414,6 +1430,7 @@
 						cup==tn ? '' : ( c.nextMode ? '<li class="woo-ell" >…</li>' : '') +'<li><a class="woo-nxt" href="javascript:;"  pdir="1">下一页</a></li>',
 						'</ul></div>'].join('');
 
+
 				pg.$pager.find('.woo-pbr').remove(),
 				pg.$pager.append(strPager);
 			}
@@ -1431,8 +1448,8 @@
 
 			var $gonext = Woo.$gonext;
 			$gonext.css('display','block');
-			if( pg.$pager.find(':first-child').length ){
-				$gonext.css('visibility', pg.hasNextPage() ? 'visible' : 'hidden');
+			if( pg.$pager.find('.woo-pbr').length ){
+				$gonext.css('display', pg.hasNextUpperPage ? 'block' : 'none');
 			}
 
 			pg.pagerVisible = true,
