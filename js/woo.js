@@ -1409,11 +1409,12 @@
 
 						cup==tn ? '' : ( c.nextMode ? '<li class="woo-ell" >…</li>' : '') +'<li><a class="woo-nxt" href="javascript:;"  pdir="1">下一页</a></li>',
 						'</ul></div>'].join('');
-				pg.$pager.empty(),
+
+				pg.$pager.find('.woo-pbr').remove(),
 				pg.$pager.append(strPager);
 			}
 			else{
-				pg.$pager.empty(),
+				pg.$pager.find('.woo-pbr').remove(),
 				pg.$pager.append(strPager);
 			}
 
