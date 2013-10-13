@@ -58,6 +58,9 @@
 			// 单元节点dom选择器
 			"unit" : '.woo',
 
+			// 同一列单元块之间的垂直间距
+			"gap" : 0,
+
 			// anchor 锚点名，回顶部会定位到该锚点处
 			"anchor" : 'woo-anchor',
 			// 相对于 name="woo-anchor" 锚记的垂直方向偏移，可解决顶部fixed nav遮盖问题
@@ -592,6 +595,7 @@
 
 				this.masn[n] = MASN[n] = new Woo.Masn($pg_cont,{
 					unit : conf.unit,
+					gap : conf.gap || 0,
 					onAppend : Woo._doLoadImage,
 					onArrange : function ($c){
 						if( $c.length ){
@@ -1755,13 +1759,13 @@
 
 
 			// left 值需要先计算 minI 即最小colY 所在的列数
-			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 );
+			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 ),
 
 			// 高度计算优先取值 data-ht 可大大缩减计算时间
-			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true);
+			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true),
 
 			// 添加此节点后 colY 的minI 列高度随之改变
-			colY[minI] += ht,
+			colY[minI] += ht + c.gap,
 
 			// 计算所在的screen 值
 			masn.screen = Math.ceil( (minY + ht) / WH );
@@ -1818,7 +1822,7 @@
 
 
 					// 要添加的节点外层字符串
-					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
+					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
 					strwrap += addf;
 
