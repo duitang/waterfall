@@ -40,6 +40,9 @@
 
 	$.extend(Woo,{
 		dfConf : {
+			// 每个请求对应的form 的id 前缀，和 arrform 标识数组结合。
+			"formprefix" : '#woo-form-',
+
 			// 组件框架选择符，依次为 总节点、tab切换触发器、tab切换容器、内容、内容翻页器、内容(与woo-pcont为同一节点，区别是已经masn过)
 			"frame" : ['#woo-holder','.woo-swa','.woo-swb','.woo-pcont','.woo-pager','.woo-masned'],
 
@@ -1269,13 +1272,13 @@
 
 				$.ajax({
 					type : 'GET',
-					cache : DEBUG !== undefined && DEBUG ? false : !!c.ajaxcache,
-					url : DEBUG !== undefined && DEBUG  ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
+					cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxcache,
+					url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
 					data : arrurl[2],
 					timeout : 20000,
 					success : function(h){
 						// 如果是 debug状态，随机取一页测试数据
-						DEBUG !== undefined && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
+						typeof DEBUG !== 'undefined' && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
 
 						if( pg.halting && !direct ) return;
 						if( direct ){
