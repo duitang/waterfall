@@ -832,9 +832,9 @@
 				}
 			}
 			// 为了避免在loading 过程中hash change 导致的无法准确回退
-			USERCLICK = false
+			USERCLICK = false,
 
-			Woo.$gonext.css('display', 'none');
+			Woo.$gonext.css('visibility', 'hidden');
 		},
 
 
@@ -905,7 +905,7 @@
 							$pagerv = $HOLDER.find(conf.frame[4]+':visible'),
 							cond1 = $pagerv.find('.woo-pbr').length,
 							cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextUpperPage;
-						$gopre.add($gonext).css('display',tp > $HOLDER.position().top && ( !cond1 || cond1 && cond2 ) ? 'block' : 'none')
+						$gopre.add($gonext).css('visibility',tp > $HOLDER.position().top && ( !cond1 || cond1 && cond2 ) ? 'visible' : 'hidden')
 					}
 				}
 			}
@@ -1449,7 +1449,7 @@
 			var $gonext = Woo.$gonext;
 			$gonext.css('display','block');
 			if( pg.$pager.find('.woo-pbr').length ){
-				$gonext.css('display', pg.hasNextUpperPage ? 'block' : 'none');
+				$gonext.css('visibility', pg.hasNextUpperPage ? 'visible' : 'hidden');
 			}
 
 			pg.pagerVisible = true,
