@@ -377,7 +377,7 @@
 			.filter('[name]')
 			.each(function (i,a){
 				if( ($(a).attr('type') === 'checkbox' || $(a).attr('type') === 'radio') &&  $(a).prop('checked') === true || ($(a).attr('type') !== 'checkbox' && $(a).attr('type') !== 'radio') ){
-					if( $.type(jsn[a.name]) !== 'undefined' ){
+					if( jsn[a.name] !== undefined ){
 						jsn[a.name] += ',' + a.value
 					}else{
 						jsn[a.name] = a.value;
@@ -1269,13 +1269,13 @@
 
 				$.ajax({
 					type : 'GET',
-					cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxcache,
-					url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
+					cache : DEBUG !== undefined && DEBUG ? false : !!c.ajaxcache,
+					url : DEBUG !== undefined && DEBUG  ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
 					data : arrurl[2],
 					timeout : 20000,
 					success : function(h){
 						// 如果是 debug状态，随机取一页测试数据
-						typeof DEBUG !== 'undefined' && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
+						DEBUG !== undefined && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
 
 						if( pg.halting && !direct ) return;
 						if( direct ){
@@ -1486,7 +1486,7 @@
 		doLazyAdd : function (wt,imm){
 			var pg = this,
 				c = pg.config,
-				wt = $.type(wt) === 'undefined' ? $W.scrollTop() : wt,
+				wt = wt === undefined ? $W.scrollTop() : wt,
 				dacol = pg.$dom.data('colY'),
 				distance = pg.$pager.offset().top - wt - WH,
 				mx = Math.max.apply(Math,dacol),
