@@ -1,6 +1,6 @@
 # 堆糖瀑布流(Woo) jQuery完整版 #
 
-version: 1.0
+version: 1.0.1
 
 ## 涵盖以下特点：
 
@@ -74,3 +74,9 @@ srcd               单元块内的图片 src 属性的替代，图片延迟加�
 ## License
 
 Duitang/Waterfall is published under the terms of the MIT License.
+
+## Change Log
+
+* **1.0.1** 2013-10-14
+ * 新增 demo for mobile
+ * 新增配置参数 gap
