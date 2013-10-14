@@ -246,7 +246,7 @@ if(!String.prototype.cut){
 						mask = d[i].iht > 800 ? '<div class="mask"></div>' : '',
 						ht = mask ? 384 : pich
 						unt = [
-							'<div class="woo" data-ht="'+ht+'"><div class="j" style="height:'+ht+'px;"><a href="/people/mblog/'+d[i].id+'/detail/"><img srcd="'+d[i].isrc+'" width="96" /></a>'+mask+'</div></div>'
+							'<div class="woo" data-ht="'+ht+'"><div class="j" style="height:'+ht+'px;"><a href="http://m.duitang.com/people/mblog/'+d[i].id+'/detail/"><img srcd="'+d[i].isrc+'" width="96" /></a>'+mask+'</div></div>'
 						].join('')
 
 					$rt = $rt.add($(unt))
