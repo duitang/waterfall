@@ -57,9 +57,6 @@
 			// 单元节点dom选择器
 			"unit" : '.woo',
 
-			// 同一列单元块之间的垂直间距
-			"gap" : 0,
-
 			// anchor 锚点名，回顶部会定位到该锚点处
 			"anchor" : 'woo-anchor',
 			// 相对于 name="woo-anchor" 锚记的垂直方向偏移，可解决顶部fixed nav遮盖问题
@@ -158,11 +155,16 @@
 				var tmpfmasnw = conf.arrfmasnw;
 				conf.arrfmasnw = [];
 			}
+			if( typeof conf.arrgap === 'number' ){
+				var tmpgap = conf.arrgap;
+				conf.arrgap = [];
+			}
 			for( var i=0; i<conf.arrform.length; i++ ){
 				tmpsplit && conf.arrsplit.push(tmpsplit),
 				tmpmasnw && conf.arrmasnw.push(tmpmasnw),
 				tmpmargin && conf.arrmargin.push(tmpmargin),
 				tmpfmasnw && conf.arrfmasnw.push(tmpfmasnw);
+				tmpgap && conf.arrgap.push(tmpgap);
 			}
 			// 参数处理结束
 
@@ -552,6 +554,7 @@
 				arrmasnw = conf.arrmasnw,
 				arrmargin = conf.arrmargin,
 				arrfmasnw = conf.arrfmasnw,
+				arrgap = conf.arrgap,
 				splitstr =  arrsplit[n] || '',
 				$ccont = $conts.eq(n),
 				$pg_cont = $ccont.find(frame[3]).not('.woo-tmpmasn'),
@@ -584,6 +587,8 @@
 				wdt = arrmasnw[n];
 				// 列与列之间的间隔
 				mgn = arrmargin[n],
+				// 同一列间单元块之间的垂直间隔
+				gap = arrgap[n],
 				// 是否支持扩展列，扩展列的宽度
 				fwdt = isextended ? wdt+arrfmasnw[n] : wdt,
 				// 是否采用 nextMode 模式
@@ -600,7 +605,7 @@
 
 				this.masn[n] = MASN[n] = new Woo.Masn($pg_cont,{
 					unit : conf.unit,
-					gap : conf.gap || 0,
+					gap : gap || 0,
 					onAppend : Woo._doLoadImage,
 					onArrange : function ($c){
 						if( $c.length ){
