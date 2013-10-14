@@ -3,7 +3,6 @@
 */
 
 
-
 ;(function(window, undefined){
 
 
@@ -40,6 +39,9 @@
 
 	$.extend(Woo,{
 		dfConf : {
+			// 每个请求对应的form 的id 前缀，和 arrform 标识数组结合。
+			"formprefix" : '#woo-form-',
+
 			// 组件框架选择符，依次为 总节点、tab切换触发器、tab切换容器、内容、内容翻页器、内容(与woo-pcont为同一节点，区别是已经masn过)
 			"frame" : ['#woo-holder','.woo-swa','.woo-swb','.woo-pcont','.woo-pager','.woo-masned'],
 
@@ -54,6 +56,9 @@
 
 			// 单元节点dom选择器
 			"unit" : '.woo',
+
+			// 同一列单元块之间的垂直间距
+			"gap" : 0,
 
 			// anchor 锚点名，回顶部会定位到该锚点处
 			"anchor" : 'woo-anchor',
@@ -107,6 +112,13 @@
 			// scroll 过程中执行的方法
 			"onScroll" : function (tp){
 				// tp 为当前的scrolltop
+			},
+
+			// 每一大页加载完毕之后执行
+			"onOnePageOver" : function (pg, $pager){
+				// pg 为 Pagine 实例，$pager 为底部翻页容器
+				// 可以使用 pg.hasNextUpperPage()  pg.isLastSub()
+
 			},
 
 			// 每次请求后都要执行的方法
@@ -339,9 +351,8 @@
 				}
 				return;
 			}
+
 			// fn 必须返回一个数组
-
-
 			arr = fn.apply(null,arr);
 			if( arr[0].length ){
 				window.setTimeout(function (){
@@ -377,7 +388,7 @@
 			.filter('[name]')
 			.each(function (i,a){
 				if( ($(a).attr('type') === 'checkbox' || $(a).attr('type') === 'radio') &&  $(a).prop('checked') === true || ($(a).attr('type') !== 'checkbox' && $(a).attr('type') !== 'radio') ){
-					if( $.type(jsn[a.name]) !== 'undefined' ){
+					if( jsn[a.name] !== undefined ){
 						jsn[a.name] += ',' + a.value
 					}else{
 						jsn[a.name] = a.value;
@@ -451,8 +462,8 @@
 			$(this).css('display','none');
 			if( PAGINE && PAGINE[IDX] && MASN && MASN[IDX]){
 				var $pagerv = $HOLDER.find(conf.frame[4]+':visible'),
-					cond1 = $pagerv.find(':first-child').length,
-					cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextPage(),
+					cond1 = $pagerv.find('.woo-pbr').length,
+					cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextUpperPage,
 					f = cond1 && cond2 ? false : true;
 
 				// 如果upper page 只有1页
@@ -589,6 +600,7 @@
 
 				this.masn[n] = MASN[n] = new Woo.Masn($pg_cont,{
 					unit : conf.unit,
+					gap : conf.gap || 0,
 					onAppend : Woo._doLoadImage,
 					onArrange : function ($c){
 						if( $c.length ){
@@ -628,6 +640,8 @@
 
 					// 请求分页数据，请求结束后 always 执行
 					requestAlways : conf.requestAlways,
+
+					onOnePageOver : conf.onOnePageOver,
 
 					// ajax 请求是否缓存
 					ajaxcache : conf.ajaxcache,
@@ -672,12 +686,16 @@
 						if( !$loadingsm.length ){
 							$loadingsm = $('<div id="woo-loading" class="woo-loading"></div>').appendTo('body')
 						}
-						$loadingsm.css('visibility','hidden');
+
+
+						Woo.$footer.css("display","none")
 
 						// 如果主内容区块有被清空
-						if(c){ 
+						if(c){
 							// 内容区域loading 进度条展示
-							$pg_cont.addClass('woo-loading')
+							$pg_cont.addClass('woo-loading'),
+
+							$loadingsm.css('visibility','hidden'),
 
 							// 清除内存 WooTemp 对象，主要是MASNUNITS
 							WOOTEMP.reset();
@@ -695,7 +713,6 @@
 
 							Woo._onscroll()
 						}else{
-							Woo.$footer.css("display","none")
 							$loadingsm.css('visibility','visible')
 						}
 					},
@@ -815,7 +832,7 @@
 				}
 			}
 			// 为了避免在loading 过程中hash change 导致的无法准确回退
-			USERCLICK = false
+			USERCLICK = false,
 
 			Woo.$gonext.css('visibility', 'hidden');
 		},
@@ -886,8 +903,8 @@
 							$gopre = Woo.$gopre,
 							$gonext = Woo.$gonext,
 							$pagerv = $HOLDER.find(conf.frame[4]+':visible'),
-							cond1 = $pagerv.find(':first-child').length,
-							cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextPage();
+							cond1 = $pagerv.find('.woo-pbr').length,
+							cond2 = PAGINE[IDX] && PAGINE[IDX].hasNextUpperPage;
 						$gopre.add($gonext).css('visibility',tp > $HOLDER.position().top && ( !cond1 || cond1 && cond2 ) ? 'visible' : 'hidden')
 					}
 				}
@@ -960,11 +977,13 @@
 				spn = c.subPageNum,
 				undefined;
 
+			pg.hasNextUpperPage = true,
 			pg.caching = c.caching,
 			pg.$data = c.$data || $(null),
 			pg.idata = [],
 			pg.$dom = id[0],
 			pg.$pager = id[1],
+			pg.unitsPerSub = c.unitsPerSub,
 			pg.totalPageNum = c.totalPageNum,
 			pg.currentUpperPage = upg,
 			pg.currentPage = (upg-1)*spn + 1;
@@ -999,6 +1018,7 @@
 				isFirstSub = sub && ( cp % spn === 1 || spn == 1 ),
 				clear = false,
 				undefined;
+
 
 			!sub && pg.scrollToAnchor(),
 
@@ -1100,7 +1120,6 @@
 			var pg = this,
 				cp = pg.currentPage;
 
-			
 			pg.clearCont = true,
 			pg.loadPage(cp+dir,1);
 		},
@@ -1141,7 +1160,7 @@
 				isFirstSub = cp % spn === 1, //第一子页
 				undefined;
 
-			
+			pg.hasNoMore = !hasnext,
 			// currentPage 当前子页码数
 			pg.currentPage = cp,
 			pg.caching = 2;
@@ -1168,7 +1187,7 @@
 			// 主内容区块消除正在加载的标识
 			pg.$dom.removeClass('woo-loading');
 
-			// 如果已经是最后一个子页，则删除 #woo-loading 节点
+			// 如果已经是最后一个子页
 			if( !pg.isLastSub() ){
 				$loadingsm.css('visibility','hidden');
 			}
@@ -1210,7 +1229,7 @@
 					"height" : 0,
 					"overflow" : "hidden"
 				})
-			}else{
+			}else if( pg.isLastSub() ){
 				pg.$pager.css({
 					"display" : "block",
 					"height" : "auto"
@@ -1253,7 +1272,7 @@
 				pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
 				pg.prepare = null,
 				// 延迟两秒后执行 always 以便设置 pg.loading=false
-				$({}).delay(2000).queue(function (){
+				$({}).delay(100).queue(function (){
 					pg._requestAlways()
 				}),
 				pg.scrollLoading = false;
@@ -1286,6 +1305,7 @@
 						// resp = [cont, hasnext, totalcount]
 						// 前两个数值必须有，最后的totalcount 可选
 						var resp =  c.analyzeResponse(h);
+
 
 						if(prepare){
 							pg.prepare = [cp,resp[0],resp[1],resp[2]];
@@ -1329,12 +1349,10 @@
 		/*
 		@说明：是否还有下一大页
 		*/
-		hasNextPage : function (){
-			var pg = this,
-				cup = pg.currentUpperPage,
-				tn = pg.totalPageNum;
+		hasNextUpperPage : function (){
+			var pg = this;
 
-			return cup < tn;
+			return pg.hasNextUpperPage;
 		},
 
 		/*
@@ -1364,6 +1382,9 @@
 					window.clearTimeout(TIMERINTERVAL)
 				}
 			},200);
+
+			// call onOnePageOver
+			pg.config.onOnePageOver(pg);
 		},
 
 		/*
@@ -1382,7 +1403,9 @@
 
 			tn = Math.floor((tn-.1)/spn) + 1;
 
-
+			if( c.nextMode && cup >= tn && pg.hasNoMore || !c.nextMode && cup >= tn ){
+				pg.hasNextUpperPage = false;
+			}
 
 			if( pg.isLastSub() ){
 				// 以下是配置普通翻页器的html 字符串
@@ -1406,11 +1429,13 @@
 
 						cup==tn ? '' : ( c.nextMode ? '<li class="woo-ell" >…</li>' : '') +'<li><a class="woo-nxt" href="javascript:;"  pdir="1">下一页</a></li>',
 						'</ul></div>'].join('');
-				pg.$pager.empty(),
+
+
+				pg.$pager.find('.woo-pbr').remove(),
 				pg.$pager.append(strPager);
 			}
 			else{
-				pg.$pager.empty(),
+				pg.$pager.find('.woo-pbr').remove(),
 				pg.$pager.append(strPager);
 			}
 
@@ -1423,8 +1448,8 @@
 
 			var $gonext = Woo.$gonext;
 			$gonext.css('display','block');
-			if( pg.$pager.find(':first-child').length ){
-				$gonext.css('visibility', pg.hasNextPage() ? 'visible' : 'hidden');
+			if( pg.$pager.find('.woo-pbr').length ){
+				$gonext.css('visibility', pg.hasNextUpperPage ? 'visible' : 'hidden');
 			}
 
 			pg.pagerVisible = true,
@@ -1486,7 +1511,7 @@
 		doLazyAdd : function (wt,imm){
 			var pg = this,
 				c = pg.config,
-				wt = $.type(wt) === 'undefined' ? $W.scrollTop() : wt,
+				wt = wt === undefined ? $W.scrollTop() : wt,
 				dacol = pg.$dom.data('colY'),
 				distance = pg.$pager.offset().top - wt - WH,
 				mx = Math.max.apply(Math,dacol),
@@ -1751,13 +1776,13 @@
 
 
 			// left 值需要先计算 minI 即最小colY 所在的列数
-			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 );
+			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 ),
 
 			// 高度计算优先取值 data-ht 可大大缩减计算时间
-			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true);
+			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true),
 
 			// 添加此节点后 colY 的minI 列高度随之改变
-			colY[minI] += ht,
+			colY[minI] += ht + c.gap,
 
 			// 计算所在的screen 值
 			masn.screen = Math.ceil( (minY + ht) / WH );
@@ -1814,7 +1839,7 @@
 
 
 					// 要添加的节点外层字符串
-					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;height:'+ht+'px"></div>',
+					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
 					strwrap += addf;
 

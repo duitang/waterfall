@@ -21,7 +21,7 @@
 <body>
 
 <div id="header">
-<div class="lattern"><a href="specialcol.html">demo特殊列</a><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
+<div class="lattern"><a href="mobile.html">demo移动版</a><a href="specialcol.html">demo特殊列</a><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
 <h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流(Waterfall O O)</a></h1>
 </div>
 
@@ -187,6 +187,9 @@ $(function (){
 		"arrfmasnw" : 0,
 
 		/////////////////// 【上方各参数必须填写，否则后果自负】
+
+		// 通过 gap 可以设置同一列单元块之间的垂直间距
+		"gap" : 0,
 
 		// 要插入的区块，只能插在左侧或右侧第一个位置，默认插左侧
 		// 此demo sink sinkheight sinkright 被 data- 覆盖，因此只作用在第一个不瀑流
