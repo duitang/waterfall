@@ -79,4 +79,4 @@ Duitang/Waterfall is published under the terms of the MIT License.
 
 * **1.0.1** 2013-10-14
  * 新增 demo for mobile
- * 新增配置参数 gap
+ * 新增配置参数 arrgap
