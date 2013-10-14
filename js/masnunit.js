@@ -113,6 +113,7 @@ if(!String.prototype.cut){
 
 '</div></div>' +
 	'<% } %>',
+	null,
 	null
 	],
 
@@ -139,6 +140,7 @@ if(!String.prototype.cut){
 			}
 		},
 
+		null,
 		null
 	],
 
@@ -208,6 +210,43 @@ if(!String.prototype.cut){
 				for(var i=0,d=dat.albums,l=d.length; i<l; i++){
 					var unt = [
 							'<div class="woo"  data-ht="328"> <div class="albbigimg"> <p class="lev2"></p> <p class="lev1"></p> <a class="lev0" href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/item/201208/07/20120807235954_URvcE.thumb.200_200_c.jpeg" alt="动漫集 ."></a> <p class="lev3"></p> <div>动漫集 .</div> </div> <ul> <li><span>3736个收集 | 103人喜欢</span></li> <li class="clr"><a href="http://www.duitang.com/topics/" target="_blank" ><img src="http://cdn.duitang.com/uploads/people/201309/15/20130915021315_kyMMu.thumb.24_24_c.jpeg" />笑我作茧自缚还…</a></li> <li>有壁纸.</li> </ul> </div>'
+						].join('')
+
+					$rt = $rt.add($(unt))
+				}
+				ret = [$rt.toArray(),dat.has_next]
+			}
+			return ret;
+		},
+		// ANALYZERESPONSE[2] 使用第二种组装方式，return 的主体内容 ret[0] 是dom 树
+		// 采用第二种方式的话，不需要使用 artTemplate 
+		// 因此，RENDER TEMPLATES EXTRADATA (后两者均只为RENDER服务)都不需要
+		// RENDER[2] 设为 null，其依赖的 TEMPLATES[2] 也设为 null
+		// EXTRADATA 没有初始值，只在需要的时候使用
+		function (h){
+			var strrt = _strReturn(h);
+			if( strrt ){
+				return strrt;
+			}
+
+			var ret = [[],true];
+			// 转json对象
+			var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
+			// 如果parse 失败，直接返回
+			if(!jsn) return ret;
+
+
+			// 判断jsn 请求是否成功返回数据
+			if(jsn.success){
+				var $rt = $(null),
+					dat = jsn.data,
+					picw = 96;
+				for(var i=0,d=dat.blogs,l=d.length; i<l; i++){
+					var pich = Math.round(d[i].iht * picw / 200),
+						mask = d[i].iht > 800 ? '<div class="mask"></div>' : '',
+						ht = mask ? 384 : pich
+						unt = [
+							'<div class="woo" data-ht="'+ht+'"><div class="j" style="height:'+ht+'px;"><a href="/people/mblog/'+d[i].id+'/detail/"><img srcd="'+d[i].isrc+'" width="96" /></a>'+mask+'</div></div>'
 						].join('')
 
 					$rt = $rt.add($(unt))
