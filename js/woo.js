@@ -1041,7 +1041,6 @@
 			}
 
 			pg.isPagerClick = false;
-//			pg._beforeRequest(clear);
 			pg._requestData(cp,sub,direct,false,clear);
 		},
 

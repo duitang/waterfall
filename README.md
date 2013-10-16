@@ -22,10 +22,11 @@ version: 1.0.1
 1. 灵活的参数设置，比如：子页数量、子页内单元数量、瀑布流单元宽度和间距 等等等等。
 
 
-* [纯静态demo演示地址1](http://www.duitang.com/app/woo/examples/main.html)
-* [纯静态demo演示地址2](http://www.duitang.com/app/woo/examples/sinkleft.html)
-* [纯静态demo演示地址3](http://www.duitang.com/app/woo/examples/sinkright.html)
-* [纯静态demo演示地址4](http://www.duitang.com/app/woo/examples/specialcol.html)
+* [纯静态demo演示1——主功能](http://www.duitang.com/app/woo/examples/main.html)
+* [纯静态demo演示2——sink开启](http://www.duitang.com/app/woo/examples/sinkleft.html)
+* [纯静态demo演示3——specialcol开启](http://www.duitang.com/app/woo/examples/specialcol.html)
+* [纯静态demo演示4——mobile模拟](http://www.duitang.com/app/woo/examples/mobile.html)
+* [纯静态demo演示5——简版无请求](http://www.duitang.com/app/woo/examples/norequest.html)
 
 
 ## 一些保留命名 >>
@@ -62,6 +63,7 @@ srcd               单元块内的图片 src 属性的替代，图片延迟加�
 1. `.woo-pcont` 节点上目前支持的 `data-` 配置有：`data-domwidth`
 `data-subpagenum` `data-unitsnum` `data-totalunits` `data-wootemp`
 `data-sink` `data-sinkheight` `data-sinkright`。
+1. 是否有下一大页的设定最优先依赖于请求返回里的hasnext字段，如果hasnext=true，即便总单元已经超过`data-totalunits`的设定，仍然会显示下一页按钮。
 1. `data-wootemp` 取值为从0开始的整数，对应 masnunit.js 文件里定义的不同类型瀑布流。
 1. 示例使用了 DEBUG 并分别在 main.html 和 masnunit.js 里给定了模拟数据。
 1. 可在 masnunit.js 里编写不同种类的瀑布流，示例给出了两种：图片类型和专辑类型。
