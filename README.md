@@ -1,6 +1,6 @@
 # 堆糖瀑布流(Woo) jQuery完整版 #
 
-version: 1.0.1
+version: 1.0.2
 
 ## 涵盖以下特点：
 
@@ -82,3 +82,8 @@ Duitang/Waterfall is published under the terms of the MIT License.
 * **1.0.1** 2013-10-14
  * 新增 demo for mobile
  * 新增配置参数 arrgap
+
+* **1.0.2** 2013-10-16
+ * 新增 demo norequest.html 无请求依赖的最简版
+ * bug fix. 修复浏览器不能正常后退的问题
+ * 是否有下一大页最优先依赖请求返回里的hasnext字段
