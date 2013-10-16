@@ -204,12 +204,13 @@
 			this.iswebkit = $.browser && $.browser.webkit || !!/webkit/.exec(navigator.userAgent.toLocaleLowerCase())
 
 
-			if( H && !H.getHash()){
+			if( H && !H.getHash() || !H ){
 				Woo._switch($trigs,$conts)
 			}
 
 			// 通过hash 值定位到
 			H && H.bind(function(hash){
+
 				// 是否tab 切换动作引发的 hashchange
 				if( !TABSW ){
 					Woo._switch($trigs,$conts)
@@ -473,6 +474,7 @@
 					return
 				}
 
+				// 用于判断是否用户点击
 				PAGINE[IDX].isPagerClick = true;
 
 				//如果翻页器没有出现，即中途强制翻页
@@ -505,7 +507,7 @@
 
 				var $ndym = $l.eq(a),
 					// 每次切换都重置到第1大页
-					upg = 1;
+					upg = Woo._getPageNumFromHash();
 
 
 				// 如果是swtich 组件第一次初始化
@@ -525,7 +527,7 @@
 				}
 
 				// 清除内存 WooTemp 对象，主要是MASNUNITS
-				WOOTEMP.reset();
+				WOOTEMP && WOOTEMP.reset();
 
 				// 清除上一次瀑布流的缓存数据
 				if( PAGINE[pre] ){
@@ -684,44 +686,7 @@
 					// 是否采用 hasNext 模式
 					nextMode : hsn,
 
-					// 获取数据之前执行的方法
-					beforeRequest : function (c){
-						var $loadingsm = $('#woo-loading')
-
-						if( !$loadingsm.length ){
-							$loadingsm = $('<div id="woo-loading" class="woo-loading"></div>').appendTo('body')
-						}
-
-
-						Woo.$footer.css("display","none")
-
-						// 如果主内容区块有被清空
-						if(c){
-							// 内容区域loading 进度条展示
-							$pg_cont.addClass('woo-loading'),
-
-							$loadingsm.css('visibility','hidden'),
-
-							// 清除内存 WooTemp 对象，主要是MASNUNITS
-							WOOTEMP.reset();
-
-							// 清除上一次瀑布流的缓存数据
-							if( PAGINE[n] ){
-								PAGINE[n].idata = []
-								PAGINE[n].$data = $(null)
-							}
-
-							// 重新开启 TIMERINTERVAL
-							if( TIMERINTERVAL ){
-								window.clearTimeout(TIMERINTERVAL)
-							}
-
-							Woo._onscroll()
-						}else{
-							$loadingsm.css('visibility','visible')
-						}
-					},
-					analyzeResponse : WOOTEMP.analyzeResponse[np],
+					analyzeResponse : WOOTEMP ? WOOTEMP.analyzeResponse[np] : $.noop,
 
 
 					// 分解小块加载
@@ -780,11 +745,9 @@
 						// 这里生成的jonhtml 可能是 string 类型
 						// 也可能是 [<jQuery对象>] 数组
 						// 这两种情况均需要 $() 后再使用
-						var jonhtml = WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
+						var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
 						MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
-
 						// End = new Date().getTime()
-						// console.log(End - Start)
 
 							if( rnum <= 0 ){
 								// pg 指代 Pagine 对象实例
@@ -847,9 +810,27 @@
 		@说明：从hash值中获取当前页的标识字符串
 		*/
 		_getIdentityFromHash : function (){
-			var u = location.hash.substr(1);
-			u = u.split('-')[0];
+			var u = '';
+			if( H ){
+				u = H.getHash(),
+				u = u.split('-')[0];
+			}
 			return u;
+		},
+
+		/*
+		@说明：从hash值中获取当前大页码数
+		*/
+		_getPageNumFromHash : function (){
+			var n = 1;
+			if( H ){
+				var hash = H.getHash();
+				hash = hash.split('-p')[1];
+				if( hash ){
+					n = parseInt(hash) || n;
+				}
+			}
+			return n;
 		},
 
 		/*
@@ -991,7 +972,16 @@
 			pg.unitsPerSub = c.unitsPerSub,
 			pg.totalPageNum = c.totalPageNum,
 			pg.currentUpperPage = upg,
-			pg.currentPage = (upg-1)*spn + 1;
+			pg.currentPage = (upg-1)*spn + 1,
+			// loading 状态条
+			pg.$loadingsm = $('<div id="woo-loading" class="woo-loading"></div>');
+
+
+			// 分析arrurl 即 c.arrRequestUrl 第一参数是form 才是正确的，否则不会发起请求
+			var arrurl = c.arrRequestUrl;
+			if( $.type(arrurl[0]) === 'object' && arrurl[0].tagName.toLowerCase() === 'form' ){
+				pg.arrurl = arrurl;
+			}
 
 			// 如果分页内容为空，则自动发起请求
 			if( !pg.$dom.find(':first-child').length ){
@@ -1050,9 +1040,9 @@
 				pg.$dom.empty();
 			}
 
-			// beforeRequest 方法执行
-			c.beforeRequest.call(pg,clear),
-			pg._requestData(cp,sub,direct);
+			pg.isPagerClick = false;
+//			pg._beforeRequest(clear);
+			pg._requestData(cp,sub,direct,false,clear);
 		},
 
 		/*
@@ -1186,7 +1176,7 @@
 				tcp = pg.currentPage,
 				tup = pg.currentUpperPage || tcp,
 				ttp = pg.totalPageNum,
-				$loadingsm = $('#woo-loading'),
+				$loadingsm = pg.$loadingsm,
 				undefined;
 
 			// 主内容区块消除正在加载的标识
@@ -1249,10 +1239,43 @@
 				c = pg.config;
 			pg.loading = false,
 			pg.$dom.removeClass('woo-loading'),
-			$('#woo-loading').css('visibility','hidden');
+			pg.$loadingsm.css('visibility','hidden');
 
 			// 执行配置好的 requestAlways 方法
 			$.isFunction(c.requestAlways) && c.requestAlways(IDX);
+		},
+
+		// 请求发起前执行 参数c 表示是否有清空内容容器
+		_beforeRequest : function (c){
+			var pg = this,
+				$loadingsm = pg.$loadingsm;
+
+			pg.$pager.after($loadingsm),
+			Woo.$footer.css("display","none");
+
+			// 如果主内容区块有被清空
+			if(c){
+				// 内容区域loading 进度条展示
+				pg.$dom.addClass('woo-loading'),
+
+				$loadingsm.css('visibility','hidden'),
+
+				// 清除内存 WooTemp 对象，主要是MASNUNITS
+				WOOTEMP && WOOTEMP.reset(),
+
+				// 清除上一次瀑布流的缓存数据
+				pg.idata = [],
+				pg.$data = $(null);
+
+				// 重新开启 TIMERINTERVAL
+				if( TIMERINTERVAL ){
+					window.clearTimeout(TIMERINTERVAL)
+				}
+
+				Woo._onscroll()
+			}else{
+				$loadingsm.css('visibility','visible')
+			}
 		},
 
 		/*
@@ -1262,92 +1285,89 @@
 		sub				- (Bool) 加载subpage 中
 		direct			- (Bool) 中断之前的请求处理，直接进入下一次请求
 		prepare			- (Bool) 是否启动后一页预加载
+		clear			- (Bool) 是否内容容器被清空了
 		*/
-		_requestData : function (cp,sub,direct,prepare){
+		_requestData : function (cp,sub,direct,prepare,clear){
 			var pg = this,
 				c = pg.config,
 				spn = c.subPageNum,
+				arrurl = pg.arrurl,
 				undefined;
+			if( arrurl ){
+				!prepare && pg._beforeRequest(clear);
 
-			// 点此重试按钮去除
-			$('#woo-retry').remove();
-
-			// 大页码翻页时，检查有没有预加载
-			if( pg.prepare && pg.prepare[0] == cp ){
-				pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
-				pg.prepare = null,
-				// 延迟两秒后执行 always 以便设置 pg.loading=false
-				$({}).delay(100).queue(function (){
-					pg._requestAlways()
-				}),
-				pg.scrollLoading = false;
-			}else{
-				// 分析arrurl 即 c.arrRequestUrl 如果第一参数是form dom 则进行解析
-				var arrurl = [].concat(c.arrRequestUrl);
-
-				if( $.type(arrurl[0]) === 'object' && arrurl[0].tagName.toLowerCase() === 'form' ){
-					var $form = $(arrurl[0]);
-					arrurl[0] = Woo.getFormAction($form),
-					arrurl[2] = Woo.paramForm($form);
-				}
-
-				$.ajax({
-					type : 'GET',
-					cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxcache,
-					url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : arrurl[0] +  cp  + arrurl[1],
-					data : arrurl[2],
-					timeout : 20000,
-					success : function(h){
-						// 如果是 debug状态，随机取一页测试数据
-						typeof DEBUG !== 'undefined' && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
-
-						if( pg.halting && !direct ) return;
-						if( direct ){
-							pg.halting = false,
-							pg.$dom.empty();
-						}
-
-						// resp = [cont, hasnext, totalcount]
-						// 前两个数值必须有，最后的totalcount 可选
-						var resp =  c.analyzeResponse(h);
-
-
-						if(prepare){
-							pg.prepare = [cp,resp[0],resp[1],resp[2]];
-
-							// 准备下一页的图片，预加载图片
-							var lst = [];
-							$(resp[0]).find('img[srcd]').each(function (i,e){
-								var $e = $(e);
-								lst.push($e.attr('srcd'));
-							})
-
-							Woo.recurseDo(function (a){
-								new Image().src = a.splice(0,1);
-								return [a];
-							},[lst],lst.length,200)
-						}else{
-							pg.requestOver(cp,sub,resp[0],resp[1],resp[2]);
-						}
-
-						pg.scrollLoading = false;
-						pg._requestAlways();
-					},
-
-					error : function (x,statustext){
-						if(!prepare){
-							$('<div id="woo-retry" style="text-align:center;padding:16px 0 0;height:48px">网络繁忙，<a href="javascript:;">点此重试~</a></div>')
-							.click(function (e){
-									e.stopPropagation(),
-									e.preventDefault(),
-									pg._requestData(cp,sub),
-									$(this).remove();
-								})
-							.insertAfter(pg.$dom);
-						}
+				// 大页码翻页时，检查有没有预加载
+				if( pg.prepare && pg.prepare[0] == cp ){
+					pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
+					pg.prepare = null,
+					// 延迟两秒后执行 always 以便设置 pg.loading=false
+					$({}).delay(100).queue(function (){
 						pg._requestAlways()
-					}
-				})
+					}),
+					pg.scrollLoading = false;
+				}else{
+					var $form = $(arrurl[0]);
+
+					$.ajax({
+						type : 'GET',
+						cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxcache,
+						url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : Woo.getFormAction($form) +  cp  + arrurl[1],
+						data : Woo.paramForm($form),
+						timeout : 20000,
+						success : function(h){
+							// 如果是 debug状态，随机取一页测试数据
+							typeof DEBUG !== 'undefined' && DEBUG  && (h = DEBUG_DATA[Math.floor((DEBUG_DATA.length-1)*Math.random())]);
+
+							if( pg.halting && !direct ) return;
+							if( direct ){
+								pg.halting = false,
+								pg.$dom.empty();
+							}
+
+							// resp = [cont, hasnext, totalcount]
+							// 前两个数值必须有，最后的totalcount 可选
+							var resp =  c.analyzeResponse(h);
+
+
+							if(prepare){
+								pg.prepare = [cp,resp[0],resp[1],resp[2]];
+
+								// 准备下一页的图片，预加载图片
+								var lst = [];
+								$(resp[0]).find('img[srcd]').each(function (i,e){
+									var $e = $(e);
+									lst.push($e.attr('srcd'));
+								})
+
+								Woo.recurseDo(function (a){
+									new Image().src = a.splice(0,1);
+									return [a];
+								},[lst],lst.length,200)
+							}else{
+								pg.requestOver(cp,sub,resp[0],resp[1],resp[2]);
+							}
+
+							pg.scrollLoading = false;
+							pg._requestAlways();
+						},
+
+						error : function (x,statustext){
+							if(!prepare){
+								$('<div id="woo-retry" style="text-align:center;padding:16px 0 0;height:48px">网络繁忙，<a href="javascript:;">点此重试~</a></div>')
+								.click(function (e){
+										e.stopPropagation(),
+										e.preventDefault(),
+										pg._requestData(cp,sub),
+										$(this).remove();
+									})
+								.insertAfter(pg.$dom);
+							}
+							pg._requestAlways()
+						}
+					})
+					// ajax over
+
+				}
 			}
 		},
 
@@ -1378,7 +1398,7 @@
 			pg.$pager.css({"height" : "auto"}),
 			Woo.$footer.css("display","block"),
 			// 移除底部的loading 状态条
-			$('#woo-loading').remove();
+			pg.$loadingsm.remove();
 
 			// 设置翻页器可见
 			window.setTimeout(function (){
@@ -1408,7 +1428,7 @@
 
 			tn = Math.floor((tn-.1)/spn) + 1;
 
-			if( c.nextMode && cup >= tn && pg.hasNoMore || !c.nextMode && cup >= tn ){
+			if( (c.nextMode && cup >= tn || !c.nextMode && cup >= tn) && pg.hasNoMore ){
 				pg.hasNextUpperPage = false;
 			}
 
@@ -1469,10 +1489,12 @@
 		upg				- (Num) pagine 对象的 currentUpperpage
 		*/
 		changeHashOnFirstLoad : function (idt,upg){
-			var hash = idt + (upg > 1 ? '-p' + upg : '');
+			var pg = this,
+				hash = idt + (upg > 1 ? '-p' + upg : ''),
+				nowhs = H.getHash();
 
-			if( location.hash !== hash ){
-				location.hash = hash;
+			if( (nowhs || pg.isPagerClick) && nowhs !== hash ){
+				H.setHash(hash);
 			}
 		},
 
@@ -1494,6 +1516,8 @@
 					var pto = parseInt(s.innerHTML),
 						dir = s.getAttribute('pdir');
 
+					// 用于判断是否用户点击
+					pg.isPagerClick = true;
 					if(pto){
 						pg.gotoPage(pto);
 					}else if(dir === 'jump'){
@@ -1503,6 +1527,8 @@
 					}else if(dir = parseInt(dir)){
 						pg.slidePage(dir);
 					}
+
+
 				}
 			})
 		},

@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 <title>堆糖瀑布流完整解决方案(jQuery)</title>
+<meta name="keywords" content="瀑布流,jQuery,堆糖" />
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/woo.css" />
@@ -23,7 +24,7 @@
 <body>
 
 <div id="header">
-<div class="lattern"><a href="mobile.html">demo移动版</a><a href="specialcol.html">demo特殊列</a><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
+<div class="lattern"><a href="norequest.html">demo最简版</a><a href="mobile.html">demo移动版</a><a href="specialcol.html">demo特殊列</a><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
 <h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流(Waterfall O O)</a></h1>
 </div>
 
@@ -90,9 +91,10 @@
 	<li>5) 一个页面可以有多个瀑布流，不同瀑布流的配置可以差异化。通过在各自.woo-pcont节点上设置 data- 属性，例如：data-subpagenum data-unitsnum data-sink来覆盖全局配置。</li>
 	<li>6) .woo-pcont节点上目前支持的data- 配置有：data-subpagenum data-unitsnum data-totalunits data-wootemp data-sink data-sinkheight data-sinkright。</li>
 	<li>7) data-wootemp 取值为从0开始的整数，对应 masnunit.js 文件里定义的不同类型瀑布流。</li>
-	<li>8) 示例使用了DEBUG 并分别在 main.html 和 masnunit.js 里给定了模拟数据。</li>
-	<li>9) 可在 masnunit.js 里编写不同种类的瀑布流，示例给出了两种：图片类型和专辑类型。</li>
-	<li>10) 请仔细研究 masnunit.js。</li>
+	<li>8) 是否有下一大页的设定最优先依赖于请求返回里的hasnext字段，如果hasnext=true，即便总单元已经超过`data-totalunits`的设定，仍然会显示下一页按钮。</li>
+	<li>9) 示例使用了DEBUG 并分别在 main.html 和 masnunit.js 里给定了模拟数据。</li>
+	<li>10) 可在 masnunit.js 里编写不同种类的瀑布流，示例给出了两种：图片类型和专辑类型。</li>
+	<li>11) 请仔细研究 masnunit.js。</li>
 	</ul>
 </div>
 <div id="footer">
