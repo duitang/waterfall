@@ -1,4 +1,4 @@
-# 堆糖瀑布流 Pinterestlike Website(jQuery) #
+# Pinterestlike Website(jQuery) #
 This is a full set of Front-end Solutions for Pinterestlike websites.
 
 
@@ -42,7 +42,7 @@ This example shows how to deal with unit datas with order operation.<br/>[Click 
 This example shows how to deal with unit datas with delete operation.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples-operate/delete.html)
 
 
-
+# 堆糖瀑布流(jQuery) #
 
 ## 涵盖以下特点：
 
