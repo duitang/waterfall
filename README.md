@@ -69,8 +69,8 @@ This example shows how to deal with unit datas with delete operation.<br/>[Click
 * [纯静态demo演示——specialcol开启](http://www.duitang.com/app/woo/examples/specialcol.html)
 * [纯静态demo演示——mobile模拟](http://www.duitang.com/app/woo/examples/mobile.html)
 * [纯静态demo演示——简版无请求](http://www.duitang.com/app/woo/examples/norequest.html)
-* [纯静态demo演示——单元排序](http://www.duitang.com/app/woo/examples-operate/order.html)
-* [纯静态demo演示——单元删除](http://www.duitang.com/app/woo/examples-operate/delete.html)
+* [纯静态demo演示——单元排序](http://www.duitang.com/app/woo/example-operate/order.html)
+* [纯静态demo演示——单元删除](http://www.duitang.com/app/woo/example-operate/delete.html)
 
 
 ## 一些保留命名 >>
