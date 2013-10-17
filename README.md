@@ -1,6 +1,48 @@
-# 堆糖瀑布流(Woo) jQuery完整版 #
+# Pinterestlike Website(jQuery) #
+This is a full set of Front-end Solutions for Pinterestlike websites.
 
-version: 1.0.2
+
+version: 1.0.3
+
+## Features:
+1. Multi-waterfalls are supported in one page.
+1. First subpage can be preseted in html without limit.
+1. Seperated js file for dealing with response data.
+1. Different from infinite waterfall, contents are paged.
+1. Page turning without refreshing. History go back and go forward are supported.
+1. Preload next page when you reach the bottom.
+1. In sink mode, you can insert one block into waterfall either on the left side or the right side.
+1. Special column can be set.
+1. Useful next(pre) button composed with go-to-top button.
+1. Go-to-top button can bring you to a precise position you want to go.
+1. Dazzling resize mode.
+1. Flexible configs such as: subpagenum in one Upper Page, unitsnum in one subpage etc.
+
+## Requirements:
+* jQuery >= 1.6.1
+
+## Included examples
+### Example sink mode:
+This example shows how to insert an outside block into waterfall either on the left side or on the right side. <br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/sinkleft.html)
+
+### Example special column mode:
+This example shows how to set a special column(different column width) in your waterfall.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/specialcol.html)
+
+### Example simplest demo:
+This example shows how to build a simple waterfall page without any other data request.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/norequest.html)
+
+### Example mobile demo:
+This example shows how to build a waterfall page which is running in mobile phone.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/mobile.html)
+
+### Example order:
+This example shows how to deal with unit datas with order operation.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples-operate/order.html)
+
+
+### Example delete:
+This example shows how to deal with unit datas with delete operation.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples-operate/delete.html)
+
+
+# 堆糖瀑布流(jQuery) #
 
 ## 涵盖以下特点：
 
@@ -22,11 +64,13 @@ version: 1.0.2
 1. 灵活的参数设置，比如：子页数量、子页内单元数量、瀑布流单元宽度和间距 等等等等。
 
 
-* [纯静态demo演示1——主功能](http://www.duitang.com/app/woo/examples/main.html)
-* [纯静态demo演示2——sink开启](http://www.duitang.com/app/woo/examples/sinkleft.html)
-* [纯静态demo演示3——specialcol开启](http://www.duitang.com/app/woo/examples/specialcol.html)
-* [纯静态demo演示4——mobile模拟](http://www.duitang.com/app/woo/examples/mobile.html)
-* [纯静态demo演示5——简版无请求](http://www.duitang.com/app/woo/examples/norequest.html)
+* [纯静态demo演示——主功能](http://www.duitang.com/app/woo/examples/main.html)
+* [纯静态demo演示——sink开启](http://www.duitang.com/app/woo/examples/sinkleft.html)
+* [纯静态demo演示——specialcol开启](http://www.duitang.com/app/woo/examples/specialcol.html)
+* [纯静态demo演示——mobile模拟](http://www.duitang.com/app/woo/examples/mobile.html)
+* [纯静态demo演示——简版无请求](http://www.duitang.com/app/woo/examples/norequest.html)
+* [纯静态demo演示——单元排序](http://www.duitang.com/app/woo/examples-operate/order.html)
+* [纯静态demo演示——单元删除](http://www.duitang.com/app/woo/examples-operate/delete.html)
 
 
 ## 一些保留命名 >>
@@ -87,3 +131,8 @@ Duitang/Waterfall is published under the terms of the MIT License.
  * 新增 demo norequest.html 无请求依赖的最简版
  * bug fix. 修复浏览器不能正常后退的问题
  * 是否有下一大页最优先依赖请求返回里的hasnext字段
+
+* **1.0.3** 2013-10-17
+ * 新增 demo example-operate/delete.html
+ * 新增 demo example-operate/order.html 
+ * 新增事件监听 onOnePageOver requestAlways
