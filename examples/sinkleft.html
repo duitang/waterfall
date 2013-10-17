@@ -30,15 +30,15 @@
 <div id="content">
 	<div id="woo-holder" class="tube-in">
 		<!-- When gotop button is clicked, scrollbar will be positioned where the anchor is. -->
-		<!-- 点击回到顶部时，会回到这个锚点所在处，此锚点可放置任意位置 -->
-		<!-- 具体代码在 scrollTo() 方法中 -->
 		<a name="woo-anchor"></a>
 		<ul id="switchholder">
-		<li class="woo-swa woo-cur"><a href="javascript:;">我的图片</a></li>
-		<li class="woo-swa"><a href="javascript:;">我喜欢的专辑</a></li>
-		<li class="woo-swa"><a href="javascript:;">我的专辑</a></li>
-		<li class="woo-swa"><a href="javascript:;">我的收集</a></li>
+		<li class="woo-swa woo-cur"><a href="javascript:;">my pics</a></li>
+		<li class="woo-swa"><a href="javascript:;">my fav</a></li>
+		<li class="woo-swa"><a href="javascript:;">my albums</a></li>
+		<li class="woo-swa"><a href="javascript:;">my collects</a></li>
 		</ul>
+
+
 
 		<div class="woo-swb">
 			<div class="woo-pcont woo-masned my-pic">
@@ -184,14 +184,11 @@
 <script>
 $(function (){
 	// Append buttons gonext, gopre, gotop to the body as you like.
-	// 可自行修改代码添加瀑布流的三个控制键 gonext gopre gotop
 	$('<div id="mycontrols"><a id="gonext" href="javascript:;" title="下一页"></a><a href="javascript:;" id="gotop"></a><a id="gopre" href="javascript:;"  title="上一页"></a></div>').appendTo('body');
 
 	var conf = {
 		// Identification of a single waterfall. There are 4 waterfalls in main.html.
 		// You can get the form in #win-holder by putting formprefix and one identification together.
-		// 标识数组，每个标识对应一个瀑布流，本例有四个瀑布流。
-		// 容易看出每个标识前加上 formprefix 就能对应#win-holder 里的form 表单：
 		// <form id="woo-form-(collect|original|album|favalbum)">
 		"arrform" : ['album','favalbum','collect','original'], 
 
@@ -204,20 +201,14 @@ $(function (){
 		// Finally, we put '/tail/' into arrsplit.
 		// Or, we could choose no hidden input and '/tail/?type=hot' into arrsplit.
 		// Nevertheless, we put them together and get the entire url.
-		// 请求地址在页码处split分开的后半截(例如/message/list/1/?type=hot)
-		// 前半截在 <form action="/message/list/"> action 里，
-		// 后半截作为 arrsplit 参数值，上例中其值为 '/?type=hot'。
-		// 前后半截均不包含页码数。
-		// 这是为了应对页码数被设计在url 中间的悲剧情况。
-		// 请将页码数设计在地址最后的位置如 <form action="/people/list/?page=">
-		// 那么对应的 arrsplit 参数值为空字符串。
 		"arrsplit" : ['/?type=hot','','',''],
 
-		// The margin between two cols.
-		// 瀑布流每一列扩展宽度，此宽度包含两列之间的间距。
+
+		// The extend width of each common column including margin between two cols.
 		"arrmasnw" : [245,250,250,245],
 
-		// 瀑布流两列之间的间距。此例第一个瀑布流的可视宽度为 245-21=224
+		// The margin between two cols.
+		// In this example, visible column width is 245-21=224.
 		"arrmargin" : [21,42,42,21],
 
 		// Diff value of special column width, default 0.
@@ -225,58 +216,42 @@ $(function (){
 		// We simplified params by converting equal-value array [0,0,0,0] to single value 0.
 		// Params arrsplit, arrmasnw, arrmargin and arrgap can be treated on the same principle.
 		// But, param arrform is out of the principle.
-		// 第一列特殊宽度 默认等于 arrmasnw。
-		// 如果想让第一列(可左数第一列，也可右数第一列)宽度不同于其它列，
-		// arrfmasnw 应设置为第一列和其它列的宽度差值。
-		// 为什么参数值是一个数字0 而不是数组[0,0,0,0]？
-		// 这里简化了传参，如果数组里所有元素的值相同，可以只传这个值。
-		// 同理，上方的参数 arrsplit arrmasnw arrmargin 包括 arrgap 均适用这一简化规则
-		// arrform 不适用这一简化规则，原因不解释。
 		"arrfmasnw" : 0,
 
 		// The gap between units in one column.
-		// 通过 gap 可以设置同一列单元块之间的垂直间距
 		"arrgap" : 0,
 
-		/////////////////// 【上方各参数必须填写，否则后果自负】
 
 		// Set them to open sink mode.
 		// sink sinkheight sinkright would be overrided by data-sink...
-		// 要插入的区块，只能插在左侧或右侧第一个位置，默认插左侧
 		"sink" : '#mytags',
 		"sinkheight" : 140, 
 		"sinkright" : false,
 
 		// Install $gopre $gonext $gotop as you like.
-		// 可自由选择安装 $gopre $gonext $gotop 等操作键。
 		"gopre" : '#gopre',
 		"gonext" : '#gonext',
 		"gotop" : '#gotop',
 
 		// Footer selctor, any node below the pager can be treated as footer.
-		// footer 选择器，只要处于瀑布流翻页器下方的都可视为 footer。
-		// 它的隐藏和显示将会受到控制。
 		"footer" : '#footer,#preserve',
 
 		// Open resize mode.
 		// If you open it, every time window resizes, waterfall will be repainted.
 		// Not recommend in ie.
-		// window resize 时，是否重绘瀑布流，默认不重绘。此功能打开，resize.css 才有意义
 		"resize" : true,
 
 		// Sth you do during scrolling, say, pop out a login confirm.
-		// scroll 过程中触发的方法，可用于登录弹出框等
 		"onScroll" : function (tp){
-			// tp 为当前的scrolltop
+			// tp current scrolltop
 //			if( (typeof ALREADYNOTICED === 'undefined' || !ALREADYNOTICED) && tp >= 1000 ){
 //				ALREADYNOTICED = true
-//				alert("弹出登录框")
+//				alert("login")
 //			}
 		}
 	}
 
 	// Let's go.
-	// 启动瀑布流，好短
 	$.Woo(conf);
 })
 </script>
