@@ -11,6 +11,6 @@
 .woo-masned{zoom:1;overflow:hidden;visibility:hidden;margin-left:auto;margin-right:auto;}
 
 /* woo 基本单元块，初始状态不可见 */
-.woo-masned .woo{position:absolute;top:-10000px;}
+.woo-masned .woo{position:absolute;top:-6000px;}
 /* woo-spec 有特殊用途 */
-.woo-masned .woo-spec{top:-10000px !important;}
+.woo-masned .woo-spec{top:-6000px !important;}

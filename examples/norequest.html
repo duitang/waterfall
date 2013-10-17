@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-<title>堆糖瀑布流完整解决方案(jQuery)</title>
-<meta name="keywords" content="瀑布流,jQuery,堆糖" />
+<title>堆糖瀑布流Woo - perfect solution for waterfall(jQuery)</title>
+<meta name="keywords" content="瀑布流,jQuery,waterfall,woo" />
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/woo.css" />
@@ -14,28 +14,32 @@
 <script src="../js/woo.js"></script>
 </head>
 <body>
+
 <div id="header">
-<div class="lattern"><a href="norequest.html">demo最简版</a><a href="mobile.html">demo移动版</a><a href="specialcol.html">demo特殊列</a><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
-<h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流(Waterfall O O)</a></h1>
+<div class="lattern"><a href="../example-operate/delete.html">demo-del</a><a href="../example-operate/order.html">demo-order</a><a href="norequest.html">demo-simplest</a><a href="specialcol.html">demo-specialcol</a><a href="main.html">demo-main</a><a href="sinkleft.html">demo-sink</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
+<h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流 Woo(Waterfall O O) in duitang.com</a></h1>
 </div>
 
 
 <div id="content">
 	<style>
-	/* 默认显示 #footer */
+	/* set #footer visible */
 	#footer{display:block}
 	.newinfo{padding:8px 8px 10px;border:2px solid #2386d8;color:#f14382;}
 	</style>
 	<div class="newinfo">
+		Only first subpage without any other data request. <br />
 		简化版，无分页请求，只需把第一页内容放在 woo-pcont 节点里即可，css js 依赖大大减少，也不需要额外提供后端接口。
 	</div>
 	<div id="woo-holder">
+		<!-- When gotop button is clicked, scrollbar will be positioned where the anchor is. -->
 		<!-- 点击回到顶部时，会回到这个锚点所在处，此锚点可放置任意位置 -->
 		<!-- 具体代码在 scrollTo() 方法中 -->
 		<a class="woo-swa" name="woo-anchor"></a>
 
 		<div class="woo-swb">
-			<div class="woo-pcont woo-masned my-pic" data-totalunits="440">
+			<div class="woo-pcont woo-masned my-pic">
+				<!-- You can preset some(no limit) '.woo' tags here in '.woo-pcont', they will be treated as the first subpage. Then waterfall request will start from subpage No. 2. -->
 				<!-- .woo-pcont 节点内可预先放好若干个单元(个数没有限制) -->
 				<!-- 预先放置的会被当做第一子页数据，后面会直接从第二子页开始 -->
 				<!-- 可以选择不放置 -->
@@ -109,18 +113,28 @@
 
 <script>
 $(function (){
-
+	// Append buttons gonext, gopre, gotop to the body as you like.
 	// 可自行修改代码添加瀑布流的三个控制键 gonext gopre gotop
 	$('<div id="mycontrols"><a href="javascript:;" id="gotop"></a></div>').appendTo('body');
 
 	var conf = {
-		// 每个请求对应的form 的id 前缀，和 arrform 标识数组结合。
-		"formprefix" : '#woo-form-',
+		// Identification of a single waterfall. There are 4 waterfalls in main.html.
+		// You can get the form in #win-holder by putting formprefix and one identification together.
 		// 标识数组，每个标识对应一个瀑布流，本例有四个瀑布流。
 		// 容易看出每个标识前加上 formprefix 就能对应#win-holder 里的form 表单：
 		// <form id="woo-form-(collect|original|album|favalbum)">
 		"arrform" : ['collect'], 
 
+
+		// arrsplit, the last part of the url which has been split by page number.
+		// The first part of the url has already been put in the action attribute of the proper form.
+		// Page number can be seen neighther in the first part nor the last part.
+		// Why and how we do this? Think a simple url like '/message/list/1/tail/?type=hot'
+		// First, we put '/message/list/' in form action.
+		// Then, we can make a hidden input in this form <input type="hidden" name="type" value="hot"/>.
+		// Finally, we put '/tail/' into arrsplit.
+		// Or, we could choose no hidden input and '/tail/?type=hot' into arrsplit.
+		// Nevertheless, we put them together and get the entire url.
 		// 请求地址在页码处split分开的后半截(例如/message/list/1/?type=hot)
 		// 前半截在 <form action="/message/list/"> action 里，
 		// 后半截作为 arrsplit 参数值，上例中其值为 '/?type=hot'。
@@ -130,13 +144,20 @@ $(function (){
 		// 那么对应的 arrsplit 参数值为空字符串。
 		"arrsplit" : '',
 
+		// The extend width of each common column including margin between two cols.
 		// 瀑布流每一列扩展宽度，此宽度包含两列之间的间距。
 		"arrmasnw" : 245,
 
+		// The margin between two cols.
+		// In this example, visible column width is 245-21=224.
 		// 瀑布流两列之间的间距。此例第一个瀑布流的可视宽度为 245-21=224
 		"arrmargin" : 21,
 
-
+		// Diff value of special column width, default 0.
+		// Why the value is 0, not [0,0,0,0]?
+		// We simplified params by converting equal-value array [0,0,0,0] to single value 0.
+		// Params arrsplit, arrmasnw, arrmargin and arrgap can be treated on the same principle.
+		// But, param arrform is out of the principle.
 		// 第一列特殊宽度 默认等于 arrmasnw。
 		// 如果想让第一列(可左数第一列，也可右数第一列)宽度不同于其它列，
 		// arrfmasnw 应设置为第一列和其它列的宽度差值。
@@ -146,23 +167,30 @@ $(function (){
 		// arrform 不适用这一简化规则，原因不解释。
 		"arrfmasnw" : 0,
 
+		// The gap between units in one column.
 		// 通过 gap 可以设置同一列单元块之间的垂直间距
 		"arrgap" : 0,
 
 		/////////////////// 【上方各参数必须填写，否则后果自负】
 
+		// Install $gopre $gonext $gotop as you like.
 		// 可自由选择安装 $gopre $gonext $gotop 等操作键。
 //		"gopre" : '#gopre',
 //		"gonext" : '#gonext',
 		"gotop" : '#gotop',
 
+		// Footer selctor, any tag below the pager can be treated as footer.
 		// footer 选择器，只要处于瀑布流翻页器下方的都可视为 footer。
 		// 它的隐藏和显示将会受到控制。
 //		"footer" : '#footer,#preserve',
 
+		// Open resize mode.
+		// If you open it, every time window resizes, waterfall will be repainted.
+		// Not recommend in ie.
 		// window resize 时，是否重绘瀑布流，默认不重绘。此功能打开，resize.css 才有意义
 		"resize" : true,
 
+		// Sth you do during scrolling, say, pop out a login confirm.
 		// scroll 过程中触发的方法，可用于登录弹出框等
 		"onScroll" : function (tp){
 			// tp 为当前的scrolltop
@@ -173,6 +201,7 @@ $(function (){
 		}
 	}
 
+	// Let's go.
 	// 启动瀑布流，好短
 	$.Woo(conf);
 })
