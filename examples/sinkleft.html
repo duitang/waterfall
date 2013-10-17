@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-<title>堆糖瀑布流完整解决方案(jQuery)</title>
-<meta name="keywords" content="瀑布流,jQuery,堆糖" />
+<title>堆糖瀑布流Woo - perfect solution for waterfall(jQuery)</title>
+<meta name="keywords" content="瀑布流,jQuery,waterfall,woo" />
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/woo.css" />
@@ -23,21 +23,22 @@
 
 
 <div id="header">
-<div class="lattern"><a href="norequest.html">demo最简版</a><a href="mobile.html">demo移动版</a><a href="specialcol.html">demo特殊列</a><a href="main.html">demo1</a><a href="sinkleft.html">demo2</a><a href="sinkright.html">demo3</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
-<h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流(Waterfall O O)</a></h1>
+<div class="lattern"><a href="../example-operate/delete.html">demo-del</a><a href="../example-operate/order.html">demo-order</a><a href="norequest.html">demo-simplest</a><a href="specialcol.html">demo-specialcol</a><a href="main.html">demo-main</a><a href="sinkleft.html">demo-sink</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
+<h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流 Woo(Waterfall O O) in duitang.com</a></h1>
 </div>
 
 <div id="content">
 	<div id="woo-holder" class="tube-in">
-		<!-- 点击回到顶部时，会回到这个锚点所在处，此锚点可放置任意位置 -->
-		<!-- 具体代码在 scrollTo() 方法中 -->
+		<!-- When gotop button is clicked, scrollbar will be positioned where the anchor is. -->
 		<a name="woo-anchor"></a>
 		<ul id="switchholder">
-		<li class="woo-swa woo-cur"><a href="javascript:;">我的图片</a></li>
-		<li class="woo-swa"><a href="javascript:;">我喜欢的专辑</a></li>
-		<li class="woo-swa"><a href="javascript:;">我的专辑</a></li>
-		<li class="woo-swa"><a href="javascript:;">我的收集</a></li>
+		<li class="woo-swa woo-cur"><a href="javascript:;">my pics</a></li>
+		<li class="woo-swa"><a href="javascript:;">my fav</a></li>
+		<li class="woo-swa"><a href="javascript:;">my albums</a></li>
+		<li class="woo-swa"><a href="javascript:;">my collects</a></li>
 		</ul>
+
+
 
 		<div class="woo-swb">
 			<div class="woo-pcont woo-masned my-pic">
@@ -66,6 +67,36 @@
 
 
 <div id="preserve">
+	<h2>Reserved Words:</h2>
+	<ul>
+	<li><u>co(n)</u><p>className with column idx for the .woo unit.</p></li>
+	<li><u>sc(n)</u><p>className with screen idx for the .woo unit.</p></li>
+	<li><u>woo-(*)</u><p>reserved className or id.</p></li>
+	<li><u>woo-form-(*)</u><p>reserved id of forms which contain part of the request url.</p></li>
+	<li><u>srcd</u><p>replacement of img attribute src for delay loading images.</p></li>
+	</ul>
+	<h2>Requirements:</h2>
+	<ul>
+	<li>browser.js, disappeared in jQuery 1.10.1 and upper versions.</li>
+	<li>history.js, handles the hashchange event.(a littel fat~)</li>
+	<li>tabswitch.js, supports switching in different waterfalls.</li>
+	<li>(optional)template.min.js, pieces together html strings.(See more in masnunit.js)</li>
+	
+	</ul>
+	<h2>Guides:</h2>
+	<ul>
+	<li>1) Each &lt;form &gt; at the bottom of the page represents a single waterfall. You need to put the url of subpage data request into those forms. We use getFormAction() and paramForm() to get what is needed.</li>
+	<li>2) If only one waterfall is prepared，please delete the unnecessary &lt;form &gt;, '.woo-swa' and '.woo-swb' tags.</li>
+	<li>3) If no fixed width is given to '.woo-masned(.woo-pcont)', waterfall will fill the parent like a Response-type layout does. Otherwise, if you give a 1000px width to it by setting data-domwidth="1000", then it will keep that width all the time.</li>
+	<li>4) You can preset some(no limit) '.woo' tags in '.woo-pcont' in html(not in js), they will be treated as the first subpage. Then waterfall request will start from subpage No. 2.</li>
+	<li>5) Multiple waterfalls are supported as you can see, and settings for each waterfall can be different by setting 'data-' attributes on '.woo-pcont'. Global settings such as 'subpagenum', 'unitsnum', 'sink', 'sinkheight' and 'sinkright' would be overrided.</li>
+	<li>6) 'data-' attributes on '.woo-pcont' now supported: 'data-subpagenum', 'data-unitsnum', 'data-totalunits', 'data-wootemp', 'data-sink', 'data-sinkheight', 'data-sinkright'.</li>
+	<li>7) 'data-wootemp', number, the idx of TEMPLATES you've already made in masnunit.js. Different numbers represent different waterfall patterns. Corresponding functions RENDER[idx], ANALYZERESPONSE[idx] are also given in masnunit.js.</li>
+	<li>8) Does next upper page exist? Feature 'hasnext' in each subpage response has the toppest priority. If hasnext=true, the next button will be visible even if the real total unitsnum has already exceeded the number preseted by 'data-totalunits'.</li>
+	<li>9) DEBUG mode has been opened in demos. DEBUG_DATA is being used after each successful request.</li>
+	<li>10) We've given several different-pattern waterfalls.</li>
+	<li>11) masnunit.js should be read carefully.</li>
+	</ul>
 	<h2>一些保留命名 &gt;&gt;</h2>
 	<ul>
 	<li><u>co(n)</u><p>单元块所在列数对应的className</p></li>
@@ -101,7 +132,7 @@
 </div>
 
 <style>
-/* 页面上的不可见容器 */
+/* invisible holder for the page */
 #win-holder{overflow:hidden;height:0px;}
 </style>
 <div id="win-holder">
@@ -152,77 +183,75 @@
 </script>
 <script>
 $(function (){
-
-	// 可自行修改代码添加瀑布流的三个控制键 gonext gopre gotop
+	// Append buttons gonext, gopre, gotop to the body as you like.
 	$('<div id="mycontrols"><a id="gonext" href="javascript:;" title="下一页"></a><a href="javascript:;" id="gotop"></a><a id="gopre" href="javascript:;"  title="上一页"></a></div>').appendTo('body');
 
 	var conf = {
-		// 每个请求对应的form 的id 前缀，和 arrform 标识数组结合。
-		"formprefix" : '#woo-form-',
-		// 标识数组，每个标识对应一个瀑布流，本例有四个瀑布流。
-		// 容易看出每个标识前加上 formprefix 就能对应#win-holder 里的form 表单：
+		// Identification of a single waterfall. There are 4 waterfalls in main.html.
+		// You can get the form in #win-holder by putting formprefix and one identification together.
 		// <form id="woo-form-(collect|original|album|favalbum)">
 		"arrform" : ['album','favalbum','collect','original'], 
 
-		// 请求地址在页码处split分开的后半截(例如/message/list/1/?type=hot)
-		// 前半截在 <form action="/message/list/"> action 里，
-		// 后半截作为 arrsplit 参数值，上例中其值为 '/?type=hot'。
-		// 前后半截均不包含页码数。
-		// 这是为了应对页码数被设计在url 中间的悲剧情况。
-		// 请将页码数设计在地址最后的位置如 <form action="/people/list/?page=">
-		// 那么对应的 arrsplit 参数值为空字符串。
+		// arrsplit, the last part of the url which has been split by page number.
+		// The first part of the url has already been put in the action attribute of the proper form.
+		// Page number can be seen neighther in the first part nor the last part.
+		// Why and how we do this? Think a simple url like '/message/list/1/tail/?type=hot'
+		// First, we put '/message/list/' in form action.
+		// Then, we can make a hidden input in this form <input type="hidden" name="type" value="hot"/>.
+		// Finally, we put '/tail/' into arrsplit.
+		// Or, we could choose no hidden input and '/tail/?type=hot' into arrsplit.
+		// Nevertheless, we put them together and get the entire url.
 		"arrsplit" : ['/?type=hot','','',''],
 
-		// 瀑布流每一列扩展宽度，此宽度包含两列之间的间距。
+
+		// The extend width of each common column including margin between two cols.
 		"arrmasnw" : [245,250,250,245],
 
-		// 瀑布流两列之间的间距。此例第一个瀑布流的可视宽度为 245-21=224
+		// The margin between two cols.
+		// In this example, visible column width is 245-21=224.
 		"arrmargin" : [21,42,42,21],
 
-
-		// 第一列特殊宽度 默认等于 arrmasnw。
-		// 如果想让第一列(可左数第一列，也可右数第一列)宽度不同于其它列，
-		// arrfmasnw 应设置为第一列和其它列的宽度差值。
-		// 为什么参数值是一个数字0 而不是数组[0,0,0,0]？
-		// 这里简化了传参，如果数组里所有元素的值相同，可以只传这个值。
-		// 同理，上方的参数 arrsplit arrmasnw arrmargin 包括 arrgap 均适用这一简化规则
-		// arrform 不适用这一简化规则，原因不解释。
+		// Diff value of special column width, default 0.
+		// Why the value is 0, not [0,0,0,0]?
+		// We simplified params by converting equal-value array [0,0,0,0] to single value 0.
+		// Params arrsplit, arrmasnw, arrmargin and arrgap can be treated on the same principle.
+		// But, param arrform is out of the principle.
 		"arrfmasnw" : 0,
 
-		// 通过 gap 可以设置同一列单元块之间的垂直间距
+		// The gap between units in one column.
 		"arrgap" : 0,
 
-		/////////////////// 【上方各参数必须填写，否则后果自负】
 
-
-		// 要插入的区块，只能插在左侧或右侧第一个位置，默认插左侧
+		// Set them to open sink mode.
+		// sink sinkheight sinkright would be overrided by data-sink...
 		"sink" : '#mytags',
 		"sinkheight" : 140, 
 		"sinkright" : false,
 
-		// 可自由选择安装 $gopre $gonext $gotop 等操作键。
+		// Install $gopre $gonext $gotop as you like.
 		"gopre" : '#gopre',
 		"gonext" : '#gonext',
 		"gotop" : '#gotop',
 
-		// footer 选择器，只要处于瀑布流翻页器下方的都可视为 footer。
-		// 它的隐藏和显示将会受到控制。
+		// Footer selctor, any node below the pager can be treated as footer.
 		"footer" : '#footer,#preserve',
 
-		// window resize 时，是否重绘瀑布流，默认不重绘。此功能打开，resize.css 才有意义
+		// Open resize mode.
+		// If you open it, every time window resizes, waterfall will be repainted.
+		// Not recommend in ie.
 		"resize" : true,
 
-		// scroll 过程中触发的方法，可用于登录弹出框等
+		// Sth you do during scrolling, say, pop out a login confirm.
 		"onScroll" : function (tp){
-			// tp 为当前的scrolltop
+			// tp current scrolltop
 //			if( (typeof ALREADYNOTICED === 'undefined' || !ALREADYNOTICED) && tp >= 1000 ){
 //				ALREADYNOTICED = true
-//				alert("弹出登录框")
+//				alert("login")
 //			}
 		}
 	}
 
-	// 启动瀑布流，好短
+	// Let's go.
 	$.Woo(conf);
 })
 </script>

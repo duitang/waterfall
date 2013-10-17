@@ -112,14 +112,16 @@
 			},
 
 			// 每一大页加载完毕之后执行
-			"onOnePageOver" : function (pg, $pager){
-				// pg 为 Pagine 实例，$pager 为底部翻页容器
+			"onOnePageOver" : function (pg, idx){
+				// pg 为 Pagine 实例，pg.$pager 为底部翻页容器
+				// idx 表示当前瀑布流的序号
 				// 可以使用 pg.hasNextUpperPage()  pg.isLastSub()
 
 			},
 
 			// 每次请求后都要执行的方法
-			"requestAlways" : function (idx){
+			"requestAlways" : function (pg, idx){
+				// pg 为 Pagine 实例，pg.$pager 为底部翻页容器
 				// idx 表示当前瀑布流的序号
 			}
 		},
@@ -284,9 +286,9 @@
 		@说明：整列重新调整
 		@参数：
 		v				- (Num) 增加的高度
-		sc				- (Num) 所在屏数
-		co				- (Num) 所在列数
-		tp				- (Num) top 值
+		sc				- (Num) 参考单元所在屏数
+		co				- (Num) 参考单元所在列数
+		tp				- (Num) 参考单元的top值
 		*/
 		resetCol : function(v,sc,co,tp){
 			var $masn = $HOLDER.find(this.conf.frame[5]+':visible').not('.woo-tmpmasn'),
@@ -298,7 +300,6 @@
 
 				// 重新设置高度，将新的 colY 保存到data 数据中
 				$masn.data('colY',dacol).css({"height":mx})
-
 
 				$HOLDER.find('div.co'+co).each(function (i,e){
 					var ttp = parseInt(e.style.top);
@@ -741,13 +742,13 @@
 						}
 
 
-						// Start = new Date().getTime()
+//						 Start = new Date().getTime()
 						// 这里生成的jonhtml 可能是 string 类型
 						// 也可能是 [<jQuery对象>] 数组
 						// 这两种情况均需要 $() 后再使用
 						var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
 						MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
-						// End = new Date().getTime()
+//						 End = new Date().getTime()
 
 							if( rnum <= 0 ){
 								// pg 指代 Pagine 对象实例
@@ -1241,7 +1242,7 @@
 			pg.$loadingsm.css('visibility','hidden');
 
 			// 执行配置好的 requestAlways 方法
-			$.isFunction(c.requestAlways) && c.requestAlways(IDX);
+			$.isFunction(c.requestAlways) && c.requestAlways(pg,IDX);
 		},
 
 		// 请求发起前执行 参数c 表示是否有清空内容容器
@@ -1408,7 +1409,7 @@
 			},200);
 
 			// call onOnePageOver
-			pg.config.onOnePageOver(pg);
+			pg.config.onOnePageOver(pg, IDX);
 		},
 
 		/*
@@ -1590,7 +1591,7 @@
 			var masn = this;
 
 			masn.$dom = $($cont),
-			masn.domWidth = masn.$dom.data('domwidth') || 'auto',
+			masn.domInitWidth = masn.$dom.data('domwidth') || 'auto',
 			masn.figure(),
 			masn.arrangeContents();
 		},
@@ -1612,7 +1613,6 @@
 			if( c.firstColumnWidth ){
 				masn.colwf = c.firstColumnWidth;
 			}
-
 
 			masn.setCols();
 
@@ -1666,19 +1666,22 @@
 				dw;
 
 			masn.resetDomWidth(),
-			dw = $dom.width();
+			dw = masn.domWidth,
 
 			masn.colCount = Math.max( Math.floor( (dw - masn.colwf + masn.colw) / masn.colw ), 1 ),
-			$dom.css('width',masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin);
+			masn.domWidth = masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin,
+			$dom.css('width',masn.domWidth);
 		},
 
 		/*
 		@说明：重置 $dom 容器的宽度为初始状态，resize时需要重置所有 MASN 的dom width
 		*/
 		resetDomWidth : function (){
-			var masn = this;
 
-			masn.$dom.css("width",masn.domWidth)
+			var masn = this,
+				$dom = masn.$dom;
+			masn.$dom.css("width",masn.domInitWidth),
+			masn.domWidth = masn.domInitWidth === 'auto' ? $dom.parent().width() : masn.domInitWidth;
 		},
 
 
@@ -1784,7 +1787,7 @@
 			}
 		},
 
-		_placeCall : function ($e, colY, colc, f){
+		prePlaceUnit : function ($e, colY, colc, f){
 			var masn = this,
 				c = masn.opts,
 				len = colc,
@@ -1851,14 +1854,14 @@
 			var $lame = $data.add(htmlp).removeClass('woo-spec'),
 				$drawer = indom ? $lame.parent() : $pre.append($lame);
 
-			$htmlp = $drawer.find(c.unit).not('.woo-f').each(function (i,e){
+			$htmlp = $drawer.find(c.unit).not('.woo-f,.woo-spec').each(function (i,e){
 				var $e = $(e),
 					id = $e.data('id');
 
 				// 在左(右)侧第一个位置增加占位节点，之前如果有添加过(resize时)则删除
 				if( (i === 0 && f && !c.rightAlignFirstBlock || i === colc - 1 && f && c.rightAlignFirstBlock) ){
 					// 计算 minY minI left
-					ars = masn._placeCall($e, colY, colc, f);
+					ars = masn.prePlaceUnit($e, colY, colc, f);
 
 					minY = ars[0],
 					minI = ars[1],
@@ -1887,7 +1890,7 @@
 				}
 
 				// 计算 minY minI left
-				ars = masn._placeCall($e, colY, colc);
+				ars = masn.prePlaceUnit($e, colY, colc);
 
 				minY = ars[0],
 				minI = ars[1],
@@ -1903,6 +1906,7 @@
 					"top" : minY,
 					"left" : left
 				})
+				.data('ht',ht)
 				.removeClass(function (i,cls){
 					return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
 				})

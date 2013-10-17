@@ -307,7 +307,7 @@ if(!String.prototype.cut){
 		if( !munits[id] ){
 			munits[id] = jsn,
 			WT.ulen++,
-			munits[id].indx = WT.ulen;
+			munits[id].indx = WT.ulen-1;
 
 			return WT.ulen;
 		}else{

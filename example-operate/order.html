@@ -6,10 +6,11 @@
 <title>堆糖瀑布流Woo - perfect solution for waterfall(jQuery)</title>
 <meta name="keywords" content="瀑布流,jQuery,waterfall,woo" />
 <link rel="stylesheet" href="../css/reset.css" />
-<link rel="stylesheet" href="../css/mobile.css" />
+<link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/woo.css" />
+<link rel="stylesheet" href="../css/gotop.css" />
+<link rel="stylesheet" href="../css/pagine.css" />
 <link rel="stylesheet" href="../css/resize.css" />
-
 <script src="../js/jquery-1.6.1.min.js"></script>
 <script src="../js/browser.js"></script>
 <script src="../js/history.js"></script>
@@ -20,22 +21,44 @@
 </head>
 <body>
 <div id="header">
-<div class="lattern"><a href="norequest.html">demo-simplest</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
+<div class="lattern"><a href="order.html">demo-order</a><a href="delete.html">demo-delete</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
 <h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流 Woo(Waterfall O O) in duitang.com</a></h1>
 </div>
 
 
 <div id="content">
+	<style>
+	.newinfo{padding:8px 8px 10px;border:2px solid #2386d8;color:#f14382;}
+	.newinfo u{color:#ccc;text-decoration:none;}
+	.newinfo .operate{text-align:right;}
+	</style>
+	<div class="newinfo">
+		Order by favarites. This example has no preseted contents in html.<u>（Units preseted in html have no saved datas in $.Woo.WooTemp.masnUnits）</u>
+		<div class="operate">
+			<a id="btnorderdesc" class="abtn" href="javascript:;">&gt;&gt; order by favarites desc &lt;&lt;</a>&nbsp;&nbsp;<a id="btnorderasc" class="abtn" href="javascript:;">&gt;&gt; order by favarites asc &lt;&lt;</a>
+		</div>
+	</div>
 	<div id="woo-holder">
 		<!-- When gotop button is clicked, scrollbar will be positioned where the anchor is. -->
-		<a name="woo-anchor"></a>
-		<div class="woo-swa">my pics</div>
+		<a class="woo-swa" name="woo-anchor" style="display:none">my pics</a>
+
 
 		<div class="woo-swb">
-			<div class="woo-pcont woo-masned my-pic"  data-wootemp="2">
-				<!-- You can preset some(no limit) '.woo' tags here in '.woo-pcont', they will be treated as the first subpage. Then waterfall request will start from subpage No. 2. -->
-				<div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87354707/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/24/20130724101156_GjTNy.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="72"><div class="j" style="height:72px"><a href="http://m.duitang.com/people/mblog/87354659/detail/"><img src="http://img4.duitang.com/uploads/item/201307/24/20130724101146_WzNym.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87354603/detail/"><img src="http://img4.duitang.com/uploads/item/201307/24/20130724101104_YTeCw.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="100"><div class="j" style="height:100px"><a href="http://m.duitang.com/people/mblog/87354520/detail/"><img src="http://img4.duitang.com/uploads/item/201307/24/20130724101054_WUuTZ.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="97"><div class="j" style="height:97px"><a href="http://m.duitang.com/people/mblog/87172299/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/23/20130723103900_2BQiW.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87172284/detail/"><img src="http://img4.duitang.com/uploads/item/201307/23/20130723103853_ranmk.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="70"><div class="j" style="height:70px"><a href="http://m.duitang.com/people/mblog/87172270/detail/"><img src="http://img4.duitang.com/uploads/item/201307/23/20130723103848_L5Cn3.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="101"><div class="j" style="height:101px"><a href="http://m.duitang.com/people/mblog/87172247/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/23/20130723103841_uCKPC.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87172231/detail/"><img src="http://img4.duitang.com/uploads/item/201307/23/20130723103816_AuMRT.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="84"><div class="j" style="height:84px"><a href="http://m.duitang.com/people/mblog/87006784/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114543_kJLfk.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/87006744/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114539_L4TCx.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/87006707/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/22/20130722114521_LhrdV.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="84"><div class="j" style="height:84px"><a href="http://m.duitang.com/people/mblog/87006667/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114506_ZTHjw.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="101"><div class="j" style="height:101px"><a href="http://m.duitang.com/people/mblog/87006574/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114421_vkJYx.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/86991265/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722095141_ECrxH.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="93"><div class="j" style="height:93px"><a href="http://m.duitang.com/people/mblog/86991214/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722095134_KY3Wt.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/86991186/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/22/20130722095011_UEPfy.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="86"><div class="j" style="height:86px"><a href="http://m.duitang.com/people/mblog/86277048/detail/"><img src="http://img4.duitang.com/uploads/item/201307/18/20130718100345_SKPX3.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="103"><div class="j" style="height:103px"><a href="http://m.duitang.com/people/mblog/86276978/detail/"><img src="http://img4.duitang.com/uploads/item/201307/18/20130718100310_KXGT2.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="134"><div class="j" style="height:134px"><a href="http://m.duitang.com/people/mblog/86276907/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/18/20130718100228_zyYBa.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="94"><div class="j" style="height:94px"><a href="http://m.duitang.com/people/mblog/86276840/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/18/20130718100208_2UeaR.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="71"><div class="j" style="height:71px"><a href="http://m.duitang.com/people/mblog/86276784/detail/"><img src="http://img4.duitang.com/uploads/item/201307/18/20130718100135_F4AKh.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="66"><div class="j" style="height:66px"><a href="http://m.duitang.com/people/mblog/86111112/detail/"><img src="http://img4.duitang.com/uploads/item/201307/17/20130717103101_RWxvf.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="144"><div class="j" style="height:144px"><a href="http://m.duitang.com/people/mblog/86111018/detail/"><img src="http://img4.duitang.com/uploads/item/201307/17/20130717102953_YcweY.thumb.200_0.png" width="96"></a></div></div>
+			<div class="woo-pcont woo-masned my-pic">
 			</div>
+			<div class="woo-pager"></div>
+		</div>
+		<div class="woo-swb">
+			
+			<div class="woo-pcont woo-masned my-album" data-domwidth="1000" data-wootemp="1" data-subpagenum="6"></div>
+			<div class="woo-pager"></div>
+		</div>
+		<div class="woo-swb">
+			<div class="woo-pcont woo-masned my-album" data-wootemp="1" data-subpagenum="6"></div>
+			<div class="woo-pager"></div>
+		</div>
+		<div class="woo-swb">
+			<div class="woo-pcont woo-masned my-pic"></div>
 			<div class="woo-pager"></div>
 		</div>
 
@@ -46,6 +69,68 @@
 
 
 
+<div id="preserve">
+	<h2>Reserved Words:</h2>
+	<ul>
+	<li><u>co(n)</u><p>className with column idx for the .woo unit.</p></li>
+	<li><u>sc(n)</u><p>className with screen idx for the .woo unit.</p></li>
+	<li><u>woo-(*)</u><p>reserved className or id.</p></li>
+	<li><u>woo-form-(*)</u><p>reserved id of forms which contain part of the request url.</p></li>
+	<li><u>srcd</u><p>replacement of img attribute src for delay loading images.</p></li>
+	</ul>
+	<h2>Requirements:</h2>
+	<ul>
+	<li>browser.js, disappeared in jQuery 1.10.1 and upper versions.</li>
+	<li>history.js, handles the hashchange event.(a littel fat~)</li>
+	<li>tabswitch.js, supports switching in different waterfalls.</li>
+	<li>(optional)template.min.js, pieces together html strings.(See more in masnunit.js)</li>
+	
+	</ul>
+	<h2>Guides:</h2>
+	<ul>
+	<li>1) Each &lt;form &gt; at the bottom of the page represents a single waterfall. You need to put the url of subpage data request into those forms. We use getFormAction() and paramForm() to get what is needed.</li>
+	<li>2) If only one waterfall is prepared，please delete the unnecessary &lt;form &gt;, '.woo-swa' and '.woo-swb' tags.</li>
+	<li>3) If no fixed width is given to '.woo-masned(.woo-pcont)', waterfall will fill the parent like a Response-type layout does. Otherwise, if you give a 1000px width to it by setting data-domwidth="1000", then it will keep that width all the time.</li>
+	<li>4) You can preset some(no limit) '.woo' tags in '.woo-pcont' in html(not in js), they will be treated as the first subpage. Then waterfall request will start from subpage No. 2.</li>
+	<li>5) Multiple waterfalls are supported as you can see, and settings for each waterfall can be different by setting 'data-' attributes on '.woo-pcont'. Global settings such as 'subpagenum', 'unitsnum', 'sink', 'sinkheight' and 'sinkright' would be overrided.</li>
+	<li>6) 'data-' attributes on '.woo-pcont' now supported: 'data-subpagenum', 'data-unitsnum', 'data-totalunits', 'data-wootemp', 'data-sink', 'data-sinkheight', 'data-sinkright'.</li>
+	<li>7) 'data-wootemp', number, the idx of TEMPLATES you've already made in masnunit.js. Different numbers represent different waterfall patterns. Corresponding functions RENDER[idx], ANALYZERESPONSE[idx] are also given in masnunit.js.</li>
+	<li>8) Does next upper page exist? Feature 'hasnext' in each subpage response has the toppest priority. If hasnext=true, the next button will be visible even if the real total unitsnum has already exceeded the number preseted by 'data-totalunits'.</li>
+	<li>9) DEBUG mode has been opened in demos. DEBUG_DATA is being used after each successful request.</li>
+	<li>10) We've given several different-pattern waterfalls.</li>
+	<li>11) masnunit.js should be read carefully.</li>
+	</ul>
+
+	<h2>一些保留命名 &gt;&gt;</h2>
+	<ul>
+	<li><u>co(n)</u><p>单元块所在列数对应的className</p></li>
+	<li><u>sc(n)</u><p>单元块所在屏数对应的className</p></li>
+	<li><u>woo-(*)</u><p>Woo内部特殊用途的className or id</p></li>
+	<li><u>woo-form-(*)</u><p>form 表单的 id，用作请求地址url的拼装</p></li>
+	<li><u>srcd</u><p>单元块内的图片src 属性的替代，图片延迟加载功能使用</p></li>
+	</ul>
+	<h2>一些依赖 &gt;&gt;</h2>
+	<ul>
+	<li>依赖 browser.js 用于兼容1.10 及以上jQuery 版本的$.browser 对象</li>
+	<li>依赖 history.js 监控hashchange 事件</li>
+	<li>依赖(非必需) template.min.js 组装html 字符串，详见 masnunit.js</li>
+	<li>依赖 tabswitch.js 用于不同瀑布流的切换</li>
+	</ul>
+	<h2>一些使用方法 &gt;&gt;</h2>
+	<ul>
+	<li>1) 在main.html 代码底部每一个&lt;form &gt;对应一个瀑布流的数据请求地址。</li>
+	<li>2) 如页面上只需要一个瀑布流，请相应的删除掉多余的form 表单和 .woo-swa .woo-swb节点。</li>
+	<li>3) 如不给定 .woo-masned 节点的宽度，会自动适应屏幕宽度。专辑类型示例中给定了 1000px 的宽度。</li>
+	<li>4) .woo-pcont 节点内可预先放好若干个单元(个数没有限制)，预先放置的会被当做第一子页数据，后面会直接从第二子页开始。</li>
+	<li>5) 一个页面可以有多个瀑布流，不同瀑布流的配置可以差异化。通过在各自.woo-pcont节点上设置 data- 属性，例如：data-subpagenum data-unitsnum data-sink来覆盖全局配置。</li>
+	<li>6) .woo-pcont节点上目前支持的data- 配置有：data-subpagenum data-unitsnum data-totalunits data-wootemp data-sink data-sinkheight data-sinkright。</li>
+	<li>7) data-wootemp 取值为从0开始的整数，对应 masnunit.js 文件里定义的不同类型瀑布流。</li>
+	<li>8) 是否有下一大页的设定最优先依赖于请求返回里的hasnext字段，如果hasnext=true，即便总单元已经超过`data-totalunits`的设定，仍然会显示下一页按钮。</li>
+	<li>9) 示例使用了DEBUG 并分别在 main.html 和 masnunit.js 里给定了模拟数据。</li>
+	<li>10) 可在 masnunit.js 里编写不同种类的瀑布流，示例给出了两种：图片类型和专辑类型。</li>
+	<li>11) 请仔细研究 masnunit.js。</li>
+	</ul>
+</div>
 <div id="footer">
 &copy;Copyright by 堆糖 2010-2013 duitang.com, all rights reserved
 </div>
@@ -79,15 +164,17 @@
 <script>
 $(function (){
 	// Append buttons gonext, gopre, gotop to the body as you like.
-	var $wooholder = $('#woo-holder');
-	$wooholder.find('.woo-pager').append('<a id="gonext" href="javascript:;">下一页</a>')
-
+	$('<div id="mycontrols"><a href="javascript:;" id="gotop"></a></div>').appendTo('body');
 
 	var conf = {
+		// Prefix of form id. Each form represents a subpage data request.
+		"formprefix" : '#woo-form-',
+
 		// Identification of a single waterfall. There are 4 waterfalls in main.html.
 		// You can get the form in #win-holder by putting formprefix and one identification together.
 		// <form id="woo-form-(collect|original|album|favalbum)">
 		"arrform" : ['collect'], 
+
 
 		// arrsplit, the last part of the url which has been split by page number.
 		// The first part of the url has already been put in the action attribute of the proper form.
@@ -101,10 +188,12 @@ $(function (){
 		"arrsplit" : '',
 
 		// The extend width of each common column including margin between two cols.
-		"arrmasnw" : 104,
+		"arrmasnw" : 245,
 
 		// The margin between two cols.
-		"arrmargin" : 8,
+		// In this example, visible column width is 245-21=224.
+		"arrmargin" : 21,
+
 
 		// Diff value of special column width, default 0.
 		// Why the value is 0, not [0,0,0,0]?
@@ -114,13 +203,13 @@ $(function (){
 		"arrfmasnw" : 0,
 
 		// The gap between units in one column.
-		"arrgap" : 8,
+		"arrgap" : 0,
 
 
 		// Install $gopre $gonext $gotop as you like.
 //		"gopre" : '#gopre',
-		"gonext" : '#gonext',
-//		"gotop" : '#gotop',
+//		"gonext" : '#gonext',
+		"gotop" : '#gotop',
 
 		// Footer selctor, any tag below the pager can be treated as footer.
 		"footer" : '#footer,#preserve',
@@ -142,6 +231,79 @@ $(function (){
 
 	// Let's go.
 	$.Woo(conf);
+
+
+
+
+	// order units by favarites, data has already been saved in $.Woo.WooTemp.masnUnits
+	$('#btnorderdesc,#btnorderasc').click(function (e){
+		e.preventDefault();
+		e.stopPropagation();
+
+		// param desc = true 
+		orderCall( this.id === 'btnorderdesc' ? true : false );
+	})
+
+
+	// param desc
+	function orderCall(desc){
+		var masn = $.Woo.masn[0],
+			colc = masn.colCount,
+			colY = masn.$dom.data('colY'),
+			minY, minI, left,
+			munits = $.Woo.WooTemp.masnUnits,
+			el,
+			arru = [],
+			$units = $('.woo:visible').not('.woo-f');
+
+
+		// set each colY height 0
+		for( var i=0; i<colc; i++ ){
+			colY[i] = 0;
+		}
+		masn.lastscreen = masn.screen = 0;
+
+
+		for( el in munits ){
+			arru.push({
+				"indx" : munits[el].indx,
+				"fav" : munits[el].favc
+			})
+		}
+
+
+		// order
+		arru.sort(function (a,b){
+			if(a.fav > b.fav){
+				return desc ? -1 : 1;
+			}else{
+				return desc ? 1 : -1;
+			}
+		});
+
+
+		for( var i=0,l=arru.length; i<l; i++ ){
+			var $new = $units.eq(arru[i].indx),
+				ht = $new.data('ht'),
+				len = colc,
+				ars = masn.prePlaceUnit($new, colY, colc);
+
+			minY = ars[0],
+			minI = ars[1],
+			left = ars[2],
+			ht = ars[3];
+
+
+			$new.css({
+				"left" : left,
+				"top" : minY
+			})
+			.removeClass(function (i,cls){
+				return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
+			})
+			.addClass('sc'+masn.screen+' co'+minI);
+		}
+	}
 })
 </script>
 </body>
