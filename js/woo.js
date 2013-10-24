@@ -1872,7 +1872,7 @@
 
 
 					// 要添加的节点外层字符串
-					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;z-index:-1;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
+					addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
 					strwrap += addf;
 

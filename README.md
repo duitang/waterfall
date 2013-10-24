@@ -23,23 +23,23 @@ version: 1.0.3
 
 ## Included examples
 ### Example sink mode:
-This example shows how to insert an outside block into waterfall either on the left side or on the right side. <br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/sinkleft.html)
+This example shows how to insert an outside block into waterfall either on the left side or on the right side. <br/><a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">Click me to have a look!</a>
 
 ### Example special column mode:
-This example shows how to set a special column(different column width) in your waterfall.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/specialcol.html)
+This example shows how to set a special column(different column width) in your waterfall.<br/><a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">Click me to have a look!</a>
 
 ### Example simplest demo:
-This example shows how to build a simple waterfall page without any other data request.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/norequest.html)
+This example shows how to build a simple waterfall page without any other data request.<br/><a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">Click me to have a look!</a>
 
 ### Example mobile demo:
-This example shows how to build a waterfall page which is running in mobile phone.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/examples/mobile.html)
+This example shows how to build a waterfall page which is running in mobile phone.<br/><a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">Click me to have a look!</a>
 
 ### Example order:
-This example shows how to deal with unit datas with order operation.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/example-operate/order.html)
-
+This example shows how to deal with unit datas with order operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">Click me to have a look!</a>
 
 ### Example delete:
-This example shows how to deal with unit datas with delete operation.<br/>[Click me to have a look!](http://www.duitang.com/app/woo/example-operate/delete.html)
+This example shows how to deal with unit datas with delete operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">Click me to have a look!</a>
+
 
 
 # 堆糖瀑布流(jQuery) #
@@ -64,13 +64,13 @@ This example shows how to deal with unit datas with delete operation.<br/>[Click
 1. 灵活的参数设置，比如：子页数量、子页内单元数量、瀑布流单元宽度和间距 等等等等。
 
 
-* [纯静态demo演示——主功能](http://www.duitang.com/app/woo/examples/main.html)
-* [纯静态demo演示——sink开启](http://www.duitang.com/app/woo/examples/sinkleft.html)
-* [纯静态demo演示——specialcol开启](http://www.duitang.com/app/woo/examples/specialcol.html)
-* [纯静态demo演示——mobile模拟](http://www.duitang.com/app/woo/examples/mobile.html)
-* [纯静态demo演示——简版无请求](http://www.duitang.com/app/woo/examples/norequest.html)
-* [纯静态demo演示——单元排序](http://www.duitang.com/app/woo/example-operate/order.html)
-* [纯静态demo演示——单元删除](http://www.duitang.com/app/woo/example-operate/delete.html)
+* <a href="http://www.duitang.com/app/woo/examples/main.html" target="_blank">纯静态demo演示——主功能</a>
+* <a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">纯静态demo演示——sink开启</a>
+* <a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">纯静态demo演示——specialcol开启</a>
+* <a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">纯静态demo演示——mobile模拟</a>
+* <a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
+* <a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>
+* <a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">纯静态demo演示——单元删除</a>
 
 
 ## 一些保留命名 >>
@@ -115,8 +115,8 @@ srcd               单元块内的图片 src 属性的替代，图片延迟加�
 
 ## 如果对本产品感兴趣，请关注博客：
 
-[http://blog.duitang.com/2013/10/woo/](http://blog.duitang.com/2013/10/woo/)
- 
+<a href="http://blog.duitang.com/2013/10/woo/" target="_blank">http://blog.duitang.com/2013/10/woo/</a>
+
 ## License
 
 Duitang/Waterfall is published under the terms of the MIT License.
