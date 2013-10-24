@@ -155,6 +155,10 @@ if(!String.prototype.cut){
 		// 第一种组装方式依赖 RENDER TEMPLATES EXTRADATA 
 		// 相应的 RENDER[0] TEMPLATES[0] 需要定义
 		// EXTRADATA 没有初始值，只在需要的时候使用
+		// repsonse data h:
+		// {"data":{"blogs":[${unit},...,${unit}],"has_next":true},"success":true}
+		// see more here : https://github.com/duitang/waterfall/issues/6
+		// ret = [cont,hasnext,totalcount] cont,hasnext are necessary while totalcount is optional
 		function (h){
 			var strrt = _strReturn(h);
 			if( strrt ){
@@ -178,7 +182,7 @@ if(!String.prototype.cut){
 				ret = [
 					dat.blogs,
 					dat.has_next,
-					dat.count
+					dat.totalcount
 				]
 			}
 			return ret;
@@ -188,8 +192,13 @@ if(!String.prototype.cut){
 		// 因此，RENDER TEMPLATES EXTRADATA (后两者均只为RENDER服务)都不需要
 		// RENDER[1] 设为 null，其依赖的 TEMPLATES[1] 也设为 null
 		// EXTRADATA 没有初始值，只在需要的时候使用
+		// repsonse data h:
+		// {"data":{"albums":[${unit},...,${unit}],"has_next":true,"totalcount":8907},"success":true}
+		// see more here : https://github.com/duitang/waterfall/issues/6
+		// data.totalcount is optional for totalcount returned in ret
+		// ret = [cont,hasnext,totalcount] cont,hasnext are necessary while totalcount is optional
 		function (h){
-			typeof DEBUG !== 'undefined' && DEBUG && (h = {"data":{"count":8907,"has_next":true,"albums":[/*测试用*/]},"success":true},h.data.albums[23]=0);
+			typeof DEBUG !== 'undefined' && DEBUG && (h = {"data":{"totalcount":8907,"has_next":true,"albums":[/*测试用*/]},"success":true},h.data.albums[23]=0);
 
 			var strrt = _strReturn(h);
 			if( strrt ){
