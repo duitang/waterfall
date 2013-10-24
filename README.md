@@ -119,6 +119,13 @@ srcd               单元块内的图片 src 属性的替代，图片延迟加�
 1. 可在 masnunit.js 里编写不同种类的瀑布流，示例给出了两种：图片类型和专辑类型。
 1. 请仔细研究 masnunit.js。
 
+## 请求返回数据格式推荐:
+{"data":{"blogs":[${unit},...,${unit}],"has_next":true,"totalcount":202},"success":true}
+
+data.blogs 必须是数组，由单元数据组成的数组。一个子页请求返回的单元个数，必须和配置参数里的`unitsnum` 保持一致，否则会出现页码数计算错误。返回数据 data.has_next 必须有，依赖它判断是否还有下一子页；data.totalcount 可以有(参考示例) ，用于更新当前的总单元数从而更新总页码数；success 表示请求数据成功，如果为 false 则会进入请求出错流程页面上会提示“网络繁忙，点此重试~”。
+
+寻求更多帮助请看<a href="https://github.com/duitang/waterfall/issues/6" target="_blank">使用问题答疑贴</a>
+
 ## 如果对本产品感兴趣，请关注博客：
 
 <a href="http://blog.duitang.com/2013/10/woo/" target="_blank">http://blog.duitang.com/2013/10/woo/</a>
