@@ -40,6 +40,12 @@ This example shows how to deal with unit datas with order operation.<br/><a href
 ### Example delete:
 This example shows how to deal with unit datas with delete operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">Click me to have a look!</a>
 
+## Response data structure recommended:
+{"data":{"blogs":[${unit},...,${unit}],"has_next":true,"totalcount":202},"success":true}
+
+data.blogs must be an array which contains waterfall units. The unit length in one subpage must be concordant with the value of param `unitsnum`. data.has_next is necessary, which is needed to judge the existance of next subpage, while data.totalcount is optional, which will update the total unit count and total page count. success refers to data request status, a tip "busy, retry~" will be shown while the value is false.
+
+
 
 
 # 堆糖瀑布流(jQuery) #
