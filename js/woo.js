@@ -99,6 +99,10 @@
 			// 当前页码前后显示的页码数
 			"nearbypagenum" : 3,
 
+
+			// ajax 请求返回数据的默认类型
+			"ajaxdatatype" : "text",
+
 			// ajax 请求是否缓存
 			"ajaxcache" : false,
 
@@ -116,6 +120,19 @@
 				// pg 为 Pagine 实例，pg.$pager 为底部翻页容器
 				// idx 表示当前瀑布流的序号
 				// 可以使用 pg.hasNextUpperPage()  pg.isLastSub()
+
+			},
+			// 每次lazyAdd 结束之后执行
+			"onLazyAddOver" : function (pg, idx){
+				// pg 为 Pagine 实例，pg.$pager 为底部翻页容器
+				// idx 表示当前瀑布流的序号
+			},
+
+			// 每次 tabswitch 执行
+			"onTabSwitch" : function ($swtrigs,$swconts,a,pre,c){
+				// $swtrigs tabswitch 触发按钮
+				// $swconts tabswitch 内容区块
+				// a 表示当前序号 pre 表示前一个序号 c 表示是点击或自动播放触发的tabswitch
 
 			},
 
@@ -510,11 +527,14 @@
 					// 每次切换都重置到第1大页
 					upg = Woo._getPageNumFromHash();
 
+				// 每次tabswitch 执行
+				$.Woo.conf.onTabSwitch($l,$c,a,pre,c);
 
 				// 如果是swtich 组件第一次初始化
 				if(!c){
 					//
 				}else{
+					upg = PAGINE[a] ? PAGINE[a].getPageNum() : 1;
 					// 为了避免在loading 过程中hash change 导致的无法准确回退。借用 $W 保存状态
 					USERCLICK = true;
 
@@ -594,6 +614,7 @@
 				gap = arrgap[n],
 				// 是否支持扩展列，扩展列的宽度
 				fwdt = isextended ? wdt+arrfmasnw[n] : wdt,
+				specialopen = fwdt != wdt,
 				// 是否采用 nextMode 模式
 				hsn = pcount > 2 ? false : true,
 				undefined;
@@ -632,6 +653,7 @@
 					sinkWhat : sink,
 					firstHeight : sinkheight,
 					rightAlignFirstBlock : sinkright,
+					specialColumnOpen : specialopen,
 					firstColumnWidth : fwdt,
 					columnWidth : wdt,
 					columnMargin : mgn,
@@ -651,8 +673,11 @@
 
 					onOnePageOver : conf.onOnePageOver,
 
+					// ajax 请求返回数据类型
+					ajaxDataType : conf.ajaxdatatype,
+
 					// ajax 请求是否缓存
-					ajaxcache : conf.ajaxcache,
+					ajaxCache : conf.ajaxcache,
 					
 					// 触发下翻页的scroll 偏离值，例如提前100px触发
 					scrollBias : conf.lbias,
@@ -776,6 +801,8 @@
 
 							window.setTimeout(function (){
 								pg.lazyAdding = false;
+
+								Woo.conf.onLazyAddOver(pg, IDX);
 							},200)
 
 						},function ($u){
@@ -820,7 +847,7 @@
 		},
 
 		/*
-		@说明：从hash值中获取当前大页码数
+		@说明：从当前瀑布流的属性值中获取大页码数
 		*/
 		_getPageNumFromHash : function (){
 			var n = 1;
@@ -1071,6 +1098,13 @@
 		},
 
 		/*
+		@说明：获取当前的大页码数
+		*/
+		getPageNum : function (){
+			return this.currentUpperPage;
+		},
+
+		/*
 		@说明：goto 到指定页码数
 		@参数：
 		cp         - (Num) 页码数
@@ -1310,7 +1344,8 @@
 
 					$.ajax({
 						type : 'GET',
-						cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxcache,
+						dataType : c.ajaxDataType,
+						cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxCache,
 						url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : Woo.getFormAction($form) +  cp  + arrurl[1],
 						data : Woo.paramForm($form),
 						timeout : 20000,
@@ -1665,10 +1700,11 @@
 				$dom = masn.$dom,
 				dw;
 
+
 			masn.resetDomWidth(),
 			dw = masn.domWidth,
 
-			masn.colCount = Math.max( Math.floor( (dw - masn.colwf + masn.colw) / masn.colw ), 1 ),
+			masn.colCount = Math.max( Math.floor( (dw + c.columnMargin - masn.colwf + masn.colw) / masn.colw ), 1 ),
 			masn.domWidth = masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin,
 			$dom.css('width',masn.domWidth);
 		},
@@ -1680,7 +1716,7 @@
 
 			var masn = this,
 				$dom = masn.$dom;
-			masn.$dom.css("width",masn.domInitWidth),
+			$dom.css("width",masn.domInitWidth),
 			masn.domWidth = masn.domInitWidth === 'auto' ? $dom.parent().width() : masn.domInitWidth;
 		},
 
@@ -1706,7 +1742,10 @@
 
 				// 先加载 anum 个unit，剩下的交给 onArrage 方法处理
 				var $madd = $c.slice(0,anum);
-				$c = $c.slice(anum).addClass('woo-spec'),
+
+				// if you preset too many units via html,say, more than unitsnum.
+				// The overflow units should be added className woo-wait
+				$c = $c.slice(anum).addClass('woo-wait'),
 				// all 参数这里用来判断是在进行 resize 
 				masn.appendContents($madd,null,true,all,!!c.firstHeight,anum,$.noop);
 			}
@@ -1787,7 +1826,7 @@
 			}
 		},
 
-		prePlaceUnit : function ($e, colY, colc, f){
+		prePlaceUnit : function ($e, colY, colc, resize, f){
 			var masn = this,
 				c = masn.opts,
 				len = colc,
@@ -1805,6 +1844,12 @@
 			if( (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) && masn.colwf != masn.colw ){
 				colwf = masn.colwf;
 				!f && ($e.addClass('woo-spcol'))
+			}
+
+			// if specialColumnOpen is true, unit height will be uncertain.
+			// So,we need to removeData ht before calculating the virtual height.
+			if( resize && c.specialColumnOpen ){
+				 $e.removeData('ht').removeAttr('data-ht');
 			}
 
 
@@ -1850,18 +1895,18 @@
 				$d.before($pre);
 			}
 
-			// indom 为true 时，  $data所有单元都已经在dom 树上，并且 htmlp 一定为空
-			var $lame = $data.add(htmlp).removeClass('woo-spec'),
+			// indom 为true 时，  $data所有单元都已经在dom 树上
+			var $lame = $data.add(htmlp).removeClass('woo-wait'),
 				$drawer = indom ? $lame.parent() : $pre.append($lame);
 
-			$htmlp = $drawer.find(c.unit).not('.woo-f,.woo-spec').each(function (i,e){
+			$htmlp = $drawer.find(c.unit).not('.woo-f,.woo-wait').each(function (i,e){
 				var $e = $(e),
 					id = $e.data('id');
 
 				// 在左(右)侧第一个位置增加占位节点，之前如果有添加过(resize时)则删除
 				if( (i === 0 && f && !c.rightAlignFirstBlock || i === colc - 1 && f && c.rightAlignFirstBlock) ){
 					// 计算 minY minI left
-					ars = masn.prePlaceUnit($e, colY, colc, f);
+					ars = masn.prePlaceUnit($e, colY, colc, resize, f);
 
 					minY = ars[0],
 					minI = ars[1],
@@ -1890,7 +1935,7 @@
 				}
 
 				// 计算 minY minI left
-				ars = masn.prePlaceUnit($e, colY, colc);
+				ars = masn.prePlaceUnit($e, colY, colc, resize);
 
 				minY = ars[0],
 				minI = ars[1],

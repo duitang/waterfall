@@ -2,6 +2,13 @@
 @说明：main.html 相关样式，非Woo 主体部分。可删除此文件运行 main.html 体验效果
 */
 
+/* 标红链接 */
+.redlk:link,
+.redlk:visited,
+.redlk a:link,
+.redlk a:visited{color:#e65592;text-decoration:none;}
+.redlk:hover,
+.redlk a:hover{color:#e65592;text-decoration:underline;}
 
 /* 瀑布流基本单元 unit */
 .my-pic .woo{float:left;+display:inline;height:auto;padding-bottom:4px;margin:0 21px 20px 0;border-top:0 none;background-color:#fff;background-image:url(http://cdn.duitang.com/uploads/people/201309/25/20130925155758_y3Bw4.gif);background-position:right bottom;background-repeat:no-repeat;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;}

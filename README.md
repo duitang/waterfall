@@ -6,7 +6,7 @@ version: 1.0.3
 
 ## Features:
 1. Multi-waterfalls are supported in one page.
-1. First subpage can be preseted in html without limit.
+1. First subpage can be preseted in html without length-limit.
 1. Seperated js file for dealing with response data.
 1. Different from infinite waterfall, contents are paged.
 1. Page turning without refreshing. History go back and go forward are supported.
@@ -145,7 +145,11 @@ Duitang/Waterfall is published under the terms of the MIT License.
  * bug fix. 修复浏览器不能正常后退的问题
  * 是否有下一大页最优先依赖请求返回里的hasnext字段
 
-* **1.0.3** 2013-10-17
+* **1.0.3** 2013-10-29
+ * Waterfall switch optimized by recording the page number you have read.
+ * Column counts caculation optimized by considering cols margin.
+ * new added config param `ajaxdatatype` for ajax repsonse.
+ * new demo `fixedw.html` showing how to build waterfall with fixed width.
  * 新增 demo example-operate/delete.html
  * 新增 demo example-operate/order.html 
  * 新增事件监听 onOnePageOver requestAlways
