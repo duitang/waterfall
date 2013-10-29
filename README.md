@@ -146,6 +146,7 @@ Duitang/Waterfall is published under the terms of the MIT License.
  * 是否有下一大页最优先依赖请求返回里的hasnext字段
 
 * **1.0.3** 2013-10-29
+ * Column counts caculation optimized by considering cols margin.
  * new added config param `ajaxdatatype` for ajax repsonse.
  * new demo `fixedw.html` showing how to build waterfall with fixed width.
  * 新增 demo example-operate/delete.html
