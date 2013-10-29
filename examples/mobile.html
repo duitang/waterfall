@@ -81,7 +81,10 @@
 $(function (){
 	// Append buttons gonext, gopre, gotop to the body as you like.
 	var $wooholder = $('#woo-holder');
-	$wooholder.find('.woo-pager').append('<a id="gonext" href="javascript:;">下一页</a>')
+	$wooholder.find('.woo-pager').append('<a id="gonext" href="javascript:;">下一页</a>').css({
+		"height" : 0,
+		"overflow" : "hidden"
+	})
 
 
 	var conf = {

@@ -6,7 +6,7 @@ version: 1.0.3
 
 ## Features:
 1. Multi-waterfalls are supported in one page.
-1. First subpage can be preseted in html without limit.
+1. First subpage can be preseted in html without length-limit.
 1. Seperated js file for dealing with response data.
 1. Different from infinite waterfall, contents are paged.
 1. Page turning without refreshing. History go back and go forward are supported.

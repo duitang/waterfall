@@ -4,13 +4,10 @@
 /* woo-pcont 为空节点时，ie6 ie7下，节点的高度不为0 */
 .woo-pcont{+height:0}
 
-/* 初始状态 pager 不可见 */
-.woo-pager{height:0px;overflow:hidden;}
-
 /* masn 生效前设置不可见 */
 .woo-masned{zoom:1;overflow:hidden;visibility:hidden;margin-left:auto;margin-right:auto;}
 
 /* woo 基本单元块，初始状态不可见 */
 .woo-masned .woo{position:absolute;top:-6000px;}
-/* woo-spec 有特殊用途 */
-.woo-masned .woo-spec{top:-6000px !important;}
+
+
