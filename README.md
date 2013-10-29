@@ -145,7 +145,9 @@ Duitang/Waterfall is published under the terms of the MIT License.
  * bug fix. 修复浏览器不能正常后退的问题
  * 是否有下一大页最优先依赖请求返回里的hasnext字段
 
-* **1.0.3** 2013-10-17
+* **1.0.3** 2013-10-29
+ * new added config param `ajaxdatatype` for ajax repsonse.
+ * new demo `fixedw.html` showing how to build waterfall with fixed width.
  * 新增 demo example-operate/delete.html
  * 新增 demo example-operate/order.html 
  * 新增事件监听 onOnePageOver requestAlways
