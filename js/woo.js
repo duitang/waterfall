@@ -115,6 +115,11 @@
 				// tp 为当前的scrolltop
 			},
 
+			// When preset html units are arranged ok
+			"onFirstArrange" : function (idx){
+				// idx is the index of current waterfall
+
+			},
 			// 每一大页加载完毕之后执行
 			"onOnePageOver" : function (pg, idx){
 				// pg 为 Pagine 实例，pg.$pager 为底部翻页容器
@@ -179,11 +184,11 @@
 				conf.arrgap = [];
 			}
 			for( var i=0; i<conf.arrform.length; i++ ){
-				tmpsplit && conf.arrsplit.push(tmpsplit),
-				tmpmasnw && conf.arrmasnw.push(tmpmasnw),
-				tmpmargin && conf.arrmargin.push(tmpmargin),
-				tmpfmasnw && conf.arrfmasnw.push(tmpfmasnw);
-				tmpgap && conf.arrgap.push(tmpgap);
+				tmpsplit !== undefined && conf.arrsplit.push(tmpsplit),
+				tmpmasnw !== undefined && conf.arrmasnw.push(tmpmasnw),
+				tmpmargin !== undefined && conf.arrmargin.push(tmpmargin),
+				tmpfmasnw !== undefined && conf.arrfmasnw.push(tmpfmasnw);
+				tmpgap !== undefined && conf.arrgap.push(tmpgap);
 			}
 			// 参数处理结束
 
@@ -578,7 +583,7 @@
 				arrmargin = conf.arrmargin,
 				arrfmasnw = conf.arrfmasnw,
 				arrgap = conf.arrgap,
-				splitstr =  arrsplit[n] || '',
+				splitstr =  arrsplit[n],
 				$ccont = $conts.eq(n),
 				$pg_cont = $ccont.find(frame[3]).not('.woo-tmpmasn'),
 				$pg_pager = $ccont.find(frame[4]),
@@ -623,6 +628,7 @@
 			// 总共只有1个子页不隐藏 footer，否则隐藏之
 			this.$footer.css("display", pcount == 1 ? "block" : "none");
 
+
 			if( !PAGINE[n] ){
 				var pgcache,
 					$pgdata = $(null);
@@ -631,6 +637,7 @@
 					unit : conf.unit,
 					gap : gap || 0,
 					onAppend : Woo._doLoadImage,
+					onFirstArrange : conf.onFirstArrange,
 					onArrange : function ($c){
 						if( $c.length ){
 							pgcache = 2;
@@ -805,11 +812,6 @@
 								Woo.conf.onLazyAddOver(pg, IDX);
 							},200)
 
-						},function ($u){
-							var masn = this;
-							// 设置大容器的高度
-							emp && masn.setContHeight(),
-							Woo._doLoadImage($u);
 						});
 					}
 				});
@@ -1540,14 +1542,14 @@
 			var pg = this;
 
 			pg.$pager.click(function (e){
-				e.stopPropagation(),
-				e.preventDefault();
-				
 				var s = e.target;
 				if( s && s.tagName && s.tagName.toLowerCase() != 'a'){
 					s = $(s).closest('a')[0];
 				}
-				if( s && s.tagName && s.tagName.toLowerCase() === 'a' && !$(s.parentNode).attr('nolink')){
+				if( s && s.tagName && s.tagName.toLowerCase() === 'a' && !$(s).closest('.woo-nopagine',pg.$pager.get(0)).length){
+					e.preventDefault();
+					e.stopPropagation();
+
 					var pto = parseInt(s.innerHTML),
 						dir = s.getAttribute('pdir');
 
@@ -1628,7 +1630,8 @@
 			masn.$dom = $($cont),
 			masn.domInitWidth = masn.$dom.data('domwidth') || 'auto',
 			masn.figure(),
-			masn.arrangeContents();
+			masn.arrangeContents(),
+			masn.opts.onFirstArrange(IDX);
 		},
 		figure : function (){
 			var masn = this,
@@ -1737,19 +1740,28 @@
 			$c = $d.children().filter(c.unit),
 			clen = $c.length;
 			if( clen ){
+				// Decide whether append all preset units via html or not
 				// all 参数决定是否将所有预先填入的内容一次性加载
 				all && (anum = clen);
 
-				// 先加载 anum 个unit，剩下的交给 onArrage 方法处理
+				// if param 'all' is false, we only append part of units according to c.initAppendCounts.
+				// 先加载 anum 个unit，剩下的交给 onArrange 方法处理
 				var $madd = $c.slice(0,anum);
 
 				// if you preset too many units via html,say, more than unitsnum.
 				// The overflow units should be added className woo-wait
 				$c = $c.slice(anum).addClass('woo-wait'),
+
+				
+				// param 'all' refers to whether resize has been triggered
 				// all 参数这里用来判断是在进行 resize 
-				masn.appendContents($madd,null,true,all,!!c.firstHeight,anum,$.noop);
+				masn.appendContents($madd,null,true,all,!!c.firstHeight,anum,$.noop),
+
+				// Load images in onAppend() which will not be called since the param indom is true here.
+				c.onAppend($madd);
 			}
 
+			// Set dom visible after initialization
 			// 初始状态，$dom 对应的主内容节点是 hidden 状态
 			$d.css('visibility','visible');
 
@@ -1778,22 +1790,22 @@
 				minI,minY;
 
 
-			// lastscreen 设置为上一次的screen 值
+			// set lastscreen
 			masn.lastscreen = masn.screen;
 
-
-			// 最后一个参数判定是否添加左(右)侧第一个位置节点
+			// call _placeEachUnit() which return both unit-wrap node and unit-inner node 
 			var arr = masn._placeEachUnit(masn,c,$d,$data,htmlp,indom,resize,addfirst && masn.firstHeight),
 				$u = arr[0],
 				inner = arr[1];
 
+			// indom = true indicate that $data has already been in the dom, no need to append again.
 			// indom为真表示待添加的 $data 已经在dom中，不需要重新append
 			if( !indom ){
 				$u.appendTo($d);
 
-				// 使用 batchOpen 每批加载耗时会变长，但是整体效果会更平滑，请斟酌使用
+				// If batchOpen is opened, appending process will be longer but smoother
 				if( c.batchOpen ){
-					// 递归添加节点，以达到时间利用的最佳效果
+					// Append small pieces of $u recursively
 					Woo.recurseDo(function (b,inner){
 						var m = 0;
 						b.append(function (i){
@@ -1803,7 +1815,7 @@
 						c.onAppend(b),
 						b = b.slice(nm),
 						inner = inner.slice(m),
-						//设置大容器的高度
+						// set content height
 						masn.setContHeight();
 
 						return [b,inner];
@@ -1811,17 +1823,21 @@
 						callback(masn.lastscreen,masn.screen);
 					});
 				}else{
+					// put unit-inner node into each unit-wrap node 
 					$u.append(function (i){
 						return inner.eq(i).children();
 					})
-
-					//设置大容器的高度
+					// set content height
 					masn.setContHeight(),
+
+					// Load images in onAppend()
 					c.onAppend($u),
 					callback(masn.lastscreen,masn.screen);
 				}
 			}else{
-				//设置大容器的高度
+				// Load images in onAppend()
+				c.onAppend($u)
+				// set content height
 				masn.setContHeight();
 			}
 		},
@@ -1833,13 +1849,15 @@
 				minY, minI, left, ht, colwf;
 
 			minY = Math.min.apply(Math, colY);
-			// 计算minY 所在的序号数
+
+			// Get the index of minY column
 			while (len--){
 				if( colY[len] == minY ){
 					minI = len;
 				}
 			}
 
+			// Judge whether it's special column or not throught woo-spcol
 			// 判断minI 所在列是 woo-spcol 特殊列
 			if( (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) && masn.colwf != masn.colw ){
 				colwf = masn.colwf;
@@ -1853,15 +1871,18 @@
 			}
 
 
-			// left 值需要先计算 minI 即最小colY 所在的列数
+			// Calculate the position of each unit
 			left = masn.colw * minI + masn.left0 + ( !c.rightAlignFirstBlock && minI && masn.colwf != masn.colw ? masn.colwf - masn.colw : 0 ),
 
-			// 高度计算优先取值 data-ht 可大大缩减计算时间
+			// Be sure to put 'datap-ht'(unit height) on each unit(.woo) if you have known the unit height in advance.
+			// 高度计算优先取值 data-ht 可大大缩减计算时间，如果你事先已经知道unit 高度，请设置它
 			ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true),
 
+			// Increase colY the height of the spercific column by the unit height plus gap.
 			// 添加此节点后 colY 的minI 列高度随之改变
 			colY[minI] += ht + c.gap,
 
+			// get the screen number
 			// 计算所在的screen 值
 			masn.screen = Math.ceil( (minY + ht) / WH );
 
@@ -1964,7 +1985,7 @@
 			// resf 判断是否resize 中，并且已经插入好节点
 			if( !resf && f ){
 				var arrp = $htmlp.toArray();
-				$htmlp = $(arrp.slice(0,mm).concat($addfc.toArray(),arrp.slice(mm)))
+				$htmlp = $(arrp.slice(0,mm).concat($addfc ? $addfc.toArray() : [],arrp.slice(mm)))
 			}
 
 			$pre.empty();

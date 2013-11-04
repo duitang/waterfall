@@ -153,3 +153,7 @@ Duitang/Waterfall is published under the terms of the MIT License.
  * 新增 demo example-operate/delete.html
  * 新增 demo example-operate/order.html 
  * 新增事件监听 onOnePageOver requestAlways
+
+* **1.0.3** 2013-11-4
+ * bug fixed, img delay load in units preset via html.
+ * bug fixed, sink-right when units total num is smaller than cols num.

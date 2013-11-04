@@ -59,7 +59,7 @@ div.my-pic .mbpho .k img{float:left;+display:inline;margin:0 4px 4px 0;}
 
 /* 专辑单元 */
 div div.my-album{visibility:visible}
-.my-album .dym{float:left;+display:inline;width:230px;height:308px;padding:0 0 0 1px;overflow:hidden;margin:0 19px 18px 0;}
+.my-album .woo{float:left;width:230px;height:308px;padding:0 0 0 1px;overflow:hidden;margin:0 19px 18px 0;}
 .my-album .albbigimg{position:relative;height:208px;}
 .my-album .lev0,.my-album .lev1,.my-album .lev2{position:absolute;top:4px;left:0;width:200px;height:200px;overflow:hidden;padding:1px;border:1px solid #d8d8d8;background-color:#fff;}
 .my-album a.lev0:link,.my-album a.lev0:visited{}
