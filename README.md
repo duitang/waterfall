@@ -157,3 +157,7 @@ Duitang/Waterfall is published under the terms of the MIT License.
 * **1.0.3** 2013-11-4
  * bug fixed, img delay load in units preset via html.
  * bug fixed, sink-right when units total num is smaller than cols num.
+
+* **1.0.3** 2013-11-19
+ * Add a config `refreshwhenswitch` to decide whether to refresh to page one or to keep the latest pagenum when switching happens.
+ * Set a default height value to node `.woo-pcont` when switching happens. If u don't do this, the scrollbar position will move to top due to the height collapse.
