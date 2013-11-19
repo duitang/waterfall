@@ -109,6 +109,8 @@
 			// resize 为 false 则 window resize 时不重绘，否则会调用默认的 resize 方法
 			"resize" : false,
 
+			// whether refresh or keep the latest pagenum when switch waterfall 
+			"refreshwhenswitch" : false,
 
 			// scroll 过程中执行的方法
 			"onScroll" : function (tp){
@@ -539,7 +541,8 @@
 				if(!c){
 					//
 				}else{
-					upg = PAGINE[a] ? PAGINE[a].getPageNum() : 1;
+					upg = PAGINE[a] && a != pre && !Woo.conf.refreshwhenswitch ? PAGINE[a].getPageNum() : 1;
+
 					// 为了避免在loading 过程中hash change 导致的无法准确回退。借用 $W 保存状态
 					USERCLICK = true;
 
@@ -550,6 +553,9 @@
 						var nexh = '!' + arrform[a];
 						H.setHash(nexh + ( upg > 1 ? '-p'+upg : ''));
 					}
+
+					// 设置当前cont 的默认高度
+					$c.eq(a).find(Woo.conf.frame[3]).last().css('height',WH);
 				}
 
 				// 清除内存 WooTemp 对象，主要是MASNUNITS

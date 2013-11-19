@@ -166,10 +166,16 @@ if(!String.prototype.cut){
 			}
 
 			var ret = [[],true];
+
+
 			// 转json对象
-			var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
-			// 如果parse 失败，直接返回
-			if(!jsn) return ret;
+			try{
+				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
+			}catch(e){
+				console.log(e)
+				// 如果parse 失败，直接返回初始状态的 ret;
+				return ret;
+			}
 
 
 			// 判断jsn 请求是否成功返回数据
@@ -206,10 +212,16 @@ if(!String.prototype.cut){
 			}
 
 			var ret = [[],true];
+
+
 			// 转json对象
-			var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
-			// 如果parse 失败，直接返回
-			if(!jsn) return ret;
+			try{
+				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
+			}catch(e){
+				console.log(e)
+				// 如果parse 失败，直接返回初始状态的 ret;
+				return ret;
+			}
 
 
 			// 判断jsn 请求是否成功返回数据
@@ -239,10 +251,15 @@ if(!String.prototype.cut){
 			}
 
 			var ret = [[],true];
+
 			// 转json对象
-			var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
-			// 如果parse 失败，直接返回
-			if(!jsn) return ret;
+			try{
+				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
+			}catch(e){
+				console.log(e)
+				// 如果parse 失败，直接返回初始状态的 ret;
+				return ret;
+			}
 
 
 			// 判断jsn 请求是否成功返回数据
