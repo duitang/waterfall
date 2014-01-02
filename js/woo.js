@@ -173,6 +173,10 @@
 				var tmpmasnw = conf.arrmasnw;
 				conf.arrmasnw = [];
 			}
+			if( typeof conf.arrmessw === 'number' ){
+				var tmpmessw = conf.arrmessw;
+				conf.arrmessw = [];
+			}
 			if( typeof conf.arrmargin === 'number' ){
 				var tmpmargin = conf.arrmargin;
 				conf.arrmargin = [];
@@ -188,6 +192,7 @@
 			for( var i=0; i<conf.arrform.length; i++ ){
 				tmpsplit !== undefined && conf.arrsplit.push(tmpsplit),
 				tmpmasnw !== undefined && conf.arrmasnw.push(tmpmasnw),
+				tmpmessw !== undefined && conf.arrmessw.push(tmpmessw),
 				tmpmargin !== undefined && conf.arrmargin.push(tmpmargin),
 				tmpfmasnw !== undefined && conf.arrfmasnw.push(tmpfmasnw);
 				tmpgap !== undefined && conf.arrgap.push(tmpgap);
@@ -586,6 +591,7 @@
 				arrform = conf.arrform,
 				arrsplit = conf.arrsplit,
 				arrmasnw = conf.arrmasnw,
+				arrmessw = conf.arrmessw,
 				arrmargin = conf.arrmargin,
 				arrfmasnw = conf.arrfmasnw,
 				arrgap = conf.arrgap,
@@ -618,7 +624,13 @@
 				isextended = !!arrfmasnw[n],
 
 				// masn 每列宽度
-				wdt = arrmasnw[n];
+				wdt = arrmasnw[n],
+
+				// mess width of this col
+				mwdt = arrmessw[n],
+
+				wdt = mwdt ? wdt - mwdt : wdt,
+
 				// 列与列之间的间隔
 				mgn = arrmargin[n],
 				// 同一列间单元块之间的垂直间隔
@@ -668,6 +680,7 @@
 					rightAlignFirstBlock : sinkright,
 					specialColumnOpen : specialopen,
 					firstColumnWidth : fwdt,
+					columnMessWidth : mwdt,
 					columnWidth : wdt,
 					columnMargin : mgn,
 					batchOpen : conf.batchopen,
@@ -1707,14 +1720,14 @@
 			var masn = this,
 				c = masn.opts,
 				$dom = masn.$dom,
+				messdiff = c.columnMessWidth || 0,
 				dw;
-
 
 			masn.resetDomWidth(),
 			dw = masn.domWidth,
 
-			masn.colCount = Math.max( Math.floor( (dw + c.columnMargin - masn.colwf + masn.colw) / masn.colw ), 1 ),
-			masn.domWidth = masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin,
+			masn.colCount = Math.max( Math.floor( (dw + c.columnMargin - masn.colwf + masn.colw - messdiff) / masn.colw ), 1 ),
+			masn.domWidth = masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin + messdiff,
 			$dom.css('width',masn.domWidth);
 		},
 

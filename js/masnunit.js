@@ -111,7 +111,7 @@ if(!String.prototype.cut){
 	<li><a target="_blank" href="http://www.duitang.com/topics/"><img width="24" height="24" src="<%=u.cmts[j].ava%>"></a><p><a target="_blank" href="http://www.duitang.com/topics/"><%=$cut(u.cmts[j].name,16)%></a>&nbsp;<%=u.cmts[j].cont%></p></li> \
 <% } %>' +
 
-'</div></div>' +
+'</ul></div></div>' +
 	'<% } %>',
 	null,
 	null
