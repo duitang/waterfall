@@ -22,11 +22,14 @@ version: 1.0.3
 * jQuery >= 1.6.1
 
 ## Included examples
-### Example sink mode:
+### Example Sink Mode:
 This example shows how to insert an outside block into waterfall either on the left side or on the right side. <br/><a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">Click me to have a look!</a>
 
-### Example special column mode:
+### Example Special-Column Mode:
 This example shows how to set a special column(different column width) in your waterfall.<br/><a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">Click me to have a look!</a>
+
+### Example Messup Mode:
+This example shows a Messup Mode of waterfall in which column covers each other.<br/><a href="http://www.duitang.com/app/woo/examples/messup.html" target="_blank">Click me to have a look!</a>
 
 ### Example simplest demo:
 This example shows how to build a simple waterfall page without any other data request.<br/><a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">Click me to have a look!</a>
@@ -73,6 +76,7 @@ data.blogs must be an array which contains waterfall units. The unit length in o
 * <a href="http://www.duitang.com/app/woo/examples/main.html" target="_blank">纯静态demo演示——主功能</a>
 * <a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">纯静态demo演示——sink开启</a>
 * <a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">纯静态demo演示——specialcol开启</a>
+* <a href="http://www.duitang.com/app/woo/examples/messup.html" target="_blank">纯静态demo演示——Messup 混乱模式</a>
 * <a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">纯静态demo演示——mobile模拟</a>
 * <a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
 * <a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>
@@ -161,3 +165,8 @@ Duitang/Waterfall is published under the terms of the MIT License.
 * **1.0.3** 2013-11-19
  * Add a config `refreshwhenswitch` to decide whether to refresh to page one or to keep the latest pagenum when switching happens.
  * Set a default height value to node `.woo-pcont` when switching happens. If u don't do this, the scrollbar position will move to top due to the height collapse.
+
+
+* **1.0.3** 2014-1-7
+ * Add Messup Mode in which column covers each other.
+ * Clean a case of global variable pollution.
