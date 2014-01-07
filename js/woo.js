@@ -595,7 +595,7 @@
 				arrmargin = conf.arrmargin,
 				arrfmasnw = conf.arrfmasnw,
 				arrgap = conf.arrgap,
-				splitstr =  arrsplit[n],
+				splitstr =  $.isArray(arrsplit) ? arrsplit[n] : '',
 				$ccont = $conts.eq(n),
 				$pg_cont = $ccont.find(frame[3]).not('.woo-tmpmasn'),
 				$pg_pager = $ccont.find(frame[4]),
@@ -627,7 +627,7 @@
 				wdt = arrmasnw[n],
 
 				// mess width of this col
-				mwdt = arrmessw[n],
+				mwdt = $.isArray(arrmessw) ? arrmessw[n] : null,
 
 				wdt = mwdt ? wdt - mwdt : wdt,
 
@@ -1721,13 +1721,16 @@
 				c = masn.opts,
 				$dom = masn.$dom,
 				messdiff = c.columnMessWidth || 0,
+				messmg = messdiff ? c.columnMargin : 0,
 				dw;
+
+
 
 			masn.resetDomWidth(),
 			dw = masn.domWidth,
 
 			masn.colCount = Math.max( Math.floor( (dw + c.columnMargin - masn.colwf + masn.colw - messdiff) / masn.colw ), 1 ),
-			masn.domWidth = masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin + messdiff,
+			masn.domWidth = masn.colCount*masn.colw + masn.colwf - masn.colw - c.columnMargin + messdiff - messmg,
 			$dom.css('width',masn.domWidth);
 		},
 
