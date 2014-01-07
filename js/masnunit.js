@@ -330,15 +330,16 @@ if(!String.prototype.cut){
 	template.helper('$unit', function (id,jsn) {
 		id += '';
 		var munits = WT.masnUnits;
-		// munits 去重工作
-		if( !munits[id] ){
+		// here shows how to avoid repeated unit being added
+		// remove "|| 1" if you want to do it
+		if( !munits[id] || 1 ){
 			munits[id] = jsn,
 			WT.ulen++,
 			munits[id].indx = WT.ulen-1;
 
 			return WT.ulen;
 		}else{
-			// 如果有重复，返回0，则不做添加动作
+			// if id repeated, return 0, repeated unit will not be added
 			return 0
 		}
 	});
