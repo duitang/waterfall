@@ -11,11 +11,11 @@
 .redlk a:hover{color:#e65592;text-decoration:underline;}
 
 /* 瀑布流基本单元 unit */
-.my-pic .woo{float:left;+display:inline;height:auto;padding-bottom:4px;margin:0 21px 20px 0;border-top:0 none;background-color:#fff;background-image:url(http://cdn.duitang.com/uploads/people/201309/25/20130925155758_y3Bw4.gif);background-position:right bottom;background-repeat:no-repeat;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;}
+.my-pic .woo{float:left;+display:inline;height:auto;margin:0 21px 20px 0;border-top:0 none;background-color:#fff;background-position:right bottom;background-repeat:no-repeat;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;}
 /* .woo-f 插入节点设置背景为none */
 .my-pic .woo-f{background:none}
 .my-pic .woo .blog-ppcount{position:absolute;top:0;left:0;z-index:2;background-color:red;height:16px;color:#fff;}
-.my-pic .woo .j{border:1px solid #E5E5E5;border-bottom:0 none;width:222px;padding:11px 0 0 0;box-shadow:1px 0 1px #f3f3f3;-moz-box-shadow:1px 0 1px #f3f3f3;-webkit-box-shadow:1px 0 1px #f3f3f3;border-radius:2px 2px 0 0;-moz-border-radius:2px 2px 0 0;-webkit-border-radius:2px 2px 0 0;}
+.my-pic .woo .j{border:1px solid #E5E5E5;width:222px;padding:11px 0 0 0;box-shadow:1px 1px 1px rgba(240,240,240,.3);-moz-box-shadow:1px 1px 1px rgba(240,240,240,.3);-webkit-box-shadow:1px 1px 1px rgba(240,240,240,.3);border-radius:2px 2px 0 0;-moz-border-radius:2px 2px 0 0;-webkit-border-radius:2px 2px 0 0;}
 .my-pic .woo .mbpho{margin-left:11px;}
 .my-pic .o{width:auto;height:auto;padding:14px 16px 8px 15px;border:1px solid #f7f7f7;border-right:1px solid #f7f7f7;border-bottom:1px solid #f7f7f7;background-color:#f7f7f7;}
 .my-pic .g{clear:both;overflow:hidden;line-height:1.5;padding:8px 11px 6px 11px;margin:0;background-color:#f8f8f8;word-wrap:break-word;word-break:break-all;}
