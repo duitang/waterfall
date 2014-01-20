@@ -76,7 +76,7 @@ if(!String.prototype.cut){
 		ipad = !!ua.match(/ipad/ig),
 		// 是否使用 srcd 替代<img /> 的src 属性，用于图片延迟加载
 		// ipad 不适用，因为出过 bug
-		SRCD = !ipad,
+		SRCD = false, //!ipad,
 		// (function数组) 每次请求成功后，对数据进行分析处理
 		ANALYZERESPONSE = [],
 		// (function数组) 使用artTemplate 拼装数据
@@ -173,7 +173,6 @@ if(!String.prototype.cut){
 			try{
 				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
 			}catch(e){
-				console.log(e)
 				// 如果parse 失败，直接返回初始状态的 ret;
 				return ret;
 			}
@@ -219,7 +218,6 @@ if(!String.prototype.cut){
 			try{
 				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
 			}catch(e){
-				console.log(e)
 				// 如果parse 失败，直接返回初始状态的 ret;
 				return ret;
 			}
@@ -257,7 +255,6 @@ if(!String.prototype.cut){
 			try{
 				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
 			}catch(e){
-				console.log(e)
 				// 如果parse 失败，直接返回初始状态的 ret;
 				return ret;
 			}

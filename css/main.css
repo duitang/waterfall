@@ -39,11 +39,11 @@ div.my-pic .mbpho .k img{float:left;+display:inline;margin:0 4px 4px 0;}
 .my-pic .d .d4{background-position:-220px -60px;}
 .my-pic .d .d5{background-position:-220px -80px;}
 /* 回复列表 */
-.my-pic ul{padding:0 0 8px 0;background-color:#f8f8f8;}
+.my-pic ul{zoom:1;display:block;padding:0 0 8px 0;background-color:#f8f8f8;}
 .my-pic li{zoom:1;padding:8px 0 7px 0;margin:0 11px 0 11px;border-top:1px solid #efeeed;}
 .my-pic li:after{content:"\0020";display:block;height:0;overflow:hidden;clear:both;}
 .my-pic li img{float:left;+display:inline;margin:0 8px 0 0;}
-.my-pic li p{float:left;width:165px;word-wrap:break-word;word-break:break-all;overflow:hidden;}
+.my-pic li p{float:left;+display:inline;width:165px;word-wrap:break-word;word-break:break-all;overflow:hidden;}
 .my-pic li i{font-size:10px;color:#bbb;margin-left:4px}
 /*###################################################*/
 

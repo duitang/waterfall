@@ -1444,14 +1444,17 @@
 
             error : function (x,statustext){
               if(!prepare){
-                $('<div id="woo-retry" style="text-align:center;padding:8px 0 0;height:32px">网络繁忙，<a href="javascript:;">点此重试~</a></div>')
+                $('<div id="woo-retry" style="text-align:center;padding:16px 0 0;height:24px">网络繁忙，<a href="javascript:;">点此重试~</a></div>')
                 .click(function (e){
                     e.stopPropagation(),
                     e.preventDefault(),
                     pg._requestData(cp,sub),
                     $(this).remove();
+                    pg.$loadingsm.css('display','block');
                   })
                 .insertAfter(pg.$dom);
+
+                pg.$loadingsm.css('display','none');
               }
               pg._requestAlways()
             }
@@ -1525,7 +1528,7 @@
 
       if( pg.isLastSub() ){
         // 以下是配置普通翻页器的html 字符串
-        strPager = ['<div class="woo-pbr"><ul class="woo-dib">',
+        strPager = ['<div class="woo-pbr woo-mpbr"><ul class="woo-dib">',
             cup==1 ? '' : '<li><a class="woo-pre" href="javascript:;" pdir="-1" >上一页</a></li>' ,
             cup==1 ? '<li class="woo-cur">1</li>' : '<li><a href="javascript:;">1</a></li>',
             cup-nn > 2 ? '<li class="woo-ell" >…</li>' : '',
@@ -1547,11 +1550,11 @@
             '</ul></div>'].join('');
 
 
-        pg.$pager.find('.woo-pbr').remove(),
+        pg.$pager.find('.woo-mpbr').remove(),
         pg.$pager.append(strPager);
       }
       else{
-        pg.$pager.find('.woo-pbr').remove(),
+        pg.$pager.find('.woo-mpbr').remove(),
         pg.$pager.append(strPager);
       }
 
