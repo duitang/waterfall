@@ -29,7 +29,7 @@ div.my-pic .mbpho .k img{float:left;+display:inline;margin:0 4px 4px 0;}
 /* 分享者信息 收集数 回复数 */
 .my-pic .w{clear:both;height:18px;overflow:hidden;padding:0 11px 12px 11px;margin:0;background-color:#f8f8f8;}
 /* list 页面结合 42px 高度的区域 */
-.my-pic div.d{overflow:hidden;height:28px;padding:0 11px 0 11px;background-color:#fff;margin:0;border-bottom:1px solid #efeeed;/*background:url(../../../../img/0/dtbutton.gif?20120106) 0 -568px no-repeat;*/}
+.my-pic div.d{overflow:hidden;height:28px;padding:0 11px 0 11px;background-color:#fff;margin:0;border-bottom:1px solid #efeeed;}
 .my-pic .d span{float:left;+display:inline;line-height:19px;padding:0 0 0 22px;margin:0 12px 0 0;background-image:url("http://cdn.duitang.com/uploads/files/201211/26/20121126121246_VXE8F.png");_background-image:url("http://cdn.duitang.com/uploads/files/201211/30/20121130160101_ePSJe.png");background-repeat:no-repeat;font-size:14px;color:#b4b4b4;}
 .my-pic .d .d1{background-position:-220px 0;}
 .my-pic .d .d1-done{background-position:-320px 0;}

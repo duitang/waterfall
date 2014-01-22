@@ -956,9 +956,9 @@
       if( !SCROLLINGTOTOP ){
         var tp = $W.scrollTop();
         // 如果已经确认scrollbar 拉到底部了
-        if( PAGINE[IDX] && !PAGINE[IDX].lazyAdding && tp + WH > $('body').height() - Woo.conf.lbias ){
+        if( PAGINE[IDX] && PAGINE[IDX].hasTouchedBottom() ){
           // pageinate 绑定的scroll事件 第二个参数不再作scroll 高度判断直接进入
-          PAGINE[IDX].doLazyAdd(tp,true),
+          PAGINE[IDX].doLazyAdd(),
           PAGINE[IDX].doLoadNext();
           //////////
         }
@@ -1444,7 +1444,7 @@
 
             error : function (x,statustext){
               if(!prepare){
-                $('<div id="woo-retry" style="text-align:center;padding:16px 0 0;height:24px">网络繁忙，<a href="javascript:;">点此重试~</a></div>')
+                $('<div id="woo-retry" style="text-align:center;padding:12px 0 0;height:28px">网络繁忙，<a href="javascript:;">点此重试~</a></div>')
                 .click(function (e){
                     e.stopPropagation(),
                     e.preventDefault(),
@@ -1628,13 +1628,13 @@
       pg.$pager.unbind('click.woo').bind('click.woo',{"pager":pg}, pg._pagerClick)
     },
 
+
     /*
-    @说明：判断是否触发 lazyAdd 
+    @说明：是否触底
     @参数
     wt				- 传入的 window scrollTop 数值
-    imm				- 直接进入 lazyAdd
     */
-    doLazyAdd : function (wt,imm){
+    hasTouchedBottom : function (wt){
       var pg = this,
         c = pg.config,
         wt = wt === undefined ? $W.scrollTop() : wt,
@@ -1643,8 +1643,17 @@
         mx = Math.max.apply(Math,dacol),
         mi = Math.min.apply(Math,dacol);
 
+      return ( distance <  c.scrollBias || distance < mx - mi );
+    },
 
-      if( !pg.lazyAdding && pg.pagerVisible && pg.caching && ( imm || distance <  c.scrollBias || distance < mx - mi ) ){
+    /*
+    @说明：否触发 lazyAdd 
+    */
+    doLazyAdd : function (){
+      var pg = this,
+        c = pg.config;
+
+      if( !pg.lazyAdding && pg.pagerVisible && pg.caching ){
         c.lazyAdd.call(pg);
       }
     },
