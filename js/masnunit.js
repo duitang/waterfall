@@ -173,7 +173,6 @@ if(!String.prototype.cut){
 			try{
 				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
 			}catch(e){
-				console.log(e)
 				// 如果parse 失败，直接返回初始状态的 ret;
 				return ret;
 			}
@@ -219,7 +218,6 @@ if(!String.prototype.cut){
 			try{
 				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
 			}catch(e){
-				console.log(e)
 				// 如果parse 失败，直接返回初始状态的 ret;
 				return ret;
 			}
@@ -257,7 +255,6 @@ if(!String.prototype.cut){
 			try{
 				var jsn = $.isPlainObject(h) ? h : $.parseJSON(h)
 			}catch(e){
-				console.log(e)
 				// 如果parse 失败，直接返回初始状态的 ret;
 				return ret;
 			}
