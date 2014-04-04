@@ -315,12 +315,11 @@ $(function (){
 			sc = 0,
 			co = 0;
 
-		/\bsc(\d+) \bco(\d+)/ig.exec(cls);
-		sc = RegExp.$1;
-		co = RegExp.$2;
+		/\bco(\d+)/ig.exec(cls);
+		co = RegExp.$1;
 
 		// reset units below current .woo in the same col
-		$.Woo.resetCol(-ht,sc,co,tp),
+		$.Woo.resetCol(-ht,co,tp),
 		// delete the clicked .woo
 		$woo.slideUp(1000,function (){
 			$woo.remove()

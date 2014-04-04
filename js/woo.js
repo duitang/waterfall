@@ -335,11 +335,10 @@
     @说明：整列重新调整
     @参数：
     v				- (Num) 增加的高度
-    sc				- (Num) 参考单元所在屏数
     co				- (Num) 参考单元所在列数
     tp				- (Num) 参考单元的top值
     */
-    resetCol : function(v,sc,co,tp){
+    resetCol : function(v,co,tp){
       var $masn = $HOLDER.find(this.conf.frame[5]+':visible').not('.woo-tmpmasn'),
         dacol = $masn.data('colY');
 
@@ -833,7 +832,7 @@
             // 也可能是 [<jQuery对象>] 数组
             // 这两种情况均需要 $() 后再使用
             var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
-            MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
+            MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (screent,screen){
 //						 End = new Date().getTime()
 
               if( rnum <= 0 ){
@@ -961,12 +960,28 @@
           PAGINE[IDX].doLazyAdd(),
           PAGINE[IDX].doLoadNext();
           //////////
+
+          // 计算当前 screen 
+          var mscreen = Math.ceil( (tp+.1) / WH ),
+              vscreen0 = Math.max(mscreen-1,1),
+              vscreen1 = mscreen+1;
+console.log('topsc:'+vscreen0)
+console.log(vscreen1)
+          var $twoo = PAGINE[IDX].$dom.find(".woo");
+          for( var i=vscreen0; i<vscreen1; i++ ){
+            $twoo = $twoo.not('.sc'+i).not('.sct'+i)
+          }
+          $twoo.each(function (i,e){
+            $(e).css('background','red')
+          })
+          //////////
         }
 
         // 如果滚动轴scrollbar 没有在滚动
         if( !BARSCROLL ){
           // 外部配置的onScroll 方法
           Woo.conf.onScroll(tp)
+
 
           if( $HOLDER.length ){
             var conf = Woo.conf,
@@ -1731,7 +1746,7 @@
       masn.left0 = Math.round( $cursor.position().left ),
       $cursor.remove(),
       // 标记添加内容块的初始位置，以screen为单位
-      masn.lastscreen = masn.screen = 0;
+      masn.screent = masn.screen = 0;
 
       // 根据 firstHeight 参数插入初始占位块
       if( c.firstHeight ){
@@ -1857,10 +1872,6 @@
         nm = nm || c.batchNum,
         minI,minY;
 
-
-      // set lastscreen
-      masn.lastscreen = masn.screen;
-
       // call _placeEachUnit() which return both unit-wrap node and unit-inner node 
       var arr = masn._placeEachUnit(masn,c,$d,$data,htmlp,indom,resize,addfirst && masn.firstHeight),
         $u = arr[0],
@@ -1888,7 +1899,7 @@
 
             return [b,inner];
           },[$u,inner],Math.ceil($u.length/nm),c.batchDelay,function (){
-            callback(masn.lastscreen,masn.screen);
+            callback(masn.screent,masn.screen);
           });
         }else{
           // put unit-inner node into each unit-wrap node 
@@ -1900,7 +1911,7 @@
 
           // Load images in onAppend()
           c.onAppend($u),
-          callback(masn.lastscreen,masn.screen);
+          callback(masn.screent,masn.screen);
         }
       }else{
         // Load images in onAppend()
@@ -1950,9 +1961,12 @@
       // 添加此节点后 colY 的minI 列高度随之改变
       colY[minI] += ht + c.gap,
 
-      // get the screen number
-      // 计算所在的screen 值
-      masn.screen = Math.ceil( (minY + ht) / WH );
+      // screen number of unit bottom
+      // 计算底部所在的screen 值
+      masn.screen = Math.ceil( (minY + ht) / WH ),
+
+      // screen number of unit top
+      masn.screent = Math.ceil( (minY + .1) / WH );
 
       return [minY, minI, left, ht, colwf];
     },
@@ -2006,7 +2020,7 @@
 
 
           // 要添加的节点外层字符串
-          addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
+          addf = '<div class="woo woo-f sct'+masn.screent+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
           strwrap += addf;
 
@@ -2033,7 +2047,7 @@
         colwf = ars[4],
 
 
-        strwrap += '<div class="'+c.unit.substr(1)+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
+        strwrap += '<div class="'+c.unit.substr(1)+' sct'+masn.screent+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
 
 
         $e.css({
@@ -2044,7 +2058,7 @@
         .removeClass(function (i,cls){
           return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
         })
-        .addClass((colwf ? 'woo-spcol ' : '')+'sc'+masn.screen+' co'+minI);
+        .addClass((colwf ? 'woo-spcol ' : '')+'sct'+masn.screent+' sc'+masn.screen+' co'+minI);
       })
 
       // 遍历结束后保存最终的 colY
