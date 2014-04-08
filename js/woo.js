@@ -945,7 +945,17 @@
       return fcn;
     },
 
-
+    /*
+    @desc： is unit visible
+    @param：
+    wt      - current scroll top
+    domtp   - units container top value
+    ut      - unit top value
+    uh      - unit height value
+    */
+    _exIsUnitVisible : function(wt, domtp, ut, uh){
+      return domtp + ut + uh > wt && domtp + ut < wt + WH;
+    }
 
     /*
     @说明：scroll 相关
@@ -961,19 +971,30 @@
           PAGINE[IDX].doLoadNext();
           //////////
 
-          // 计算当前 screen 
-          var mscreen = Math.ceil( (tp+.1) / WH ),
-              vscreen0 = Math.max(mscreen-1,1),
-              vscreen1 = mscreen+1;
-console.log('topsc:'+vscreen0)
-console.log(vscreen1)
-          var $twoo = PAGINE[IDX].$dom.find(".woo");
-          for( var i=vscreen0; i<vscreen1; i++ ){
-            $twoo = $twoo.not('.sc'+i).not('.sct'+i)
+          // 计算所有可见unit 
+//          var mscreen = Math.ceil( (tp+.1) / WH ),
+//              vscreen0 = Math.max(mscreen-1,1),
+//              vscreen1 = mscreen+1;
+//console.log('topsc:'+vscreen0)
+//console.log(vscreen1)
+//          var $twoo = PAGINE[IDX].$dom.find(".woo");
+//          for( var i=vscreen0; i<vscreen1; i++ ){
+//            $twoo = $twoo.not('.sc'+i).not('.sct'+i)
+//          }
+//          $twoo.each(function (i,e){
+//            $(e).css('background','red')
+//          })
+          if( Woo.conf.extend ){
+            var $dom = PAGINE[IDX].$dom,
+                $twoo = $dom.find(".woo").not(".woo-f");
+            $twoo.each(function (i,e){
+              var $e = $(e);
+
+              if( _exIsUnitVisible(tp, $dom.position().top, $e.css('top'), $e.data('ht')) ){
+                
+              }
+            })
           }
-          $twoo.each(function (i,e){
-            $(e).css('background','red')
-          })
           //////////
         }
 
@@ -1739,6 +1760,10 @@ console.log(vscreen1)
         colY[i] = 0;
       }
       masn.$dom.data('colY',colY);
+
+      if( Woo.conf.extend ){
+         masn.$dom.data('colR',[]);
+      }
 
       $d.prepend( $cursor ),
       masn.offset0 = $cursor.offset(),
