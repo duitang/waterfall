@@ -22,6 +22,7 @@
     BARSCROLL = false,
     // 是否正在返回顶部，$gotop 按键点击后返回页顶时设置其值为 true
     SCROLLINGTOTOP = false,
+    PAGEOVER = false,
     TIMERINTERVAL,
     TIMERSCROLL,
     // 总容器
@@ -621,7 +622,8 @@
     gtoupg			- (Num) 当前的大页码数
     */
     _pageInit : function($conts,n,gtoupg){
-      IDX = n;
+      IDX = n,
+      PAGEOVER = false;
 
       var conf = this.conf,
         frame = conf.frame,
@@ -953,56 +955,21 @@
     @说明：scroll 相关
     */
     _onscroll : function(){
+      var tp = $W.scrollTop();
       // 如果是正在回顶部的过程中，则不执行_onscroll
-      if( !SCROLLINGTOTOP ){
-        var tp = $W.scrollTop();
+      if( !SCROLLINGTOTOP && !PAGEOVER ){
         // 如果已经确认scrollbar 拉到底部了
         if( PAGINE[IDX] && PAGINE[IDX].hasTouchedBottom() ){
           // pageinate 绑定的scroll事件 第二个参数不再作scroll 高度判断直接进入
           PAGINE[IDX].doLazyAdd(),
           PAGINE[IDX].doLoadNext();
           //////////
-
-          // 计算所有可见unit 
-//          var mscreen = Math.ceil( (tp+.1) / WH ),
-//              vscreen0 = Math.max(mscreen-1,1),
-//              vscreen1 = mscreen+1;
-//console.log('topsc:'+vscreen0)
-//console.log(vscreen1)
-//          var $twoo = PAGINE[IDX].$dom.find(".woo");
-//          for( var i=vscreen0; i<vscreen1; i++ ){
-//            $twoo = $twoo.not('.sc'+i).not('.sct'+i)
-//          }
-//          $twoo.each(function (i,e){
-//            $(e).css('background','red')
-//          })
-          if( Woo.conf.autoRecycle && MASN[IDX] ){
-            var masn = MASN[IDX],
-                $dom = PAGINE[IDX].$dom,
-                domtp = $dom.position().top;
-
-						// if( isRollingDown ){
-              // params rangNum, posNum, isvNum
-              masn.exVisibleUnit(tp, domtp, 1,4,-1);
-            // }else{
-              masn.exVisibleUnit(tp, domtp, 0,3,1);
-            // }
-            // $twoo.each(function (i,e){
-            //   var $e = $(e);
-
-            //   if( masn.exIsUnitVisible(tp, $dom.position().top, parseInt($e.get(0).style.top), $e.data('ht')) ){
-            //     console.log(111);
-            //   }
-            // })
-          }
-          //////////
         }
-
+console.log('---> onscroll')
         // 如果滚动轴scrollbar 没有在滚动
         if( !BARSCROLL ){
           // 外部配置的onScroll 方法
           Woo.conf.onScroll(tp)
-
 
           if( $HOLDER.length ){
             var conf = Woo.conf,
@@ -1015,6 +982,22 @@
           }
         }
       }
+
+
+      // 计算所有可见unit 
+      if( Woo.conf.autoRecycle && MASN[IDX] ){
+        var masn = MASN[IDX],
+            $dom = PAGINE[IDX].$dom,
+            domtp = $dom.position().top;
+
+        // if( isRollingDown ){
+          // params rangNum, posNum, isvNum
+          masn.exVisibleUnit(tp, domtp, 1,4,-1);
+        // }else{
+          masn.exVisibleUnit(tp, domtp, 0,3,1);
+        // }
+      }
+
 
       window.clearTimeout(TIMERINTERVAL),
       TIMERINTERVAL = window.setTimeout(Woo._onscroll,100);
@@ -1534,7 +1517,10 @@
       window.setTimeout(function (){
         // 结束intervaltimer
         if( pg.$data.length === 0 && pg.idata.length === 0 ){
-          window.clearTimeout(TIMERINTERVAL)
+          PAGEOVER = true;
+          if( !Woo.conf.autoRecycle ){
+            window.clearTimeout(TIMERINTERVAL)
+          }
         }
       },200);
 
@@ -1758,18 +1744,6 @@
       masn.clearColY();
 
 
-
-      if( Woo.conf.autoRecycle ){
-        // set unit counts 0
-        masn.unitCount = 0,
-        masn.arrColumnTail = [],
-        // base on pos (unitCount)
-        masn.posCoordination = {},
-        masn.columnVisibleRange = [[],[]];
-      }
-
-
-
       $d.prepend( $cursor ),
       masn.offset0 = $cursor.offset(),
       masn.domtop0 =  $d.offset().top,
@@ -1788,9 +1762,27 @@
       var masn = this,
         colY = [];
 
-      for( var i=0; i<masn.colCount; i++ ){
-        colY[i] = 0;
+
+
+      if( Woo.conf.autoRecycle ){
+        // set unit counts 0
+        masn.unitCount = 0,
+        masn.arrColumnTail = [],
+        // base on pos (unitCount)
+        masn.posCoordination = {},
+        masn.columnVisibleRange = [[],[]],
+        masn.unitCache = {};
+
+        for( var i=0; i<masn.colCount; i++ ){
+          masn.columnVisibleRange[0][i] = masn.columnVisibleRange[1][i] = i,
+          colY[i] = 0;
+        }
+      }else{
+        for( var i=0; i<masn.colCount; i++ ){
+          colY[i] = 0;
+        }
       }
+
       masn.$dom.data('colY',colY);
     },
 		/*
@@ -1807,8 +1799,8 @@
           isVisible = -1,
           posBot = ut + uh,
           podTop = ut,
-          compTop = wt - remainTop*WH,
-          compBot = wt + (1+remainBotUsed)*WH;
+          compTop = wt + 100,
+          compBot = wt + WH - 100;
 
       if( posBot >= compTop &&  podTop <= compBot ){
         isVisible = 0;
@@ -1822,12 +1814,17 @@
     exVisibleUnit : function(wt, domtp, rangeNum, posNum, isvNum){
       var masn = this,
           startPos = 0,
-          endPos = 0;
+          endPos = 0,
+          nextRange;
+
       for( var i=0; i<masn.colCount; i++ ){
-        startPos = masn.columnVisibleRange[1 & rangeNum][i] || i;
-        endPos = masn.columnVisibleRange[1 ^ rangeNum][i] || i;
+        nextRange = masn.columnVisibleRange[1 & rangeNum][i];
+
+        // endPos is ok while startPos should rely on nextRange
+        endPos = masn.columnVisibleRange[1 ^ rangeNum][i];
         
         while( 0 <= startPos && startPos < masn.unitCount ){
+          startPos = nextRange;
           var  posInfo = masn.posCoordination[""+startPos] || [0,0,i,-1,-1];
 
           var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
@@ -1837,27 +1834,33 @@
           
           // posInfo[0] top; posInfo[1] height; posInfo[2] columnidx;
           // posToBeAdd.put(startPos,new int[]{startPos,posInfo[0],posInfo[1],posInfo[2]});
-          
-          
+          masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+
+          masn.columnVisibleRange[1 & rangeNum][i] = startPos;
+
           if( posInfo[posNum] == -1 || posInfo[posNum] == startPos ){
             break;
           }
 
-          startPos = masn.columnVisibleRange[1 & rangeNum][i] = posInfo[posNum];
+          nextRange = posInfo[posNum];
         }
         
         while( 0 <= endPos && endPos < masn.unitCount ){
-          var posInfo = masn.posCoordination[""+startPos] || [0,0,i,-1,-1];
+          var posInfo = masn.posCoordination[""+endPos] || [0,0,i,-1,-1];
 
           var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
-          if( isv == 0 ){
+          if( isv == 0 || isv == isvNum ){
             break;
           }
           
 
           // visibleArray.put(endPos, false);
+          masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
           
-          if( posInfo[posNum] == -1 || posInfo[posNum] == endPos ){
+          if( posInfo[posNum] == -1 ){
+            masn.columnVisibleRange[1 & rangeNum][i] = masn.columnVisibleRange[1 ^ rangeNum][i]
+            break;
+          }else if( posInfo[posNum] == endPos ){
             break;
           }
 
@@ -1866,7 +1869,7 @@
         }
       }
 
-      console.log(masn.columnVisibleRange);
+      console.log(masn.columnVisibleRange[0] + '///' + masn.columnVisibleRange[1]);
     },
 
     setContHeight : function (){
@@ -1993,10 +1996,20 @@
           // Append small pieces of $u recursively
           Woo.recurseDo(function (b,inner){
             var m = 0;
-            b.append(function (i){
-              m++;
-              return inner.eq(i).children();
-            })
+
+            if( Woo.conf.autoRecycle ){
+               b.append(function (i){
+                var $ot = b.eq(i);
+                masn.unitCache[""+$ot.data('idx')] = $ot;
+                m++;
+                return inner.eq(i).children();
+              })
+            }else{
+              b.append(function (i){
+                m++;
+                return inner.eq(i).children();
+              })
+            }
             c.onAppend(b),
             b = b.slice(nm),
             inner = inner.slice(m),
@@ -2008,10 +2021,19 @@
             callback();
           });
         }else{
-          // put unit-inner node into each unit-wrap node 
-          $u.append(function (i){
-            return inner.eq(i).children();
-          })
+          // put unit-inner node into each unit-wrap node
+          if( Woo.conf.autoRecycle ){
+            $u.append(function (i){
+              var $ot = $u.eq(i);
+              masn.unitCache[""+$ot.data('idx')] = $ot;
+              return '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>'
+//              return inner.eq(i).children();
+            })
+          }else{
+            $u.append(function (i){
+              return inner.eq(i).children();
+            })
+          }
           // set content height
           masn.setContHeight(),
 
@@ -2020,8 +2042,15 @@
           callback();
         }
       }else{
+        if( Woo.conf.autoRecycle ){
+          inner.each(function (i,e){
+            var $ot = inner.eq(i);
+            masn.unitCache[""+$ot.data('idx')] = $ot;
+          })
+        }
+
         // Load images in onAppend()
-        c.onAppend($u)
+        c.onAppend(inner)
         // set content height
         masn.setContHeight();
       }
@@ -2126,7 +2155,7 @@
 
 
           // 要添加的节点外层字符串
-          addf = '<div class="woo woo-f co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
+          addf = '<div class="woo woo-f co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
           strwrap += addf;
 
@@ -2140,7 +2169,15 @@
             $addfc = $(addf).append(c.sinkWhat);
           }
 
+          $addfc.data('idx',masn.unitCount)
+
+
+
           mm = i;
+
+          if( Woo.conf.autoRecycle ){
+            masn.exCoordMap(minY,ht,minI);
+          }
         }
 
         // 计算 minY minI left
@@ -2163,21 +2200,14 @@
         .data('ht',ht)
         .data('idx',masn.unitCount)
         .removeClass(function (i,cls){
-          return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
+          return 'woo-spcol ' + (cls.match(/co\d+/ig) || []).join(' ')
         })
         .addClass((colwf ? 'woo-spcol ' : '')+'co'+minI);
 
 
         if( Woo.conf.autoRecycle ){
-          // base on pos (unitCount)
-          var coltail = masn.arrColumnTail[minI] || minI;
-
-          masn.posCoordination[""+masn.unitCount] = [minY,ht,minI,coltail,-1],
-          masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
-          masn.arrColumnTail[minI] = masn.unitCount,
-          masn.unitCount++;
+          masn.exCoordMap(minY,ht,minI);
         }
-
       })
 
       // 遍历结束后保存最终的 colY
@@ -2192,7 +2222,19 @@
 
       $pre.empty();
 
+
       return [$(strwrap),$htmlp];
+    },
+
+    exCoordMap : function (top,ht,colidx){
+      // base on pos (unitCount)
+      var masn = this,
+          coltail = masn.arrColumnTail[colidx] || colidx;
+
+      masn.posCoordination[""+masn.unitCount] = [top,ht,colidx,coltail,-1],
+      masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
+      masn.arrColumnTail[colidx] = masn.unitCount,
+      masn.unitCount++;
     }
   }
 
