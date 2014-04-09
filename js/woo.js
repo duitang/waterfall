@@ -112,6 +112,9 @@
       // whether refresh or keep the latest pagenum when switch waterfall 
       "refreshwhenswitch" : false,
 
+      // whether use auto recycle
+      "autoRecycle" : true,
+
       // scroll 过程中执行的方法
       "onScroll" : function (tp){
         // tp 为当前的scrolltop
@@ -832,7 +835,7 @@
             // 也可能是 [<jQuery对象>] 数组
             // 这两种情况均需要 $() 后再使用
             var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
-            MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (screent,screen){
+            MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (){
 //						 End = new Date().getTime()
 
               if( rnum <= 0 ){
@@ -945,17 +948,6 @@
       return fcn;
     },
 
-    /*
-    @desc： is unit visible
-    @param：
-    wt      - current scroll top
-    domtp   - units container top value
-    ut      - unit top value
-    uh      - unit height value
-    */
-    _exIsUnitVisible : function(wt, domtp, ut, uh){
-      return domtp + ut + uh > wt && domtp + ut < wt + WH;
-    }
 
     /*
     @说明：scroll 相关
@@ -984,16 +976,24 @@
 //          $twoo.each(function (i,e){
 //            $(e).css('background','red')
 //          })
-          if( Woo.conf.extend ){
-            var $dom = PAGINE[IDX].$dom,
-                $twoo = $dom.find(".woo").not(".woo-f");
-            $twoo.each(function (i,e){
-              var $e = $(e);
+          if( Woo.conf.autoRecycle && MASN[IDX] ){
+            var masn = MASN[IDX],
+                $dom = PAGINE[IDX].$dom,
+                domtp = $dom.position().top;
 
-              if( _exIsUnitVisible(tp, $dom.position().top, $e.css('top'), $e.data('ht')) ){
-                
-              }
-            })
+						// if( isRollingDown ){
+              // params rangNum, posNum, isvNum
+              masn.exVisibleUnit(tp, domtp, 1,4,-1);
+            // }else{
+              masn.exVisibleUnit(tp, domtp, 0,3,1);
+            // }
+            // $twoo.each(function (i,e){
+            //   var $e = $(e);
+
+            //   if( masn.exIsUnitVisible(tp, $dom.position().top, parseInt($e.get(0).style.top), $e.data('ht')) ){
+            //     console.log(111);
+            //   }
+            // })
           }
           //////////
         }
@@ -1736,7 +1736,6 @@
     },
     figure : function (){
       var masn = this,
-        colY = [],
         $d = masn.$dom,
         c = masn.opts,
         exlen = 0,
@@ -1753,25 +1752,31 @@
         masn.colwf = c.firstColumnWidth;
       }
 
-      masn.setCols();
+      masn.setCols(),
 
       // 设置每列的初始高度为0
-      for( var i=0; i<masn.colCount; i++ ){
-        colY[i] = 0;
-      }
-      masn.$dom.data('colY',colY);
+      masn.clearColY();
 
-      if( Woo.conf.extend ){
-         masn.$dom.data('colR',[]);
+
+
+      if( Woo.conf.autoRecycle ){
+        // set unit counts 0
+        masn.unitCount = 0,
+        masn.arrColumnTail = [],
+        // base on pos (unitCount)
+        masn.posCoordination = {},
+        masn.columnVisibleRange = [[],[]];
       }
+
+
 
       $d.prepend( $cursor ),
       masn.offset0 = $cursor.offset(),
       masn.domtop0 =  $d.offset().top,
       masn.left0 = Math.round( $cursor.position().left ),
-      $cursor.remove(),
+      $cursor.remove();
       // 标记添加内容块的初始位置，以screen为单位
-      masn.screent = masn.screen = 0;
+      // masn.screent = masn.screen = 0;
 
       // 根据 firstHeight 参数插入初始占位块
       if( c.firstHeight ){
@@ -1788,6 +1793,82 @@
       }
       masn.$dom.data('colY',colY);
     },
+		/*
+    @desc： is unit visible
+    @param：
+    wt      - current scroll top
+    domtp   - units container top value
+    ut      - unit top value
+    uh      - unit height value
+    */
+    exIsUnitVisible : function(wt, domtp, ut, uh){
+      var remainTop = 0.5,
+          remainBotUsed = 1,
+          isVisible = -1,
+          posBot = ut + uh,
+          podTop = ut,
+          compTop = wt - remainTop*WH,
+          compBot = wt + (1+remainBotUsed)*WH;
+
+      if( posBot >= compTop &&  podTop <= compBot ){
+        isVisible = 0;
+      }else if( posBot < compTop ){
+        isVisible = 1;
+      }
+      
+      return isVisible;    
+    },
+
+    exVisibleUnit : function(wt, domtp, rangeNum, posNum, isvNum){
+      var masn = this,
+          startPos = 0,
+          endPos = 0;
+      for( var i=0; i<masn.colCount; i++ ){
+        startPos = masn.columnVisibleRange[1 & rangeNum][i] || i;
+        endPos = masn.columnVisibleRange[1 ^ rangeNum][i] || i;
+        
+        while( 0 <= startPos && startPos < masn.unitCount ){
+          var  posInfo = masn.posCoordination[""+startPos] || [0,0,i,-1,-1];
+
+          var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
+          if( isv == isvNum ){
+            break;
+          }
+          
+          // posInfo[0] top; posInfo[1] height; posInfo[2] columnidx;
+          // posToBeAdd.put(startPos,new int[]{startPos,posInfo[0],posInfo[1],posInfo[2]});
+          
+          
+          if( posInfo[posNum] == -1 || posInfo[posNum] == startPos ){
+            break;
+          }
+
+          startPos = masn.columnVisibleRange[1 & rangeNum][i] = posInfo[posNum];
+        }
+        
+        while( 0 <= endPos && endPos < masn.unitCount ){
+          var posInfo = masn.posCoordination[""+startPos] || [0,0,i,-1,-1];
+
+          var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
+          if( isv == 0 ){
+            break;
+          }
+          
+
+          // visibleArray.put(endPos, false);
+          
+          if( posInfo[posNum] == -1 || posInfo[posNum] == endPos ){
+            break;
+          }
+
+
+          endPos = masn.columnVisibleRange[1 ^ rangeNum][i] = posInfo[posNum];
+        }
+      }
+
+      console.log(masn.columnVisibleRange);
+    },
+
     setContHeight : function (){
       var masn = this,
         colY = masn.$dom.data('colY');
@@ -1924,7 +2005,7 @@
 
             return [b,inner];
           },[$u,inner],Math.ceil($u.length/nm),c.batchDelay,function (){
-            callback(masn.screent,masn.screen);
+            callback();
           });
         }else{
           // put unit-inner node into each unit-wrap node 
@@ -1936,7 +2017,7 @@
 
           // Load images in onAppend()
           c.onAppend($u),
-          callback(masn.screent,masn.screen);
+          callback();
         }
       }else{
         // Load images in onAppend()
@@ -1963,7 +2044,7 @@
 
       // Judge whether it's special column or not throught woo-spcol
       // 判断minI 所在列是 woo-spcol 特殊列
-      if( (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) && masn.colwf != masn.colw ){
+      if( masn.colwf != masn.colw && (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) ){
         colwf = masn.colwf;
         !f && ($e.addClass('woo-spcol'))
       }
@@ -1984,14 +2065,14 @@
 
       // Increase colY the height of the spercific column by the unit height plus gap.
       // 添加此节点后 colY 的minI 列高度随之改变
-      colY[minI] += ht + c.gap,
+      colY[minI] += ht + c.gap;
 
       // screen number of unit bottom
       // 计算底部所在的screen 值
-      masn.screen = Math.ceil( (minY + ht) / WH ),
+      // masn.screen = Math.ceil( (minY + ht) / WH ),
 
       // screen number of unit top
-      masn.screent = Math.ceil( (minY + .1) / WH );
+      // masn.screent = Math.ceil( (minY + .1) / WH );
 
       return [minY, minI, left, ht, colwf];
     },
@@ -2011,7 +2092,7 @@
         colwf,
         mm = 0,
         addf,
-        // 是否是resize 中，并且是要插入节点，可以断定resize前已经有插入节点
+        // 是否是resize 中，f 表示是否在第一个位置预留了空间做 sink
         resf = resize && f,
         // 要添加的节点，同时可用于判断是否有做添加(或移动)动作
         $addfc;
@@ -2045,11 +2126,11 @@
 
 
           // 要添加的节点外层字符串
-          addf = '<div class="woo woo-f sct'+masn.screent+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
+          addf = '<div class="woo woo-f co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
           strwrap += addf;
 
-          // 如果是resize 中，并且已经有插入过节点
+          // 如果是resize 中，并且第一个位置已经插入过节点
           if( resf ){
             $addfc = $drawer.find('.woo-f:first').css({
               "left" : left,
@@ -2072,7 +2153,7 @@
         colwf = ars[4],
 
 
-        strwrap += '<div class="'+c.unit.substr(1)+' sct'+masn.screent+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
+        strwrap += '<div class="'+c.unit.substr(1)+' co'+minI+(colwf?' woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
 
 
         $e.css({
@@ -2080,20 +2161,34 @@
           "left" : left
         })
         .data('ht',ht)
+        .data('idx',masn.unitCount)
         .removeClass(function (i,cls){
           return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
         })
-        .addClass((colwf ? 'woo-spcol ' : '')+'sct'+masn.screent+' sc'+masn.screen+' co'+minI);
+        .addClass((colwf ? 'woo-spcol ' : '')+'co'+minI);
+
+
+        if( Woo.conf.autoRecycle ){
+          // base on pos (unitCount)
+          var coltail = masn.arrColumnTail[minI] || minI;
+
+          masn.posCoordination[""+masn.unitCount] = [minY,ht,minI,coltail,-1],
+          masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
+          masn.arrColumnTail[minI] = masn.unitCount,
+          masn.unitCount++;
+        }
+
       })
 
       // 遍历结束后保存最终的 colY
       $d.data('colY',colY);
 
-      // resf 判断是否resize 中，并且已经插入好节点
+      // 如果不是在resize 并且在第一个位置预留了空间做 sink
       if( !resf && f ){
         var arrp = $htmlp.toArray();
         $htmlp = $(arrp.slice(0,mm).concat($addfc ? $addfc.toArray() : [],arrp.slice(mm)))
       }
+
 
       $pre.empty();
 
