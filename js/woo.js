@@ -2208,7 +2208,10 @@
         })
         .data('ht',ht)
         .data('idx',masn.unitCount)
-        .removeClass(function (i,cls){
+
+
+        console.log(masn.unitCount)
+        $e.removeClass(function (i,cls){
           return 'woo-spcol ' + (cls.match(/co\d+/ig) || []).join(' ')
         })
         .addClass((colwf ? 'woo-spcol ' : '')+'co'+minI);
