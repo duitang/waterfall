@@ -9,15 +9,6 @@
 <link rel="stylesheet" href="../css/mobile.css" />
 <link rel="stylesheet" href="../css/woo.css" />
 <link rel="stylesheet" href="../css/resize.css" />
-<style>
-html,body{background-color:black;}
-#content{margin-top:0}
-.woo div{color:blue;font-size:40px;text-align:center;}
-
-.flinetop,
-.flinebot{position:fixed;z-index:9999999;top:100px;bottom:auto;overflow:hidden;width:100%;border-top:2px solid green;height:0px;}
-.flinebot{top:auto;bottom:100px;}
-</style>
 <script src="../js/jquery-1.6.1.min.js"></script>
 <script src="../js/browser.js"></script>
 <script src="../js/history.js"></script>
@@ -27,15 +18,72 @@ html,body{background-color:black;}
 <script src="../js/masnunit.js"></script>
 </head>
 <body>
+
+
+<style>
+html,body{background-color:black;}
+#content{margin:0}
+.woo div{color:blue;font-size:40px;text-align:center;}
+.woo-loading{background:none;}
+
+/* switch holder */
+#switchholder{height:40px;}
+#switchholder li{display: inline;padding: 0 8px;}
+#switchholder a:link,
+#switchholder a:visited{color: #fff;}
+#switchholder a:hover{color: #fff;}
+
+#switchholder li.woo-cur a:link,
+#switchholder li.woo-cur a:visited{color: #0f0;}
+#switchholder li.woo-cur a:hover{color: #0f0;}
+
+
+.flinetop,
+.flinebot{position:fixed;z-index:9999999;top:100px;bottom:auto;overflow:hidden;width:100%;border-top:2px solid green;height:0px;}
+.flinebot{top:auto;bottom:100px;}
+
+.freport{position: fixed;z-index: 9999999;top: 150px;right: 0;width:300px;padding:2px 8px 8px;border: 1px solid green;color: white;font-size: 20px;}
+.freport h3{margin:8px 0 0;color: #ccc}
+
+#visiblerange p{zoom:1}
+#visiblerange p:after{content:"\0020";display:block;height:0;overflow:hidden;clear:both;}
+#visiblerange p u{float:left;width:60px;text-align: right;}
+#visiblerange p span{float:left;width:40px;margin: 0 0 0 8px;}
+
+#visibleindex{word-wrap:break-word;word-break:break-all;overflow:hidden;}
+</style>
+
+<style>
+.woo img{display:none !important;}
+</style>
+
 <div class="flinetop"></div>
 <div class="flinebot"></div>
+<div class="freport">
+	<h3>columnVisibleRange:</h3>
+	<div id="visiblerange">
+		
+	</div>
+	<h3>visibleUnits:</h3>
+	<div id="visibleindex"></div>
+</div>
+
+
+
+<div style="height:800px">
+	
+</div>
 
 
 <div id="content">
 	<div id="woo-holder">
 		<!-- When gotop button is clicked, scrollbar will be positioned where the anchor is. -->
 		<a name="woo-anchor"></a>
-		<div class="woo-swa">my pics</div>
+		<ul id="switchholder">
+		<li><a href="recycledemo1.html">demo1</a></li>
+		<li class="woo-swa woo-cur"><a href="recycledemo2.html">demo2</a></li>
+		<li><a href="recyclefinal.html">final</a></li>
+		</ul>
 
 		<div class="woo-swb">
 			<!-- "data-wootemp=2" indicates the ANALYZERESPONSE[2] in masnunit.js will be used  -->
@@ -87,14 +135,6 @@ html,body{background-color:black;}
 </script>
 <script>
 $(function (){
-	// Append buttons gonext, gopre, gotop to the body as you like.
-	var $wooholder = $('#woo-holder');
-	$wooholder.find('.woo-pager').append('<a id="gonext" href="javascript:;">下一页</a>').css({
-		"height" : 0,
-		"overflow" : "hidden"
-	})
-
-
 	var conf = {
 		// Identification of a single waterfall. There are 4 waterfalls in main.html.
 		// You can get the form in #win-holder by putting formprefix and one identification together.
@@ -128,32 +168,83 @@ $(function (){
 		// The gap between units in one column.
 		"arrgap" : 8,
 
-
-		// Install $gopre $gonext $gotop as you like.
-//		"gopre" : '#gopre',
-		"gonext" : '#gonext',
-//		"gotop" : '#gotop',
-
-		// Footer selctor, any tag below the pager can be treated as footer.
-		"footer" : '#footer,#preserve',
-
 		// Open resize mode.
 		// If you open it, every time window resizes, waterfall will be repainted.
 		// Not recommend in ie.
-		"resize" : true,
+		"resize" : false,
 
-		// Sth you do during scrolling, say, pop out a login confirm.
-		"onScroll" : function (tp){
-			// tp current scrolltop
-//			if( (typeof ALREADYNOTICED === 'undefined' || !ALREADYNOTICED) && tp >= 1000 ){
-//				ALREADYNOTICED = true
-//				alert("login")
-//			}
-		}
+		// this function is not necessary in real surrounding
+		"onLazyAddOver" : function (pg,IDX){
+      // pg 为 Pagine 实例，pg.$pager 为底部翻页容器
+      // idx 表示当前瀑布流的序号
+      var unitcache = $.Woo.masn[IDX].unitCache;
+
+      for( e in unitcache){
+      	var $ot = unitcache[e];
+      	var htmlin = '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>';
+      	unitcache[e].html(htmlin)
+      }
+
+      pg.$dom.find('.woo[data-idx]').each(function(i,e){
+      	var $ot = $(e),
+      			htmlin = '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>';
+
+      	unitcache[$ot.data('idx')] && (unitcache[$ot.data('idx')].html(htmlin))
+      	$ot.html(htmlin)
+      })
+    },
+
+		// auto recycle invisible units while scrolling
+		"extendrecycle" : true,
+		"extendtop" : -100,
+		"extendbot" : -100
 	}
 
 	// Let's go.
 	$.Woo(conf);
+})
+
+
+// all code below is not necessary in real surrounding
+$(window).scroll(function(){
+	var masn = $.Woo.masn[0];
+	if( masn ){
+		var $dom = masn.$dom,
+        domtp = $dom.position().top;
+
+    var visibleunits = [];
+	  $('#visiblerange').html(function(){
+	    var part0 = '',
+	        part1 = '';
+	    for ( var i=0; i<masn.colCount; i++ ) {
+	      var ranget = masn.columnVisibleRange[0][i],
+	          rangeb = masn.columnVisibleRange[1][i];
+	      part0 += '<span>'+masn.columnVisibleRange[0][i]+'</span>';
+	      part1 += '<span>'+masn.columnVisibleRange[1][i]+'</span>';
+
+	      for ( var j=ranget; j<=rangeb;) {
+	        visibleunits.push(j);
+	        if ( masn.posCoordination[""+j] ) {
+	          j = masn.posCoordination[""+j][4];
+	        }else{
+	          break;
+	        }
+	      }
+	    };
+	    return '<p><u>from:</u>'+part0+'</p><p><u>to:</u>'+part1+'</p>';
+	  })
+
+
+	  visibleunits.sort(function (a,b){
+	    if( a < b ){
+	      return -1;
+	    }else{
+	      return 1;
+	    }
+	  });
+
+	  $('#visibleindex').html(visibleunits.join(','))
+	}
 })
 </script>
 </body>

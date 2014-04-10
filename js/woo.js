@@ -114,7 +114,12 @@
       "refreshwhenswitch" : false,
 
       // whether use auto recycle
-      "autoRecycle" : true,
+      "extendrecycle" : false,
+
+      // if -10 < value < 10   realvalue = value*WindowHeight
+      "extendtop" : 0.5,
+      // if -10 < value < 10   realvalue = value*WindowHeight
+      "extendbot" : 1,
 
       // scroll 过程中执行的方法
       "onScroll" : function (tp){
@@ -318,7 +323,7 @@
         var conf = Woo.conf;
 
         // 是否执行 resize 方法由 conf.resize 决定
-        if( conf.resize && WW != (WW=$W.width()) ){
+        if( conf.resize && !conf.extendrecycle && WW != (WW=$W.width()) ){
           Woo.resize();
         }
       }, 100);
@@ -965,7 +970,7 @@
           PAGINE[IDX].doLoadNext();
           //////////
         }
-console.log('---> onscroll')
+
         // 如果滚动轴scrollbar 没有在滚动
         if( !BARSCROLL ){
           // 外部配置的onScroll 方法
@@ -985,18 +990,20 @@ console.log('---> onscroll')
 
 
       // 计算所有可见unit 
-      if( Woo.conf.autoRecycle && MASN[IDX] ){
+      if( Woo.conf.extendrecycle && MASN[IDX] ){
         var masn = MASN[IDX],
             $dom = PAGINE[IDX].$dom,
             domtp = $dom.position().top;
 
         // if( isRollingDown ){
           // params rangNum, posNum, isvNum
-          masn.exVisibleUnit(tp, domtp, 1,4,-1);
+          masn.exRecycleInvisibleUnits(tp, domtp, 1,4,-1);
         // }else{
-          masn.exVisibleUnit(tp, domtp, 0,3,1);
+          masn.exRecycleInvisibleUnits(tp, domtp, 0,3,1);
         // }
       }
+
+
 
 
       window.clearTimeout(TIMERINTERVAL),
@@ -1518,7 +1525,7 @@ console.log('---> onscroll')
         // 结束intervaltimer
         if( pg.$data.length === 0 && pg.idata.length === 0 ){
           PAGEOVER = true;
-          if( !Woo.conf.autoRecycle ){
+          if( !Woo.conf.extendrecycle ){
             window.clearTimeout(TIMERINTERVAL)
           }
         }
@@ -1764,7 +1771,7 @@ console.log('---> onscroll')
 
 
 
-      if( Woo.conf.autoRecycle ){
+      if( Woo.conf.extendrecycle ){
         // set unit counts 0
         masn.unitCount = 0,
         masn.arrColumnTail = [],
@@ -1792,15 +1799,19 @@ console.log('---> onscroll')
     domtp   - units container top value
     ut      - unit top value
     uh      - unit height value
+    @return:
+    (boolean) 1 - upper outrange;  0 - inrange  -1 - below outrange;
     */
     exIsUnitVisible : function(wt, domtp, ut, uh){
-      var remainTop = 0.5,
-          remainBotUsed = 1,
+      var remainTop = Woo.conf.extendtop,
+          remainBot = Woo.conf.extendbot,
+          remainTopValue = remainTop > -10 && remainTop < 10 ? remainTop * WH : remainTop,
+          remainBotValue = remainBot > -10 && remainBot < 10 ? remainBot * WH : remainBot,
           isVisible = -1,
-          posBot = ut + uh,
-          podTop = ut,
-          compTop = wt + 100,
-          compBot = wt + WH - 100;
+          posBot = domtp + ut + uh,
+          podTop = domtp + ut,
+          compTop = wt - remainTopValue,
+          compBot = wt + WH + remainBotValue;
 
       if( posBot >= compTop &&  podTop <= compBot ){
         isVisible = 0;
@@ -1811,7 +1822,7 @@ console.log('---> onscroll')
       return isVisible;    
     },
 
-    exVisibleUnit : function(wt, domtp, rangeNum, posNum, isvNum){
+    exRecycleInvisibleUnits : function(wt, domtp, rangeNum, posNum, isvNum){
       var masn = this,
           startPos = 0,
           endPos = 0,
@@ -1820,7 +1831,7 @@ console.log('---> onscroll')
       for( var i=0; i<masn.colCount; i++ ){
         nextRange = masn.columnVisibleRange[1 & rangeNum][i];
 
-        // endPos is ok while startPos should rely on nextRange
+        // startPos need nextRange while endPos is ok
         endPos = masn.columnVisibleRange[1 ^ rangeNum][i];
         
         while( 0 <= startPos && startPos < masn.unitCount ){
@@ -1832,9 +1843,8 @@ console.log('---> onscroll')
             break;
           }
           
-          // posInfo[0] top; posInfo[1] height; posInfo[2] columnidx;
-          // posToBeAdd.put(startPos,new int[]{startPos,posInfo[0],posInfo[1],posInfo[2]});
-          masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+          // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+          masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
 
           masn.columnVisibleRange[1 & rangeNum][i] = startPos;
 
@@ -1854,8 +1864,8 @@ console.log('---> onscroll')
           }
           
 
-          // visibleArray.put(endPos, false);
-          masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+          masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
+          // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
           
           if( posInfo[posNum] == -1 ){
             masn.columnVisibleRange[1 & rangeNum][i] = masn.columnVisibleRange[1 ^ rangeNum][i]
@@ -1869,7 +1879,6 @@ console.log('---> onscroll')
         }
       }
 
-      console.log(masn.columnVisibleRange[0] + '///' + masn.columnVisibleRange[1]);
     },
 
     setContHeight : function (){
@@ -1997,7 +2006,7 @@ console.log('---> onscroll')
           Woo.recurseDo(function (b,inner){
             var m = 0;
 
-            if( Woo.conf.autoRecycle ){
+            if( Woo.conf.extendrecycle ){
                b.append(function (i){
                 var $ot = b.eq(i);
                 masn.unitCache[""+$ot.data('idx')] = $ot;
@@ -2022,12 +2031,12 @@ console.log('---> onscroll')
           });
         }else{
           // put unit-inner node into each unit-wrap node
-          if( Woo.conf.autoRecycle ){
+          if( Woo.conf.extendrecycle ){
             $u.append(function (i){
               var $ot = $u.eq(i);
               masn.unitCache[""+$ot.data('idx')] = $ot;
-              return '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>'
-//              return inner.eq(i).children();
+              // return '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>'
+             return inner.eq(i).children();
             })
           }else{
             $u.append(function (i){
@@ -2042,7 +2051,7 @@ console.log('---> onscroll')
           callback();
         }
       }else{
-        if( Woo.conf.autoRecycle ){
+        if( Woo.conf.extendrecycle ){
           inner.each(function (i,e){
             var $ot = inner.eq(i);
             masn.unitCache[""+$ot.data('idx')] = $ot;
@@ -2175,7 +2184,7 @@ console.log('---> onscroll')
 
           mm = i;
 
-          if( Woo.conf.autoRecycle ){
+          if( Woo.conf.extendrecycle ){
             masn.exCoordMap(minY,ht,minI);
           }
         }
@@ -2205,7 +2214,7 @@ console.log('---> onscroll')
         .addClass((colwf ? 'woo-spcol ' : '')+'co'+minI);
 
 
-        if( Woo.conf.autoRecycle ){
+        if( Woo.conf.extendrecycle ){
           masn.exCoordMap(minY,ht,minI);
         }
       })
