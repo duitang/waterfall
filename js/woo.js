@@ -113,13 +113,15 @@
       // whether refresh or keep the latest pagenum when switch waterfall 
       "refreshwhenswitch" : false,
 
-      // whether use auto recycle
-      "extendrecycle" : false,
+      // auto recycle invisible units while scrolling
+      // resize will not work if recycle is used
+      // don't open it if you want to do operations like delete or ordering
+      "exrecycle" : false,
 
       // if -10 < value < 10   realvalue = value*WindowHeight
-      "extendtop" : 0.5,
+      "exrecycletop" : 0.5,
       // if -10 < value < 10   realvalue = value*WindowHeight
-      "extendbot" : 1,
+      "exrecyclebot" : 1,
 
       // scroll 过程中执行的方法
       "onScroll" : function (tp){
@@ -323,7 +325,7 @@
         var conf = Woo.conf;
 
         // 是否执行 resize 方法由 conf.resize 决定
-        if( conf.resize && !conf.extendrecycle && WW != (WW=$W.width()) ){
+        if( conf.resize && !conf.exrecycle && WW != (WW=$W.width()) ){
           Woo.resize();
         }
       }, 100);
@@ -990,7 +992,7 @@
 
 
       // 计算所有可见unit 
-      if( Woo.conf.extendrecycle && MASN[IDX] ){
+      if( Woo.conf.exrecycle && MASN[IDX] ){
         var masn = MASN[IDX],
             $dom = PAGINE[IDX].$dom,
             domtp = $dom.position().top;
@@ -1007,7 +1009,7 @@
 
 
       window.clearTimeout(TIMERINTERVAL),
-      TIMERINTERVAL = window.setTimeout(Woo._onscroll,100);
+      TIMERINTERVAL = window.setTimeout(Woo._onscroll,1000);
     },
 
 
@@ -1525,7 +1527,7 @@
         // 结束intervaltimer
         if( pg.$data.length === 0 && pg.idata.length === 0 ){
           PAGEOVER = true;
-          if( !Woo.conf.extendrecycle ){
+          if( !Woo.conf.exrecycle ){
             window.clearTimeout(TIMERINTERVAL)
           }
         }
@@ -1769,11 +1771,10 @@
       var masn = this,
         colY = [];
 
+      masn.unitCount = 0;
 
-
-      if( Woo.conf.extendrecycle ){
+      if( Woo.conf.exrecycle ){
         // set unit counts 0
-        masn.unitCount = 0,
         masn.arrColumnTail = [],
         // base on pos (unitCount)
         masn.posCoordination = {},
@@ -1803,8 +1804,8 @@
     (boolean) 1 - upper outrange;  0 - inrange  -1 - below outrange;
     */
     exIsUnitVisible : function(wt, domtp, ut, uh){
-      var remainTop = Woo.conf.extendtop,
-          remainBot = Woo.conf.extendbot,
+      var remainTop = Woo.conf.exrecycletop,
+          remainBot = Woo.conf.exrecyclebot,
           remainTopValue = remainTop > -10 && remainTop < 10 ? remainTop * WH : remainTop,
           remainBotValue = remainBot > -10 && remainBot < 10 ? remainBot * WH : remainBot,
           isVisible = -1,
@@ -1864,6 +1865,7 @@
           }
           
 
+          console.log("remove iteim:" + endPos + "//isvNum:" +isvNum+ "//isv:"+isv)
           masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
           // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
           
@@ -2006,7 +2008,7 @@
           Woo.recurseDo(function (b,inner){
             var m = 0;
 
-            if( Woo.conf.extendrecycle ){
+            if( Woo.conf.exrecycle ){
                b.append(function (i){
                 var $ot = b.eq(i);
                 masn.unitCache[""+$ot.data('idx')] = $ot;
@@ -2031,7 +2033,7 @@
           });
         }else{
           // put unit-inner node into each unit-wrap node
-          if( Woo.conf.extendrecycle ){
+          if( Woo.conf.exrecycle ){
             $u.append(function (i){
               var $ot = $u.eq(i);
               masn.unitCache[""+$ot.data('idx')] = $ot;
@@ -2051,7 +2053,7 @@
           callback();
         }
       }else{
-        if( Woo.conf.extendrecycle ){
+        if( Woo.conf.exrecycle ){
           inner.each(function (i,e){
             var $ot = inner.eq(i);
             masn.unitCache[""+$ot.data('idx')] = $ot;
@@ -2184,9 +2186,10 @@
 
           mm = i;
 
-          if( Woo.conf.extendrecycle ){
+          if( Woo.conf.exrecycle ){
             masn.exCoordMap(minY,ht,minI);
           }
+          masn.unitCount++;
         }
 
         // 计算 minY minI left
@@ -2210,16 +2213,16 @@
         .data('idx',masn.unitCount)
 
 
-        console.log(masn.unitCount)
         $e.removeClass(function (i,cls){
           return 'woo-spcol ' + (cls.match(/co\d+/ig) || []).join(' ')
         })
         .addClass((colwf ? 'woo-spcol ' : '')+'co'+minI);
 
 
-        if( Woo.conf.extendrecycle ){
+        if( Woo.conf.exrecycle ){
           masn.exCoordMap(minY,ht,minI);
         }
+        masn.unitCount++;
       })
 
       // 遍历结束后保存最终的 colY
@@ -2245,8 +2248,8 @@
 
       masn.posCoordination[""+masn.unitCount] = [top,ht,colidx,coltail,-1],
       masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
-      masn.arrColumnTail[colidx] = masn.unitCount,
-      masn.unitCount++;
+      masn.arrColumnTail[colidx] = masn.unitCount;
+      
     }
   }
 
