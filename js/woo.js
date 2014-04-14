@@ -1005,11 +1005,8 @@
         // }
       }
 
-
-
-
       window.clearTimeout(TIMERINTERVAL),
-      TIMERINTERVAL = window.setTimeout(Woo._onscroll,1000);
+      TIMERINTERVAL = window.setTimeout(Woo._onscroll,100);
     },
 
 
@@ -1837,15 +1834,31 @@
         
         while( 0 <= startPos && startPos < masn.unitCount ){
           startPos = nextRange;
-          var  posInfo = masn.posCoordination[""+startPos] || [0,0,i,-1,-1];
+          var  posInfo = masn.posCoordination[""+startPos];
+
+          if( posInfo === undefined ){
+            break;
+          }
 
           var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
+
+          // console.log("startPos【"+startPos+"】add item:" + startPos + "//isvNum:" +isvNum+ "//isv:"+isv)
+          // console.log(posInfo)
+
           if( isv == isvNum ){
             break;
           }
-          
-          // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
-          masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+
+          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
+          if( isv === 0 && !posInfo[5] ){
+            console.log("add pos:" + startPos +"/// posInfo[5]:" + posInfo[5])
+            // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+            masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+
+            // change visible status in posCoordination
+            posInfo[5] = 1;
+          }
+
 
           masn.columnVisibleRange[1 & rangeNum][i] = startPos;
 
@@ -1857,17 +1870,36 @@
         }
         
         while( 0 <= endPos && endPos < masn.unitCount ){
-          var posInfo = masn.posCoordination[""+endPos] || [0,0,i,-1,-1];
+          var posInfo = masn.posCoordination[""+endPos];
+
+          if( posInfo === undefined ){
+            break;
+          }
 
           var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
+
+
+          // console.log("endPos【"+endPos+"】remove iteim:" + endPos + "//isvNum:" +isvNum+ "//isv:"+isv)
+          // console.log(posInfo);
+
+
           if( isv == 0 || isv == isvNum ){
             break;
           }
-          
 
-          console.log("remove iteim:" + endPos + "//isvNum:" +isvNum+ "//isv:"+isv)
-          masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
-          // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+
+          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
+          if( posInfo[5] ){
+            console.log("in remove pass time: " + (new Date().getTime()-START))
+            console.log("remove pos:" + endPos +"/// posInfo[5]:" + posInfo[5])
+
+            masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
+            // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+
+            // change visible status in posCoordination
+            posInfo[5] = 0;
+          }
+
           
           if( posInfo[posNum] == -1 ){
             masn.columnVisibleRange[1 & rangeNum][i] = masn.columnVisibleRange[1 ^ rangeNum][i]
@@ -2246,9 +2278,15 @@
       var masn = this,
           coltail = masn.arrColumnTail[colidx] || colidx;
 
-      masn.posCoordination[""+masn.unitCount] = [top,ht,colidx,coltail,-1],
+      START = new Date().getTime()
+      console.log("exCoordMap time：" + START)
+      masn.posCoordination[""+masn.unitCount] = [top,ht,colidx,coltail,-1,0],
       masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
       masn.arrColumnTail[colidx] = masn.unitCount;
+
+      window.setTimeout(function (){
+        masn.posCoordination[""+masn.unitCount][5] = 1;
+      },800);
       
     }
   }
