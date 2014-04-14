@@ -17,7 +17,7 @@ version: 1.1.0
 1. Go-to-top button can bring you to a precise position you want to go.
 1. Dazzling resize mode.
 1. Flexible configs such as: subpagenum in one Upper Page, unitsnum in one subpage etc
-1. if "exrecycle" : true is set, invisible units would be recycled during scrolling.
+1. if {"exrecycle" : true} is set, invisible units would be recycled during scrolling.
 
 ## Requirements:
 * jQuery >= 1.6.1
