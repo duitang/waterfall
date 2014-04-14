@@ -16,7 +16,8 @@ version: 1.1.0
 1. Useful next(pre) button composed with go-to-top button.
 1. Go-to-top button can bring you to a precise position you want to go.
 1. Dazzling resize mode.
-1. Flexible configs such as: subpagenum in one Upper Page, unitsnum in one subpage etc.
+1. Flexible configs such as: subpagenum in one Upper Page, unitsnum in one subpage etc
+1. if "exrecycle" : true is set, invisible units would be recycled during scrolling.
 
 ## Requirements:
 * jQuery >= 1.6.1
@@ -177,11 +178,7 @@ Duitang/Waterfall is published under the terms of the MIT License.
  * Clean a case of global variable pollution.
 
 
- * **1.0.3** 2014-1-7
- * Add Messup Mode in which column covers each other.
- * Clean a case of global variable pollution.
 
-
- * **1.1.0** 2014-4-14
+* **1.1.0** 2014-4-14
  * Add Auto-Recycle Mode in which invisible units are recycled during scrolling.
  * Add 3 demos for Auto-Recycle Mode.
