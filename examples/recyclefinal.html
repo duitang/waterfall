@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="../css/mobile.css" />
 <link rel="stylesheet" href="../css/woo.css" />
 <link rel="stylesheet" href="../css/resize.css" />
-
 <script src="../js/jquery-1.6.1.min.js"></script>
 <script src="../js/browser.js"></script>
 <script src="../js/history.js"></script>
@@ -21,23 +20,72 @@
 <body>
 
 
-<div id="header">
-<div class="lattern"><a href="../example-operate/delete.html">demo-del</a><a href="../example-operate/order.html">demo-order</a><a class="redlk" href="../examples/recycledemo1.html" title="auto recycle">demo-recycle</a><a class="redlk" href="../examples/messup.html" title="messup">demo-messup</a><a class="redlk" href="../examples/reinstall.html" title="messup">demo-reinstall</a><a href="../examples/mobile.html">demo-mobile</a><a href="../examples/fixedw.html" title="fixed width">demo-fixedw</a><a href="../examples/norequest.html">demo-simplest</a><a href="../examples/specialcol.html">demo-specialcol</a><a href="../examples/main.html">demo-main</a><a href="../examples/sinkleft.html">demo-sink</a><a href="http://blog.duitang.com/?p=1" target="_blank" >博客</a><a href="https://github.com/duitang/waterfall" target="_blank" >GitHub</a></div>
-<h1><a href="http://www.duitang.com" title="www.duitang.com">堆糖瀑布流 Woo(Waterfall O O) in duitang.com</a></h1>
+<style>
+html,body{background-color:black;}
+#content{margin:0}
+.woo div{color:blue;font-size:40px;text-align:center;}
+.woo-loading{background:none;}
+
+/* switch holder */
+#switchholder{height:40px;}
+#switchholder li{display: inline;padding: 0 8px;}
+#switchholder a:link,
+#switchholder a:visited{color: #fff;}
+#switchholder a:hover{color: #fff;}
+
+#switchholder li.woo-cur a:link,
+#switchholder li.woo-cur a:visited{color: #0f0;}
+#switchholder li.woo-cur a:hover{color: #0f0;}
+
+
+.flinetop,
+.flinebot{position:fixed;z-index:9999999;top:100px;bottom:auto;overflow:hidden;width:100%;border-top:2px solid green;height:0px;}
+.flinebot{top:auto;bottom:100px;}
+
+.freport{position: fixed;z-index: 9999999;top: 150px;right: 0;width:300px;padding:2px 8px 8px;border: 1px solid green;color: white;font-size: 20px;}
+.freport h3{margin:8px 0 0;color: #ccc}
+
+#visiblerange p{zoom:1}
+#visiblerange p:after{content:"\0020";display:block;height:0;overflow:hidden;clear:both;}
+#visiblerange p u{float:left;width:60px;text-align: right;}
+#visiblerange p span{float:left;width:40px;margin: 0 0 0 8px;}
+
+#visibleindex{word-wrap:break-word;word-break:break-all;overflow:hidden;}
+</style>
+
+<div class="flinetop"></div>
+<div class="flinebot"></div>
+<div class="freport">
+  <h3>columnVisibleRange:</h3>
+  <div id="visiblerange">
+    
+  </div>
+  <h3>visibleUnits:</h3>
+  <div id="visibleindex"></div>
 </div>
+
+
+
+<div style="height:800px">
+  
+</div>
+
 
 <div id="content">
   <div id="woo-holder">
     <!-- When gotop button is clicked, scrollbar will be positioned where the anchor is. -->
     <a name="woo-anchor"></a>
-    <div class="woo-swa">my pics</div>
+    <ul id="switchholder">
+    <li><a href="recycledemo1.html">step1</a></li>
+    <li><a href="recycledemo2.html">step2</a></li>
+    <li class="woo-swa woo-cur"><a href="recyclefinal.html">final</a></li>
+    </ul>
 
     <div class="woo-swb">
       <!-- "data-wootemp=2" indicates the ANALYZERESPONSE[2] in masnunit.js will be used  -->
       <!-- Different numbers reprent different types of waterfall -->
-      <div class="woo-pcont woo-masned my-pic"  data-wootemp="2">
-        <!-- You can preset some(no limit) '.woo' tags here in '.woo-pcont', they will be treated as the first subpage. Then waterfall request will start from subpage No. 2. -->
-        <div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87354707/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/24/20130724101156_GjTNy.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="72"><div class="j" style="height:72px"><a href="http://m.duitang.com/people/mblog/87354659/detail/"><img src="http://img4.duitang.com/uploads/item/201307/24/20130724101146_WzNym.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87354603/detail/"><img src="http://img4.duitang.com/uploads/item/201307/24/20130724101104_YTeCw.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="100"><div class="j" style="height:100px"><a href="http://m.duitang.com/people/mblog/87354520/detail/"><img src="http://img4.duitang.com/uploads/item/201307/24/20130724101054_WUuTZ.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="97"><div class="j" style="height:97px"><a href="http://m.duitang.com/people/mblog/87172299/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/23/20130723103900_2BQiW.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87172284/detail/"><img src="http://img4.duitang.com/uploads/item/201307/23/20130723103853_ranmk.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="70"><div class="j" style="height:70px"><a href="http://m.duitang.com/people/mblog/87172270/detail/"><img src="http://img4.duitang.com/uploads/item/201307/23/20130723103848_L5Cn3.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="101"><div class="j" style="height:101px"><a href="http://m.duitang.com/people/mblog/87172247/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/23/20130723103841_uCKPC.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="96"><div class="j" style="height:96px"><a href="http://m.duitang.com/people/mblog/87172231/detail/"><img src="http://img4.duitang.com/uploads/item/201307/23/20130723103816_AuMRT.thumb.200_0.jpeg" width="96"></a></div></div><div class="woo" data-ht="84"><div class="j" style="height:84px"><a href="http://m.duitang.com/people/mblog/87006784/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114543_kJLfk.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/87006744/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114539_L4TCx.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/87006707/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/22/20130722114521_LhrdV.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="84"><div class="j" style="height:84px"><a href="http://m.duitang.com/people/mblog/87006667/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114506_ZTHjw.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="101"><div class="j" style="height:101px"><a href="http://m.duitang.com/people/mblog/87006574/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722114421_vkJYx.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/86991265/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722095141_ECrxH.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="93"><div class="j" style="height:93px"><a href="http://m.duitang.com/people/mblog/86991214/detail/"><img src="http://img4.duitang.com/uploads/item/201307/22/20130722095134_KY3Wt.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="95"><div class="j" style="height:95px"><a href="http://m.duitang.com/people/mblog/86991186/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/22/20130722095011_UEPfy.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="86"><div class="j" style="height:86px"><a href="http://m.duitang.com/people/mblog/86277048/detail/"><img src="http://img4.duitang.com/uploads/item/201307/18/20130718100345_SKPX3.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="103"><div class="j" style="height:103px"><a href="http://m.duitang.com/people/mblog/86276978/detail/"><img src="http://img4.duitang.com/uploads/item/201307/18/20130718100310_KXGT2.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="134"><div class="j" style="height:134px"><a href="http://m.duitang.com/people/mblog/86276907/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/18/20130718100228_zyYBa.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="94"><div class="j" style="height:94px"><a href="http://m.duitang.com/people/mblog/86276840/detail/"><img src="http://cdn.duitang.com/uploads/item/201307/18/20130718100208_2UeaR.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="71"><div class="j" style="height:71px"><a href="http://m.duitang.com/people/mblog/86276784/detail/"><img src="http://img4.duitang.com/uploads/item/201307/18/20130718100135_F4AKh.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="66"><div class="j" style="height:66px"><a href="http://m.duitang.com/people/mblog/86111112/detail/"><img src="http://img4.duitang.com/uploads/item/201307/17/20130717103101_RWxvf.thumb.200_0.png" width="96"></a></div></div><div class="woo" data-ht="144"><div class="j" style="height:144px"><a href="http://m.duitang.com/people/mblog/86111018/detail/"><img src="http://img4.duitang.com/uploads/item/201307/17/20130717102953_YcweY.thumb.200_0.png" width="96"></a></div></div>
+      <div class="woo-pcont woo-masned my-pic"  data-wootemp="2" data-subpagenum="4">
+      
       </div>
       <div class="woo-pager"></div>
     </div>
@@ -48,9 +96,8 @@
 </div>
 
 
-
-<div id="footer">
-&copy;Copyright by 堆糖 2010-2013 duitang.com, all rights reserved
+<div style="height:800px">
+  
 </div>
 
 <style>
@@ -84,14 +131,6 @@
 </script>
 <script>
 $(function (){
-  // Append buttons gonext, gopre, gotop to the body as you like.
-  var $wooholder = $('#woo-holder');
-  $wooholder.find('.woo-pager').append('<a id="gonext" href="javascript:;">下一页</a>').css({
-    "height" : 0,
-    "overflow" : "hidden"
-  })
-
-
   var conf = {
     // Identification of a single waterfall. There are 4 waterfalls in main.html.
     // You can get the form in #win-holder by putting formprefix and one identification together.
@@ -125,13 +164,6 @@ $(function (){
     // The gap between units in one column.
     "arrgap" : 8,
 
-
-    // Install $gopre $gonext $gotop as you like.
-    "gonext" : '#gonext',
-
-    // Footer selctor, any tag below the pager can be treated as footer.
-    "footer" : '#footer,#preserve',
-
     // Open resize mode.
     // If you open it, every time window resizes, waterfall will be repainted.
     // Not recommend in ie.
@@ -141,16 +173,56 @@ $(function (){
     // resize will not work if recycle is used
     // don't open it if you want to do operations like delete or ordering
     "exrecycle" : true,
-
-    // Sth you do during scrolling, say, pop out a login confirm.
-    "onScroll" : function (tp){
-      // tp current scrolltop
-      // TODO
-    }
+    "exrecycletop" : -100,
+    "exrecyclebot" : -100
   }
 
   // Let's go.
   $.Woo(conf);
+})
+
+
+
+// all code below is not necessary in real environment
+$(window).scroll(function(){
+  var masn = $.Woo.masn[0];
+  if( masn ){
+    var $dom = masn.$dom,
+        domtp = $dom.position().top;
+
+    var visibleunits = [];
+    $('#visiblerange').html(function(){
+      var part0 = '',
+          part1 = '';
+      for ( var i=0; i<masn.colCount; i++ ) {
+        var ranget = masn.columnVisibleRange[0][i],
+            rangeb = masn.columnVisibleRange[1][i];
+        part0 += '<span>'+masn.columnVisibleRange[0][i]+'</span>';
+        part1 += '<span>'+masn.columnVisibleRange[1][i]+'</span>';
+
+        for ( var j=ranget; j<=rangeb;) {
+          visibleunits.push(j);
+          if ( masn.posCoordination[""+j] ) {
+            j = masn.posCoordination[""+j][4];
+          }else{
+            break;
+          }
+        }
+      };
+      return '<p><u>from:</u>'+part0+'</p><p><u>to:</u>'+part1+'</p>';
+    })
+
+
+    visibleunits.sort(function (a,b){
+      if( a < b ){
+        return -1;
+      }else{
+        return 1;
+      }
+    });
+
+    $('#visibleindex').html(visibleunits.join(','))
+  }
 })
 </script>
 </body>

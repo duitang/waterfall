@@ -22,6 +22,7 @@
     BARSCROLL = false,
     // 是否正在返回顶部，$gotop 按键点击后返回页顶时设置其值为 true
     SCROLLINGTOTOP = false,
+    PAGEOVER = false,
     TIMERINTERVAL,
     TIMERSCROLL,
     // 总容器
@@ -111,6 +112,16 @@
 
       // whether refresh or keep the latest pagenum when switch waterfall 
       "refreshwhenswitch" : false,
+
+      // auto recycle invisible units while scrolling
+      // resize will not work if recycle is used
+      // don't open it if you want to do operations like delete or ordering
+      "exrecycle" : false,
+
+      // if -10 < value < 10   realvalue = value*WindowHeight
+      "exrecycletop" : 0.5,
+      // if -10 < value < 10   realvalue = value*WindowHeight
+      "exrecyclebot" : 1,
 
       // scroll 过程中执行的方法
       "onScroll" : function (tp){
@@ -314,7 +325,7 @@
         var conf = Woo.conf;
 
         // 是否执行 resize 方法由 conf.resize 决定
-        if( conf.resize && WW != (WW=$W.width()) ){
+        if( conf.resize && !conf.exrecycle && WW != (WW=$W.width()) ){
           Woo.resize();
         }
       }, 100);
@@ -335,11 +346,10 @@
     @说明：整列重新调整
     @参数：
     v				- (Num) 增加的高度
-    sc				- (Num) 参考单元所在屏数
     co				- (Num) 参考单元所在列数
     tp				- (Num) 参考单元的top值
     */
-    resetCol : function(v,sc,co,tp){
+    resetCol : function(v,co,tp){
       var $masn = $HOLDER.find(this.conf.frame[5]+':visible').not('.woo-tmpmasn'),
         dacol = $masn.data('colY');
 
@@ -619,7 +629,8 @@
     gtoupg			- (Num) 当前的大页码数
     */
     _pageInit : function($conts,n,gtoupg){
-      IDX = n;
+      IDX = n,
+      PAGEOVER = false;
 
       var conf = this.conf,
         frame = conf.frame,
@@ -833,7 +844,7 @@
             // 也可能是 [<jQuery对象>] 数组
             // 这两种情况均需要 $() 后再使用
             var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
-            MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (lastscreen,screen){
+            MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (){
 //						 End = new Date().getTime()
 
               if( rnum <= 0 ){
@@ -947,14 +958,13 @@
     },
 
 
-
     /*
     @说明：scroll 相关
     */
     _onscroll : function(){
+      var tp = $W.scrollTop();
       // 如果是正在回顶部的过程中，则不执行_onscroll
-      if( !SCROLLINGTOTOP ){
-        var tp = $W.scrollTop();
+      if( !SCROLLINGTOTOP && !PAGEOVER ){
         // 如果已经确认scrollbar 拉到底部了
         if( PAGINE[IDX] && PAGINE[IDX].hasTouchedBottom() ){
           // pageinate 绑定的scroll事件 第二个参数不再作scroll 高度判断直接进入
@@ -978,6 +988,21 @@
             $gopre.add($gonext).css('visibility',tp > $HOLDER.position().top && ( !cond1 || cond1 && cond2 ) ? 'visible' : 'hidden')
           }
         }
+      }
+
+
+      // 计算所有可见unit 
+      if( Woo.conf.exrecycle && MASN[IDX] ){
+        var masn = MASN[IDX],
+            $dom = PAGINE[IDX].$dom,
+            domtp = $dom.position().top;
+
+        // if( isRollingDown ){
+          // params rangNum, posNum, isvNum
+          masn.exRecycleInvisibleUnits(tp, domtp, 1,4,-1);
+        // }else{
+          masn.exRecycleInvisibleUnits(tp, domtp, 0,3,1);
+        // }
       }
 
       window.clearTimeout(TIMERINTERVAL),
@@ -1498,7 +1523,10 @@
       window.setTimeout(function (){
         // 结束intervaltimer
         if( pg.$data.length === 0 && pg.idata.length === 0 ){
-          window.clearTimeout(TIMERINTERVAL)
+          PAGEOVER = true;
+          if( !Woo.conf.exrecycle ){
+            window.clearTimeout(TIMERINTERVAL)
+          }
         }
       },200);
 
@@ -1700,7 +1728,6 @@
     },
     figure : function (){
       var masn = this,
-        colY = [],
         $d = masn.$dom,
         c = masn.opts,
         exlen = 0,
@@ -1717,21 +1744,19 @@
         masn.colwf = c.firstColumnWidth;
       }
 
-      masn.setCols();
+      masn.setCols(),
 
       // 设置每列的初始高度为0
-      for( var i=0; i<masn.colCount; i++ ){
-        colY[i] = 0;
-      }
-      masn.$dom.data('colY',colY);
+      masn.clearColY();
+
 
       $d.prepend( $cursor ),
       masn.offset0 = $cursor.offset(),
       masn.domtop0 =  $d.offset().top,
       masn.left0 = Math.round( $cursor.position().left ),
-      $cursor.remove(),
+      $cursor.remove();
       // 标记添加内容块的初始位置，以screen为单位
-      masn.lastscreen = masn.screen = 0;
+      // masn.screent = masn.screen = 0;
 
       // 根据 firstHeight 参数插入初始占位块
       if( c.firstHeight ){
@@ -1743,11 +1768,153 @@
       var masn = this,
         colY = [];
 
-      for( var i=0; i<masn.colCount; i++ ){
-        colY[i] = 0;
+      masn.unitCount = 0;
+
+      if( Woo.conf.exrecycle ){
+        // set unit counts 0
+        masn.arrColumnTail = [],
+        // base on pos (unitCount)
+        masn.posCoordination = {},
+        masn.columnVisibleRange = [[],[]],
+        masn.unitCache = {};
+
+        for( var i=0; i<masn.colCount; i++ ){
+          masn.columnVisibleRange[0][i] = masn.columnVisibleRange[1][i] = i,
+          colY[i] = 0;
+        }
+      }else{
+        for( var i=0; i<masn.colCount; i++ ){
+          colY[i] = 0;
+        }
       }
+
       masn.$dom.data('colY',colY);
     },
+		/*
+    @desc： is unit visible
+    @param：
+    wt      - current scroll top
+    domtp   - units container top value
+    ut      - unit top value
+    uh      - unit height value
+    @return:
+    (boolean) 1 - upper outrange;  0 - inrange  -1 - below outrange;
+    */
+    exIsUnitVisible : function(wt, domtp, ut, uh){
+      var remainTop = Woo.conf.exrecycletop,
+          remainBot = Woo.conf.exrecyclebot,
+          remainTopValue = remainTop > -10 && remainTop < 10 ? remainTop * WH : remainTop,
+          remainBotValue = remainBot > -10 && remainBot < 10 ? remainBot * WH : remainBot,
+          isVisible = -1,
+          posBot = domtp + ut + uh,
+          podTop = domtp + ut,
+          compTop = wt - remainTopValue,
+          compBot = wt + WH + remainBotValue;
+
+      if( posBot >= compTop &&  podTop <= compBot ){
+        isVisible = 0;
+      }else if( posBot < compTop ){
+        isVisible = 1;
+      }
+      
+      return isVisible;    
+    },
+
+    exRecycleInvisibleUnits : function(wt, domtp, rangeNum, posNum, isvNum){
+      var masn = this,
+          startPos = 0,
+          endPos = 0,
+          nextRange;
+
+      for( var i=0; i<masn.colCount; i++ ){
+        nextRange = masn.columnVisibleRange[1 & rangeNum][i];
+
+        // startPos need nextRange while endPos is ok
+        endPos = masn.columnVisibleRange[1 ^ rangeNum][i];
+        
+        while( 0 <= startPos && startPos < masn.unitCount ){
+          startPos = nextRange;
+          var  posInfo = masn.posCoordination[""+startPos];
+
+          if( posInfo === undefined ){
+            break;
+          }
+
+          var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
+
+          // console.log("startPos【"+startPos+"】add item:" + startPos + "//isvNum:" +isvNum+ "//isv:"+isv)
+          // console.log(posInfo)
+
+          if( isv == isvNum ){
+            break;
+          }
+
+          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
+          if( isv === 0 && !posInfo[5] ){
+            console.log("add pos:" + startPos +"/// posInfo[5]:" + posInfo[5])
+            // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+            masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+
+            // change visible status in posCoordination
+            posInfo[5] = 1;
+          }
+
+
+          masn.columnVisibleRange[1 & rangeNum][i] = startPos;
+
+          if( posInfo[posNum] == -1 || posInfo[posNum] == startPos ){
+            break;
+          }
+
+          nextRange = posInfo[posNum];
+        }
+        
+        while( 0 <= endPos && endPos < masn.unitCount ){
+          var posInfo = masn.posCoordination[""+endPos];
+
+          if( posInfo === undefined ){
+            break;
+          }
+
+          var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
+
+
+          // console.log("endPos【"+endPos+"】remove iteim:" + endPos + "//isvNum:" +isvNum+ "//isv:"+isv)
+          // console.log(posInfo);
+
+
+          if( isv == 0 || isv == isvNum ){
+            break;
+          }
+
+
+          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
+          if( posInfo[5] ){
+            console.log("in remove pass time: " + (new Date().getTime()-START))
+            console.log("remove pos:" + endPos +"/// posInfo[5]:" + posInfo[5])
+
+            masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
+            // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+
+            // change visible status in posCoordination
+            posInfo[5] = 0;
+          }
+
+          
+          if( posInfo[posNum] == -1 ){
+            masn.columnVisibleRange[1 & rangeNum][i] = masn.columnVisibleRange[1 ^ rangeNum][i]
+            break;
+          }else if( posInfo[posNum] == endPos ){
+            break;
+          }
+
+
+          endPos = masn.columnVisibleRange[1 ^ rangeNum][i] = posInfo[posNum];
+        }
+      }
+
+    },
+
     setContHeight : function (){
       var masn = this,
         colY = masn.$dom.data('colY');
@@ -1857,10 +2024,6 @@
         nm = nm || c.batchNum,
         minI,minY;
 
-
-      // set lastscreen
-      masn.lastscreen = masn.screen;
-
       // call _placeEachUnit() which return both unit-wrap node and unit-inner node 
       var arr = masn._placeEachUnit(masn,c,$d,$data,htmlp,indom,resize,addfirst && masn.firstHeight),
         $u = arr[0],
@@ -1876,10 +2039,20 @@
           // Append small pieces of $u recursively
           Woo.recurseDo(function (b,inner){
             var m = 0;
-            b.append(function (i){
-              m++;
-              return inner.eq(i).children();
-            })
+
+            if( Woo.conf.exrecycle ){
+               b.append(function (i){
+                var $ot = b.eq(i);
+                masn.unitCache[""+$ot.data('idx')] = $ot;
+                m++;
+                return inner.eq(i).children();
+              })
+            }else{
+              b.append(function (i){
+                m++;
+                return inner.eq(i).children();
+              })
+            }
             c.onAppend(b),
             b = b.slice(nm),
             inner = inner.slice(m),
@@ -1888,23 +2061,39 @@
 
             return [b,inner];
           },[$u,inner],Math.ceil($u.length/nm),c.batchDelay,function (){
-            callback(masn.lastscreen,masn.screen);
+            callback();
           });
         }else{
-          // put unit-inner node into each unit-wrap node 
-          $u.append(function (i){
-            return inner.eq(i).children();
-          })
+          // put unit-inner node into each unit-wrap node
+          if( Woo.conf.exrecycle ){
+            $u.append(function (i){
+              var $ot = $u.eq(i);
+              masn.unitCache[""+$ot.data('idx')] = $ot;
+              // return '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>'
+             return inner.eq(i).children();
+            })
+          }else{
+            $u.append(function (i){
+              return inner.eq(i).children();
+            })
+          }
           // set content height
           masn.setContHeight(),
 
           // Load images in onAppend()
           c.onAppend($u),
-          callback(masn.lastscreen,masn.screen);
+          callback();
         }
       }else{
+        if( Woo.conf.exrecycle ){
+          inner.each(function (i,e){
+            var $ot = inner.eq(i);
+            masn.unitCache[""+$ot.data('idx')] = $ot;
+          })
+        }
+
         // Load images in onAppend()
-        c.onAppend($u)
+        c.onAppend(inner)
         // set content height
         masn.setContHeight();
       }
@@ -1927,7 +2116,7 @@
 
       // Judge whether it's special column or not throught woo-spcol
       // 判断minI 所在列是 woo-spcol 特殊列
-      if( (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) && masn.colwf != masn.colw ){
+      if( masn.colwf != masn.colw && (minI === 0 && !c.rightAlignFirstBlock || minI === colc - 1 && c.rightAlignFirstBlock) ){
         colwf = masn.colwf;
         !f && ($e.addClass('woo-spcol'))
       }
@@ -1948,11 +2137,14 @@
 
       // Increase colY the height of the spercific column by the unit height plus gap.
       // 添加此节点后 colY 的minI 列高度随之改变
-      colY[minI] += ht + c.gap,
+      colY[minI] += ht + c.gap;
 
-      // get the screen number
-      // 计算所在的screen 值
-      masn.screen = Math.ceil( (minY + ht) / WH );
+      // screen number of unit bottom
+      // 计算底部所在的screen 值
+      // masn.screen = Math.ceil( (minY + ht) / WH ),
+
+      // screen number of unit top
+      // masn.screent = Math.ceil( (minY + .1) / WH );
 
       return [minY, minI, left, ht, colwf];
     },
@@ -1972,7 +2164,7 @@
         colwf,
         mm = 0,
         addf,
-        // 是否是resize 中，并且是要插入节点，可以断定resize前已经有插入节点
+        // 是否是resize 中，f 表示是否在第一个位置预留了空间做 sink
         resf = resize && f,
         // 要添加的节点，同时可用于判断是否有做添加(或移动)动作
         $addfc;
@@ -2006,11 +2198,11 @@
 
 
           // 要添加的节点外层字符串
-          addf = '<div class="woo woo-f sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
+          addf = '<div class="woo woo-f co'+minI+' '+(colwf?'woo-spcol':'')+'" data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="position:absolute;overflow:hidden;top:'+minY+'px;left:'+left+'px;width:'+(masn.firstWidth-c.columnMargin)+'px;"></div>',
 
           strwrap += addf;
 
-          // 如果是resize 中，并且已经有插入过节点
+          // 如果是resize 中，并且第一个位置已经插入过节点
           if( resf ){
             $addfc = $drawer.find('.woo-f:first').css({
               "left" : left,
@@ -2020,7 +2212,16 @@
             $addfc = $(addf).append(c.sinkWhat);
           }
 
+          $addfc.data('idx',masn.unitCount)
+
+
+
           mm = i;
+
+          if( Woo.conf.exrecycle ){
+            masn.exCoordMap(minY,ht,minI);
+          }
+          masn.unitCount++;
         }
 
         // 计算 minY minI left
@@ -2033,7 +2234,7 @@
         colwf = ars[4],
 
 
-        strwrap += '<div class="'+c.unit.substr(1)+' sc'+masn.screen+' co'+minI+' '+(colwf?'woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
+        strwrap += '<div class="'+c.unit.substr(1)+' co'+minI+(colwf?' woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
 
 
         $e.css({
@@ -2041,24 +2242,52 @@
           "left" : left
         })
         .data('ht',ht)
-        .removeClass(function (i,cls){
-          return 'woo-spcol ' + (cls.match(/(co|sc)\d+/ig) || []).join(' ')
+        .data('idx',masn.unitCount)
+
+
+        $e.removeClass(function (i,cls){
+          return 'woo-spcol ' + (cls.match(/co\d+/ig) || []).join(' ')
         })
-        .addClass((colwf ? 'woo-spcol ' : '')+'sc'+masn.screen+' co'+minI);
+        .addClass((colwf ? 'woo-spcol ' : '')+'co'+minI);
+
+
+        if( Woo.conf.exrecycle ){
+          masn.exCoordMap(minY,ht,minI);
+        }
+        masn.unitCount++;
       })
 
       // 遍历结束后保存最终的 colY
       $d.data('colY',colY);
 
-      // resf 判断是否resize 中，并且已经插入好节点
+      // 如果不是在resize 并且在第一个位置预留了空间做 sink
       if( !resf && f ){
         var arrp = $htmlp.toArray();
         $htmlp = $(arrp.slice(0,mm).concat($addfc ? $addfc.toArray() : [],arrp.slice(mm)))
       }
 
+
       $pre.empty();
 
+
       return [$(strwrap),$htmlp];
+    },
+
+    exCoordMap : function (top,ht,colidx){
+      // base on pos (unitCount)
+      var masn = this,
+          coltail = masn.arrColumnTail[colidx] || colidx;
+
+      START = new Date().getTime()
+      console.log("exCoordMap time：" + START)
+      masn.posCoordination[""+masn.unitCount] = [top,ht,colidx,coltail,-1,0],
+      masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
+      masn.arrColumnTail[colidx] = masn.unitCount;
+
+      window.setTimeout(function (){
+        masn.posCoordination[""+masn.unitCount][5] = 1;
+      },800);
+      
     }
   }
 
