@@ -1667,13 +1667,13 @@
         c = pg.config,
         wt = wt === undefined ? $W.scrollTop() : wt,
         dacol = pg.$dom.data('colY'),
-        distance = pg.$pager.offset().top - wt - WH,
+        distance = pg.$dom.offset().top + (parseInt(pg.$dom.get(0).style.height) || 0) - wt - WH,
         mx = Math.max.apply(Math,dacol),
         mi = Math.min.apply(Math,dacol);
 
       return ( distance <  c.scrollBias || distance < mx - mi );
     },
-
+    
     /*
     @说明：否触发 lazyAdd 
     */
