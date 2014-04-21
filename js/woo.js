@@ -351,7 +351,7 @@
     */
     resetCol : function(v,co,tp){
       var $masn = $HOLDER.find(this.conf.frame[5]+':visible').not('.woo-tmpmasn'),
-        dacol = $masn.data('colY');
+        dacol = Woo._getDataColY($masn);
 
       if( dacol && dacol[co] ){
         dacol[co] += v;
@@ -464,6 +464,60 @@
       return $.param(jsn);
     },
 
+    /*
+    @说明：scrollbar 平滑scroll 到指定scrollTop 值
+    */
+    scrollTo : function (scrollTo, time, callback) {
+      if(typeof jQuery !== "undefined"){
+        $('body,html').animate({scrollTop:scrollTo},time,callback);
+        return;
+      }
+      var scrollFrom = parseInt(document.body.scrollTop),
+          i = 0,
+          runEvery = 10; // run every 5ms
+
+      scrollTo = parseInt(scrollTo);
+      time /= runEvery;
+
+      var interval = setInterval(function () {
+          i++;
+          
+          document.body.scrollTop = (scrollTo - scrollFrom) / time * i + scrollFrom;
+          document.documentElement.scrollTop = (scrollTo - scrollFrom) / time * i + scrollFrom;
+
+          if (i >= time) {
+              $.isFunction(callback) && callback();
+              clearInterval(interval);
+          }
+      }, runEvery);
+    },
+
+    /*
+    @说明：平滑scroll 到指定锚点处
+    */
+    scrollToAnchor : function (){
+      var $body = $('body,html'),
+          c = Woo.conf;
+        $tohsh = $('a[name='+c.anchor+']');
+
+      // 分页内容容器置空，先置空内容再做 anchor 定位
+      if( c.anchor && $tohsh.length ){
+        // 此处由于导航设置fix 跟随，需要额外减去70 的高度
+        var at = $tohsh.offset().top - c.anchordiff || 0;
+        if( $W.scrollTop() > at ){
+          Woo.scrollTo(at,200);
+          // $body.animate({scrollTop:at},200);
+        }
+      }else{
+        // 除了ie6 其它浏览器不要设置默认回顶部，会造成切换时页面跳动
+        // 这里用到了 ActiveXObject 和 XMLHttpRequest 对象来区分 ie6
+        if( !!window.ActiveXObject && !window.XMLHttpRequest ){
+          Woo.scrollTo(at,200);
+          // $body.animate({scrollTop:0},200);
+        }
+      }
+    },
+
 
     /*
     @说明：gotop 回到顶部
@@ -480,10 +534,14 @@
         // 非webkit 浏览器使用 html 做 scroll 功能
         $body = $('body,html');
 
-      $body.animate({scrollTop:0},200,function (){
+      Woo.scrollTo(0,200,function (){
         gotop.style.visibility = 'hidden',
         SCROLLINGTOTOP = false;
-      })
+      });
+      // $body.animate({scrollTop:0},200,function (){
+      //   gotop.style.visibility = 'hidden',
+      //   SCROLLINGTOTOP = false;
+      // })
     },
 
     /*
@@ -629,7 +687,7 @@
     gtoupg			- (Num) 当前的大页码数
     */
     _pageInit : function($conts,n,gtoupg){
-      IDX = n,
+      Woo.idx = IDX = n,
       PAGEOVER = false;
 
       var conf = this.conf,
@@ -753,12 +811,6 @@
           
           // 触发下翻页的scroll 偏离值，例如提前100px触发
           scrollBias : conf.lbias,
-
-
-          // 翻页按钮点击后的 锚点定位
-          anchor : conf.anchor,
-          // 相对于 name="woo-anchor" 锚记的垂直方向偏移，可解决顶部fixed nav遮盖问题
-          anchorDiff : conf.anchordiff,
 
           // 当前页码前后显示的页码数
           nearbyPageNum : conf.nearbypagenum,
@@ -994,7 +1046,7 @@
       // 计算所有可见unit 
       if( Woo.conf.exrecycle && MASN[IDX] ){
         var masn = MASN[IDX],
-            $dom = PAGINE[IDX].$dom,
+            $dom = MASN[IDX].$dom,
             domtp = $dom.position().top;
 
         // if( isRollingDown ){
@@ -1034,17 +1086,24 @@
           })
           // 当图片加载失败，捕获error 重新加载
           .one('error',function (){
-            var $t = $(this)
-            $({}).delay(1000).queue(function (){
+            var $t = $(this);
+
+            window.setTimeout(function (){
               $t.one('error',function (){
                 $t.attr('src',or)
               })
               .attr('src',or)
-            })
+            },1000)
           })
           .attr('src',or).removeAttr('srcd')
         }
       })
+    },
+
+    _getDataColY : function ($dom){
+      var colY = $dom.data('colY');
+      // return typeof colY === 'string' ? colY.split(',') : colY;
+      return colY;
     }
   });
 
@@ -1124,7 +1183,7 @@
         undefined;
 
 
-      !sub && pg.scrollToAnchor(),
+      !sub && Woo.scrollToAnchor(),
 
       pg.$pager.css("display","none"),
       pg.pagerVisible = false,
@@ -1153,30 +1212,6 @@
       pg._requestData(cp,sub,direct,false,clear);
     },
 
-    /*
-    @说明：平滑scroll 到指定锚点处
-    */
-    scrollToAnchor : function (){
-      var pg = this,
-        c = pg.config,
-        $body = $('body,html'),
-        $tohsh = $('a[name='+c.anchor+']');
-
-      // 分页内容容器置空，先置空内容再做 anchor 定位
-      if( c.anchor && $tohsh.length ){
-        // 此处由于导航设置fix 跟随，需要额外减去70 的高度
-        var at = $tohsh.offset().top - c.anchorDiff || 0;
-        if( $W.scrollTop() > at ){
-          $body.animate({scrollTop:at},200);
-        }
-      }else{
-        // 除了ie6 其它浏览器不要设置默认回顶部，会造成切换时页面跳动
-        // 这里用到了 ActiveXObject 和 XMLHttpRequest 对象来区分 ie6
-        if( !!window.ActiveXObject && !window.XMLHttpRequest ){
-          $body.animate({scrollTop:0},200);
-        }
-      }
-    },
 
     /*
     @说明：获取当前的大页码数
@@ -1416,9 +1451,9 @@
           pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
           pg.prepare = null,
           // 延迟两秒后执行 always 以便设置 pg.loading=false
-          $({}).delay(100).queue(function (){
+          window.setTimeout(function (){
             pg._requestAlways()
-          }),
+          },100)
           pg.scrollLoading = false;
         }else{
           var $form = $(arrurl[0]);
@@ -1648,6 +1683,7 @@
       }
     },
 
+
     /*
     @说明：翻页pager 绑定click事件
     */
@@ -1666,7 +1702,7 @@
       var pg = this,
         c = pg.config,
         wt = wt === undefined ? $W.scrollTop() : wt,
-        dacol = pg.$dom.data('colY'),
+        dacol = Woo._getDataColY(pg.$dom),
         distance = pg.$dom.offset().top + (parseInt(pg.$dom.get(0).style.height) || 0) - wt - WH,
         mx = Math.max.apply(Math,dacol),
         mi = Math.min.apply(Math,dacol);
@@ -1842,16 +1878,12 @@
 
           var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
 
-          // console.log("startPos【"+startPos+"】add item:" + startPos + "//isvNum:" +isvNum+ "//isv:"+isv)
-          // console.log(posInfo)
-
           if( isv == isvNum ){
             break;
           }
 
           // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
           if( isv === 0 && !posInfo[5] ){
-            console.log("add pos:" + startPos +"/// posInfo[5]:" + posInfo[5])
             // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
             masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
 
@@ -1879,10 +1911,6 @@
           var isv = masn.exIsUnitVisible(wt, domtp, posInfo[0], posInfo[1]);
 
 
-          // console.log("endPos【"+endPos+"】remove iteim:" + endPos + "//isvNum:" +isvNum+ "//isv:"+isv)
-          // console.log(posInfo);
-
-
           if( isv == 0 || isv == isvNum ){
             break;
           }
@@ -1890,9 +1918,6 @@
 
           // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
           if( posInfo[5] ){
-            console.log("in remove pass time: " + (new Date().getTime()-START))
-            console.log("remove pos:" + endPos +"/// posInfo[5]:" + posInfo[5])
-
             masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
             // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
 
@@ -1917,7 +1942,7 @@
 
     setContHeight : function (){
       var masn = this,
-        colY = masn.$dom.data('colY');
+        colY = Woo._getDataColY(masn.$dom);
 
       masn.$dom
       .css({
@@ -2020,7 +2045,7 @@
       var masn = this,
         c = masn.opts,
         $d = masn.$dom,
-        colY = $d.data('colY'),
+        colY = Woo._getDataColY($d),
         nm = nm || c.batchNum,
         minI,minY;
 
@@ -2041,17 +2066,27 @@
             var m = 0;
 
             if( Woo.conf.exrecycle ){
-               b.append(function (i){
+              b.each(function (i,e){
                 var $ot = b.eq(i);
                 masn.unitCache[""+$ot.data('idx')] = $ot;
                 m++;
-                return inner.eq(i).children();
+                $(e).append(inner.eq(i).children());
               })
+              // b.append(function (i){
+              //   var $ot = b.eq(i);
+              //   masn.unitCache[""+$ot.data('idx')] = $ot;
+              //   m++;
+              //   return inner.eq(i).children();
+              // })
             }else{
-              b.append(function (i){
+              b.each(function (i,e){
                 m++;
-                return inner.eq(i).children();
+                $(e).append(inner.eq(i).children());
               })
+              // b.append(function (i){
+              //   m++;
+              //   return inner.eq(i).children();
+              // })
             }
             c.onAppend(b),
             b = b.slice(nm),
@@ -2066,16 +2101,25 @@
         }else{
           // put unit-inner node into each unit-wrap node
           if( Woo.conf.exrecycle ){
-            $u.append(function (i){
+            $u.each(function (i,e){
               var $ot = $u.eq(i);
               masn.unitCache[""+$ot.data('idx')] = $ot;
-              // return '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>'
-             return inner.eq(i).children();
+              $(e).append(inner.eq(i).children());
             })
+
+            // $u.append(function (i){
+            //   var $ot = $u.eq(i);
+            //   masn.unitCache[""+$ot.data('idx')] = $ot;
+            //   // return '<div title="'+$ot.data('idx')+'" style="height:'+$ot.data('ht')+'px">'+$ot.data('idx')+'</div>'
+            //  return inner.eq(i).children();
+            // })
           }else{
-            $u.append(function (i){
-              return inner.eq(i).children();
+            $u.each(function (i,e){
+              $(e).append(inner.eq(i).children());
             })
+            // $u.append(function (i){
+            //   return inner.eq(i).children();
+            // })
           }
           // set content height
           masn.setContHeight(),
@@ -2133,7 +2177,8 @@
 
       // Be sure to put 'datap-ht'(unit height) on each unit(.woo) if you have known the unit height in advance.
       // 高度计算优先取值 data-ht 可大大缩减计算时间，如果你事先已经知道unit 高度，请设置它
-      ht = f ? masn.firstHeight : $e.data('ht') || $e.outerHeight(true),
+      ht = f ? masn.firstHeight : $e.data('ht') || ( $e.outerHeight ? $e.outerHeight(true) : ($e.height()+(parseInt($e.css('margin-top'))||0)+(parseInt($e.css('margin-bottom'))||0)) ),
+
 
       // Increase colY the height of the spercific column by the unit height plus gap.
       // 添加此节点后 colY 的minI 列高度随之改变
@@ -2154,7 +2199,7 @@
         haspre = !!$pre.length,
         strwrap = '',
         $htmlp = $(null),
-        colY = $d.data('colY'),
+        colY = Woo._getDataColY($d),
         colc = masn.colCount,
         ars,
         minY,
@@ -2175,6 +2220,7 @@
         $pre = $('<div class="woo-tmpmasn '+$d.attr('class')+'" style="position:relative;height:0;overflow:hidden;margin:0;padding:0;"></div>').removeClass(clss),
         $d.before($pre);
       }
+
 
       // indom 为true 时，  $data所有单元都已经在dom 树上
       var $lame = $data.add(htmlp).removeClass('woo-wait'),
@@ -2278,14 +2324,13 @@
       var masn = this,
           coltail = masn.arrColumnTail[colidx] || colidx;
 
-      START = new Date().getTime()
-      console.log("exCoordMap time：" + START)
       masn.posCoordination[""+masn.unitCount] = [top,ht,colidx,coltail,-1,0],
       masn.posCoordination[""+coltail] && (masn.posCoordination[""+coltail][4] = masn.unitCount),
       masn.arrColumnTail[colidx] = masn.unitCount;
 
+      var unitc = masn.unitCount;
       window.setTimeout(function (){
-        masn.posCoordination[""+masn.unitCount][5] = 1;
+        masn.posCoordination[""+unitc][5] = 1;
       },800);
       
     }
