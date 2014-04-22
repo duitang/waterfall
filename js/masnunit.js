@@ -97,10 +97,7 @@ if(!String.prototype.cut){
 
 	//####################################################################
 	TEMPLATES = [
-	'<% for (var i = 0; i < list.length; i ++) { %> \
-	<% var u = list[i],indx = $unit(u.id,u),olnk = $outlnk(u); %> \
-	<% if(!indx) continue; %> \
-<div class="woo"><div class="j"> \
+	'<% for (var i = 0; i < list.length; i ++) { %><% var u = list[i],indx = $unit(u.id,u),olnk = $outlnk(u); %><% if(!indx) continue; %><div class="woo"><div class="j"> \
 	<div class="mbpho" style="height:<%=u.iht > 800 ? 800 : u.iht%>px;"><a target="_blank" class="a" href="http://www.duitang.com/people/mblog/<%=u.id%>/detail/"><img <%=srcd ? "srcd" : "src"%>="<%=u.isrc%>" height="<%=u.iht%>" /><%= u.iht > 800 ? "<u style=\'margin-top:-"+(u.iht-720)+"px\'></u>" : ""%></a> \
 	</div> \
 	<div class="d"><span class="d1 d1-done"><%=u.favc%></span><span class="d2 d2-done"><%=u.zanc%></span><span class="d3"><%=u.repc%></span></div> \

@@ -2,7 +2,7 @@
 @说明： Tab Switch jQuery plugin
 */
 
-;(function($){
+;(function(){
   //main 初始化
   $.fn.tabswitch = function(fn,selector,op){
     var $t = this;
@@ -93,4 +93,4 @@
     "index" : 0, //初始状态下聚焦项的序号，默认为0
     "event" : "click" //切换trigger 触发事件，默认是 click
   };
-})(jQuery);
+})();

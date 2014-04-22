@@ -75,7 +75,7 @@
  */
 
 // Start of our jQuery Plugin
-(function($)
+(function()
 {	// Create our Plugin function, with $ as the argument (we pass the jQuery object over later)
 	// More info: http://docs.jquery.com/Plugins/Authoring#Custom_Alias
 	
@@ -569,4 +569,4 @@
 	}
 	
 	// Finished definition
-})(jQuery); // We are done with our plugin, so lets call it with jQuery as the argument
+})(); // We are done with our plugin, so lets call it with jQuery as the argument
