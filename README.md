@@ -2,7 +2,7 @@
 This is a full set of Front-end Solutions for Pinterestlike websites.
 
 
-version: 1.1.0
+version: 1.1.1
 
 ## Features:
 1. Multi-waterfalls are supported in one page.
@@ -18,6 +18,7 @@ version: 1.1.0
 1. Dazzling resize mode.
 1. Flexible configs such as: subpagenum in one Upper Page, unitsnum in one subpage etc
 1. if {"exrecycle" : true} is set, invisible units would be recycled during scrolling.
+1. Support Zeptojs.
 
 ## Requirements:
 * jQuery >= 1.6.1
@@ -46,6 +47,9 @@ This example shows how to deal with unit datas with order operation.<br/><a href
 
 ### Example delete:
 This example shows how to deal with unit datas with delete operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">Click me to have a look!</a>
+
+### Example zeptojs:
+This example shows how zeptojs works.<br/><a href="http://www.duitang.com/app/woo/example/zeptomain.html" target="_blank">Click me to have a look!</a>
 
 ## Response data structure recommended:
 {"data":{"blogs":[${unit},...,${unit}],"has_next":true,"totalcount":202},"success":true}
@@ -76,7 +80,7 @@ data.blogs must be an array which contains waterfall units. The unit length in o
 1. 可通过配置参数激活特殊列(只能是最左或最右列)，此列宽度可不同于其它列。
 1. 灵活的参数设置，比如：子页数量、子页内单元数量、瀑布流单元宽度和间距 等等等等。
 1. 可轻松通过 "exrecycle" : true 参数开启超出屏幕范围的单元块回收功能，极大的减少了dom节点数。
-
+1. 支持zeptojs
 
 * <a href="http://www.duitang.com/app/woo/examples/main.html" target="_blank">纯静态demo演示——主功能</a>
 * <a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">纯静态demo演示——sink开启</a>
@@ -86,7 +90,8 @@ data.blogs must be an array which contains waterfall units. The unit length in o
 * <a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">纯静态demo演示——mobile模拟</a>
 * <a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
 * <a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>
-* <a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">纯静态demo演示——单元删除</a>
+* <a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">纯静态demo演示——支持Zeptojs</a>
+* <a href="http://www.duitang.com/app/woo/example/zeptomain.html" target="_blank">纯静态demo演示——zeptojs</a>
 
 
 ## 一些保留命名 >>
@@ -182,3 +187,6 @@ Duitang/Waterfall is published under the terms of the MIT License.
 * **1.1.0** 2014-4-14
  * Add Auto-Recycle Mode in which invisible units are recycled during scrolling.
  * Add 3 demos for Auto-Recycle Mode.
+
+* **1.1.1** 2014-4-22
+ * Add Support for Zeptojs.
