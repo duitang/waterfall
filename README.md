@@ -49,7 +49,7 @@ This example shows how to deal with unit datas with order operation.<br/><a href
 This example shows how to deal with unit datas with delete operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">Click me to have a look!</a>
 
 ### Example zeptojs:
-This example shows how zeptojs works.<br/><a href="http://www.duitang.com/app/woo/example/zeptomain.html" target="_blank">Click me to have a look!</a>
+This example shows how zeptojs works.<br/><a href="http://www.duitang.com/app/woo/examples/zeptomain.html" target="_blank">Click me to have a look!</a>
 
 ## Response data structure recommended:
 {"data":{"blogs":[${unit},...,${unit}],"has_next":true,"totalcount":202},"success":true}
@@ -91,7 +91,7 @@ data.blogs must be an array which contains waterfall units. The unit length in o
 * <a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
 * <a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>
 * <a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">纯静态demo演示——支持Zeptojs</a>
-* <a href="http://www.duitang.com/app/woo/example/zeptomain.html" target="_blank">纯静态demo演示——zeptojs</a>
+* <a href="http://www.duitang.com/app/woo/examples/zeptomain.html" target="_blank">纯静态demo演示——zeptojs</a>
 
 
 ## 一些保留命名 >>
