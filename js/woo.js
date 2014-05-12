@@ -1354,11 +1354,8 @@
       /***************** 原 afterRequest 内容结束 ****************/
 
 
-
-      pg.idata = pg.idata.concat(jsndata);
-
       // 第二个参数容器内容为空，则全部添加到容器中
-      c.lazyAdd.call(pg,emp);
+      pg.loadFromJson(jsndata, emp);
 
 
 
@@ -1381,6 +1378,15 @@
         })
       }
       pg.pagerVisible = true;
+    },
+
+    loadFromJson : function(jsndata, totalinsert){
+      var pg = this,
+        c = pg.config;
+      pg.idata = pg.idata.concat(jsndata);
+
+      // 第二个参数容器内容为空，则全部添加到容器中
+      c.lazyAdd.call(pg,totalinsert);
     },
 
     // 请求分页数据，请求结束后 always 执行
