@@ -23,6 +23,7 @@
     // 是否正在返回顶部，$gotop 按键点击后返回页顶时设置其值为 true
     SCROLLINGTOTOP = false,
     PAGEOVER = false,
+    TIMERPAGEOVER,
     TIMERINTERVAL,
     TIMERSCROLL,
     // 总容器
@@ -689,6 +690,7 @@
     _pageInit : function($conts,n,gtoupg){
       Woo.idx = IDX = n,
       PAGEOVER = false;
+      window.clearTimeout(TIMERPAGEOVER);
 
       var conf = this.conf,
         frame = conf.frame,
@@ -1456,10 +1458,10 @@
         if( pg.prepare && pg.prepare[0] == cp ){
           pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
           pg.prepare = null,
-          // 延迟两秒后执行 always 以便设置 pg.loading=false
+          // 延迟执行 always 以便设置 pg.loading=false
           window.setTimeout(function (){
             pg._requestAlways()
-          },100)
+          },50)
           pg.scrollLoading = false;
         }else{
           var $form = $(arrurl[0]);
@@ -1561,7 +1563,7 @@
       pg.$loadingsm.remove();
 
       // 设置翻页器可见
-      window.setTimeout(function (){
+      TIMERPAGEOVER = window.setTimeout(function (){
         // 结束intervaltimer
         if( pg.$data.length === 0 && pg.idata.length === 0 ){
           PAGEOVER = true;
