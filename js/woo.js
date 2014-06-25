@@ -504,10 +504,10 @@
       if( c.anchor && $tohsh.length ){
         // 此处由于导航设置fix 跟随，需要额外减去70 的高度
         var at = $tohsh.offset().top - c.anchordiff || 0;
-        if( $W.scrollTop() > at ){
-          Woo.scrollTo(at,200);
+        // if( $W.scrollTop() > at ){
+        Woo.scrollTo(at,200);
           // $body.animate({scrollTop:at},200);
-        }
+        // }
       }else{
         // 除了ie6 其它浏览器不要设置默认回顶部，会造成切换时页面跳动
         // 这里用到了 ActiveXObject 和 XMLHttpRequest 对象来区分 ie6
