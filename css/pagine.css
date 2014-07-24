@@ -3,7 +3,7 @@
 */
 
 
-.woo-pbr{height:60px;overflow:hidden;margin:16px 0 0;line-height:1;text-align:center;}
+.woo-pbr{height:60px;overflow:hidden;padding-top:16px;line-height:1;text-align:center;}
 .woo-pbr .woo-dib{height:100%}
 .woo-pbr li.woo-cur,
 .woo-pbr a:link,
