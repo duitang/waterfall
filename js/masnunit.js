@@ -323,43 +323,61 @@ if(!String.prototype.cut){
 
 	template.helper('$unit', function (id,jsn) {
 		id += '';
-		var munits = WT.masnUnits;
 		// here shows how to avoid repeated unit being added
-		// remove "|| 1" if you want to do it
-		if( !munits[id] || 1 ){
-			munits[id] = jsn,
-			WT.ulen++,
-			munits[id].indx = WT.ulen-1;
-
-			return WT.ulen;
-		}else{
-			// if id repeated, return 0, repeated unit will not be added
-			return 0
-		}
+		// the third param indicates that duplication-avoid is open
+    return WT.addUnit(id,jsn,false);
 	});
 
 
 
 	/*
-	@说明：$.Woo.WooTemp 类
-	*/
-	var WT = (function (){
-		var WT = {
-			ulen : 0,
-			init : function (a,b){
-				WT.analyzeResponse = a,
-				WT.render = b,
+  @说明：$.Woo.WooTemp 类
+  */
+  var WT = (function (){
+    var WT = {
+      ulen : 0,
+      latestUnits : {},
+      init : function (a,b){
+        WT.analyzeResponse = a,
+        WT.render = b,
 
-				// 当前可见瀑布流的数据集合
-				WT.masnUnits = {};
-			},
-			reset : function (){
-				WT.ulen = 0,
-				WT.masnUnits = {};
-			}
-		}
-		return WT;
-	})()
+        // 当前可见瀑布流的数据集合
+        WT.masnUnits = {};
+      },
+      reset : function (){
+        WT.ulen = 0,
+        WT.masnUnits = {};
+      },
+      getLatestUnits : function (){
+        return WT.latestUnits;
+      },
+      resetLatestUnits : function (){
+        WT.latestUnits = {};
+      },
+      setUnitsFromLatest : function (){
+        var jsnunits = WT.latestUnits;
+        if( $.isPlainObject(jsnunits) ){
+          WT.masnUnits = jsnunits;
+        }
+      },
+      addUnit : function (id, jsn, avoidduplicate){
+        var munits = WT.masnUnits;
+        // munits 去重工作
+        if( !avoidduplicate || !munits[id] ){
+          WT.latestUnits[id] = jsn,
+          munits[id] = jsn,
+          WT.ulen++,
+          munits[id].indx = WT.ulen-1;
+
+          return WT.ulen;
+        }else{
+          // 如果有重复，返回0，则不做添加动作
+          return 0
+        }
+      }
+    }
+    return WT;
+  })()
 
 	WT.init(ANALYZERESPONSE,RENDER);
 
