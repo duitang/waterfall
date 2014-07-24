@@ -3,6 +3,7 @@
 */
 
 
+
 ;(function(window, undefined){
 
 
@@ -668,7 +669,8 @@
         }
 
         // 清除内存 WooTemp 对象，主要是MASNUNITS
-        WOOTEMP && WOOTEMP.reset();
+        // WOOTEMP && WOOTEMP.reset && WOOTEMP.reset();
+
 
         // 清除上一次瀑布流的缓存数据
         if( PAGINE[pre] ){
@@ -873,9 +875,7 @@
               addfirst = false;
 
 
-
             if( emp && MASN[n] ){
-              MASN[n].clearColY(),
               addfirst = true;
             }
 
@@ -941,9 +941,10 @@
         // 为了避免在loading 过程中hash change 导致的无法准确回退
         if( !PAGINE[n].lazyAdding && !PAGINE[n].loading || !USERCLICK ){
           PAGINE[n].lazyAdding = true,
-          PAGINE[n].scrollLoading = true;
+          PAGINE[n].scrollLoading = true,
 
-          MASN[n].setCols();
+          MASN[n].setCols(),
+          MASN[n].clearColY(),
           // 第二次点击时重新取得数据，保证数据得到及时更新，默认刷新当前页
           PAGINE[n].refreshPage(gtoupg);
         }
@@ -1419,7 +1420,7 @@
         $loadingsm.css('visibility','hidden'),
 
         // 清除内存 WooTemp 对象，主要是MASNUNITS
-        WOOTEMP && WOOTEMP.reset(),
+        WOOTEMP && WOOTEMP.reset && WOOTEMP.reset(),
 
         // 清除上一次瀑布流的缓存数据
         pg.idata = [],
@@ -1456,6 +1457,8 @@
 
         // 大页码翻页时，检查有没有预加载
         if( pg.prepare && pg.prepare[0] == cp ){
+          // 如果是向下翻页，则下一页的masnunits 数据设置为上一大页的预加载
+          WOOTEMP && WOOTEMP.setUnitsFromLatest && WOOTEMP.setUnitsFromLatest(),
           pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
           pg.prepare = null,
           // 延迟执行 always 以便设置 pg.loading=false
@@ -1482,6 +1485,11 @@
                 pg.halting = false,
                 pg.$dom.empty();
               }
+
+
+
+              // 清除最近一次的 WOOTEMP latest units
+              WOOTEMP && WOOTEMP.resetLatestUnits && WOOTEMP.resetLatestUnits();
 
               // resp = [cont, hasnext, totalcount]
               // 前两个数值必须有，最后的totalcount 可选
@@ -1563,9 +1571,10 @@
       pg.$loadingsm.remove();
 
       // 设置翻页器可见
+      window.clearTimeout(TIMERPAGEOVER);
       TIMERPAGEOVER = window.setTimeout(function (){
         // 结束intervaltimer
-        if( pg.$data.length === 0 && pg.idata.length === 0 ){
+        if( pg.isLastSub() && pg.$data.length === 0 && pg.idata.length === 0 ){
           PAGEOVER = true;
           if( !Woo.conf.exrecycle ){
             window.clearTimeout(TIMERINTERVAL)
