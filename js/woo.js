@@ -944,6 +944,7 @@
         if( !PAGINE[n].lazyAdding && !PAGINE[n].loading || !USERCLICK ){
           PAGINE[n].lazyAdding = true,
           PAGINE[n].scrollLoading = true,
+          MASN[n].standardUnitCount = 0,
           MASN[n].setCols();
           // 第二次点击时重新取得数据，保证数据得到及时更新，默认刷新当前页
           PAGINE[n].refreshPage(gtoupg);
@@ -1822,6 +1823,7 @@
         colY = [];
 
       masn.unitCount = 0;
+      masn.standardUnitCount = 0;
 
       if( Woo.conf.exrecycle ){
         // set unit counts 0
@@ -2318,6 +2320,7 @@
           masn.exCoordMap(minY,ht,minI);
         }
         masn.unitCount++;
+        masn.standardUnitCount++;
       })
 
       // 遍历结束后保存最终的 colY
@@ -2355,3 +2358,4 @@
 
   $.Woo = Woo;
 })(window)
+
