@@ -3,6 +3,7 @@
 */
 
 
+
 ;(function(window, undefined){
 
 
@@ -23,6 +24,7 @@
     // 是否正在返回顶部，$gotop 按键点击后返回页顶时设置其值为 true
     SCROLLINGTOTOP = false,
     PAGEOVER = false,
+    TIMERPAGEOVER,
     TIMERINTERVAL,
     TIMERSCROLL,
     // 总容器
@@ -504,10 +506,10 @@
       if( c.anchor && $tohsh.length ){
         // 此处由于导航设置fix 跟随，需要额外减去70 的高度
         var at = $tohsh.offset().top - c.anchordiff || 0;
-        if( $W.scrollTop() > at ){
-          Woo.scrollTo(at,200);
+        // if( $W.scrollTop() > at ){
+        Woo.scrollTo(at,200);
           // $body.animate({scrollTop:at},200);
-        }
+        // }
       }else{
         // 除了ie6 其它浏览器不要设置默认回顶部，会造成切换时页面跳动
         // 这里用到了 ActiveXObject 和 XMLHttpRequest 对象来区分 ie6
@@ -667,7 +669,8 @@
         }
 
         // 清除内存 WooTemp 对象，主要是MASNUNITS
-        WOOTEMP && WOOTEMP.reset();
+        // WOOTEMP && WOOTEMP.reset && WOOTEMP.reset();
+
 
         // 清除上一次瀑布流的缓存数据
         if( PAGINE[pre] ){
@@ -689,6 +692,7 @@
     _pageInit : function($conts,n,gtoupg){
       Woo.idx = IDX = n,
       PAGEOVER = false;
+      window.clearTimeout(TIMERPAGEOVER);
 
       var conf = this.conf,
         frame = conf.frame,
@@ -871,9 +875,7 @@
               addfirst = false;
 
 
-
             if( emp && MASN[n] ){
-              MASN[n].clearColY(),
               addfirst = true;
             }
 
@@ -939,9 +941,10 @@
         // 为了避免在loading 过程中hash change 导致的无法准确回退
         if( !PAGINE[n].lazyAdding && !PAGINE[n].loading || !USERCLICK ){
           PAGINE[n].lazyAdding = true,
-          PAGINE[n].scrollLoading = true;
+          PAGINE[n].scrollLoading = true,
 
-          MASN[n].setCols();
+          MASN[n].setCols(),
+          MASN[n].clearColY(),
           // 第二次点击时重新取得数据，保证数据得到及时更新，默认刷新当前页
           PAGINE[n].refreshPage(gtoupg);
         }
@@ -1354,11 +1357,8 @@
       /***************** 原 afterRequest 内容结束 ****************/
 
 
-
-      pg.idata = pg.idata.concat(jsndata);
-
       // 第二个参数容器内容为空，则全部添加到容器中
-      c.lazyAdd.call(pg,emp);
+      pg.loadFromJson(jsndata, emp);
 
 
 
@@ -1381,6 +1381,15 @@
         })
       }
       pg.pagerVisible = true;
+    },
+
+    loadFromJson : function(jsndata, totalinsert){
+      var pg = this,
+        c = pg.config;
+      pg.idata = pg.idata.concat(jsndata);
+
+      // 第二个参数容器内容为空，则全部添加到容器中
+      c.lazyAdd.call(pg,totalinsert);
     },
 
     // 请求分页数据，请求结束后 always 执行
@@ -1411,7 +1420,7 @@
         $loadingsm.css('visibility','hidden'),
 
         // 清除内存 WooTemp 对象，主要是MASNUNITS
-        WOOTEMP && WOOTEMP.reset(),
+        WOOTEMP && WOOTEMP.reset && WOOTEMP.reset(),
 
         // 清除上一次瀑布流的缓存数据
         pg.idata = [],
@@ -1448,12 +1457,14 @@
 
         // 大页码翻页时，检查有没有预加载
         if( pg.prepare && pg.prepare[0] == cp ){
+          // 如果是向下翻页，则下一页的masnunits 数据设置为上一大页的预加载
+          WOOTEMP && WOOTEMP.setUnitsFromLatest && WOOTEMP.setUnitsFromLatest(),
           pg.requestOver(cp,sub,pg.prepare[1],pg.prepare[2],pg.prepare[3]),
           pg.prepare = null,
-          // 延迟两秒后执行 always 以便设置 pg.loading=false
+          // 延迟执行 always 以便设置 pg.loading=false
           window.setTimeout(function (){
             pg._requestAlways()
-          },100)
+          },50)
           pg.scrollLoading = false;
         }else{
           var $form = $(arrurl[0]);
@@ -1474,6 +1485,11 @@
                 pg.halting = false,
                 pg.$dom.empty();
               }
+
+
+
+              // 清除最近一次的 WOOTEMP latest units
+              WOOTEMP && WOOTEMP.resetLatestUnits && WOOTEMP.resetLatestUnits();
 
               // resp = [cont, hasnext, totalcount]
               // 前两个数值必须有，最后的totalcount 可选
@@ -1555,9 +1571,10 @@
       pg.$loadingsm.remove();
 
       // 设置翻页器可见
-      window.setTimeout(function (){
+      window.clearTimeout(TIMERPAGEOVER);
+      TIMERPAGEOVER = window.setTimeout(function (){
         // 结束intervaltimer
-        if( pg.$data.length === 0 && pg.idata.length === 0 ){
+        if( pg.isLastSub() && pg.$data.length === 0 && pg.idata.length === 0 ){
           PAGEOVER = true;
           if( !Woo.conf.exrecycle ){
             window.clearTimeout(TIMERINTERVAL)
