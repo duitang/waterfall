@@ -166,15 +166,15 @@
     /*
     @说明：switch切换配合瀑布流内容展示
     @参数：
-    conf			- (Dic) 配置参数，将覆盖 dfconf
+    conf      - (Dic) 配置参数，将覆盖 dfconf
     ---- 以下为隐藏参数 dfconf 里没有他们的默认值
-    arrform			- (Arr) 特征值组成的数组，
+    arrform     - (Arr) 特征值组成的数组，
               用途一：根据url上的hash 值判断当前聚焦项
               用途二：和woo-form- 前缀组成form表单id 
-    arrsplit		- (Arr) 请求分页地址的后半截，前半截在form表单里
-    arrmasnw		- (Arr) 瀑布流每一列的扩展宽度，包含列间隔
-    arrmargin		- (Arr) 瀑布流列之间的间隔
-    arrfmasnw		- (Arr) 第一列特殊宽度 默认等于arrmasnw
+    arrsplit    - (Arr) 请求分页地址的后半截，前半截在form表单里
+    arrmasnw    - (Arr) 瀑布流每一列的扩展宽度，包含列间隔
+    arrmargin   - (Arr) 瀑布流列之间的间隔
+    arrfmasnw   - (Arr) 第一列特殊宽度 默认等于arrmasnw
     */
     init : function (conf){
       // 简化传参
@@ -347,9 +347,9 @@
     /*
     @说明：整列重新调整
     @参数：
-    v				- (Num) 增加的高度
-    co				- (Num) 参考单元所在列数
-    tp				- (Num) 参考单元的top值
+    v       - (Num) 增加的高度
+    co        - (Num) 参考单元所在列数
+    tp        - (Num) 参考单元的top值
     */
     resetCol : function(v,co,tp){
       var $masn = $HOLDER.find(this.conf.frame[5]+':visible').not('.woo-tmpmasn'),
@@ -403,11 +403,11 @@
     /*
     @说明：分批依次处理数组数据
     @参数：
-    fn				- (Fun) 每次递归执行的方法
-    arr				- (Arr) 供fn方法使用的参数，数组  fn方法必须返回一个数组
-    n				- (Num) 递归的次数
-    delay			- (Num) 递归延迟时间
-    callback		- (Fun) 递归结束后执行的方法
+    fn        - (Fun) 每次递归执行的方法
+    arr       - (Arr) 供fn方法使用的参数，数组  fn方法必须返回一个数组
+    n       - (Num) 递归的次数
+    delay     - (Num) 递归延迟时间
+    callback    - (Fun) 递归结束后执行的方法
     */
     recurseDo : function(fn,arr,n,delay,callback){
       if( n == 0 ){
@@ -441,9 +441,9 @@
     /*
     @说明：form 表单序列化为字符串
     @参数：
-    $form			- (Obj) form 对象
-    ajsn			- (Dic) 额外添加的json object 连接成字符串
-    @返回值			- (Str) 表单数据序列化后生成的字符串
+    $form     - (Obj) form 对象
+    ajsn      - (Dic) 额外添加的json object 连接成字符串
+    @返回值      - (Str) 表单数据序列化后生成的字符串
     */
     paramForm : function ($form, ajsn){
       var jsn = {};
@@ -591,7 +591,7 @@
     /*
     @说明：内部方法，供 setClickGoPre setClickGoNext 中设置的 click事件调用
     @参数：
-    dir				- (num) 取值只能 1 或 -1  分别表示向前和向后
+    dir       - (num) 取值只能 1 或 -1  分别表示向前和向后
     */
     _clickGo : function (dir){
       var conf = Woo.conf;
@@ -626,8 +626,8 @@
     /*
     @说明：内部方法，switch 触发按键的事件绑定
     @参数：
-    $trigs			- (obj) 切换触发节点
-    $conts			- (obj) 主内容节点，和$trigs 配对
+    $trigs      - (obj) 切换触发节点
+    $conts      - (obj) 主内容节点，和$trigs 配对
     */
     _switch : function($trigs,$conts){
       var conf = Woo.conf,
@@ -685,9 +685,9 @@
     /*
     @说明：内部方法，获取当前tab 的index 序号数
     @参数：
-    $conts			- (Obj) 主内容节点
-    n				- (Num) 每个切换所对应的序号数
-    gtoupg			- (Num) 当前的大页码数
+    $conts      - (Obj) 主内容节点
+    n       - (Num) 每个切换所对应的序号数
+    gtoupg      - (Num) 当前的大页码数
     */
     _pageInit : function($conts,n,gtoupg){
       Woo.idx = IDX = n,
@@ -875,6 +875,7 @@
               addfirst = false;
 
 
+
             if( emp && MASN[n] ){
               MASN[n].clearColY(),
               addfirst = true;
@@ -894,13 +895,13 @@
             }
 
 
-//						 Start = new Date().getTime()
+//             Start = new Date().getTime()
             // 这里生成的jonhtml 可能是 string 类型
             // 也可能是 [<jQuery对象>] 数组
             // 这两种情况均需要 $() 后再使用
             var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
             MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (){
-//						 End = new Date().getTime()
+//             End = new Date().getTime()
 
               if( rnum <= 0 ){
                 // pg 指代 Pagine 对象实例
@@ -943,9 +944,7 @@
         if( !PAGINE[n].lazyAdding && !PAGINE[n].loading || !USERCLICK ){
           PAGINE[n].lazyAdding = true,
           PAGINE[n].scrollLoading = true,
-
-          MASN[n].setCols(),
-          masn.unitCount = 0;
+          MASN[n].setCols();
           // 第二次点击时重新取得数据，保证数据得到及时更新，默认刷新当前页
           PAGINE[n].refreshPage(gtoupg);
         }
@@ -987,7 +986,7 @@
     /*
     @说明：内部方法，获取当前tab triger 的序号数
     @参数：
-    $trigs			- (obj) 切换触发节点
+    $trigs      - (obj) 切换触发节点
     */
     _getFocusIdx : function($trigs){
       var arrform = Woo.conf.arrform,
@@ -1070,7 +1069,7 @@
     /*
     @说明：内部方法，添加节点时的并行方法，加载单元内的图片
     @参数：
-    $u				- (obj) 单元节点
+    $u        - (obj) 单元节点
     */
     _doLoadImage : function($u){
       // 设置了 srcd 的情况下
@@ -1124,8 +1123,8 @@
     /*
     @说明：pagine 类初始化方法
     @参数：
-    id				- (Arr) 两部分容器。id[0]页面内容容器；id[1]翻页器
-    opts			- (Dic) 配置参数，详见类实例化的相关代码
+    id        - (Arr) 两部分容器。id[0]页面内容容器；id[1]翻页器
+    opts      - (Dic) 配置参数，详见类实例化的相关代码
     */
     init : function (id,opts){
       this.config = $.extend({}, opts);
@@ -1170,9 +1169,9 @@
     /*
     @说明：装载当前页内容，包括两部分，内容置于contObj节点内；翻页器置于pager节点内
     @参数：
-    cp				- (Num) 当前页码数
-    sub				- (Bool) 加载subpage 中
-    direct			- (Bool) 和 .halting 配合解决中途翻页的问题
+    cp        - (Num) 当前页码数
+    sub       - (Bool) 加载subpage 中
+    direct      - (Bool) 和 .halting 配合解决中途翻页的问题
     */
     loadPage : function (cp,sub,direct){
       if(this.loading){
@@ -1251,8 +1250,8 @@
     /*
     @说明：上下翻页，每次翻动一页，有方向性
     @参数：
-    dir				- (Num) 当dir=1时，向下翻页页码数+1；当dir=-1时，向上翻页页码数-1
-    direct			- (Bool) 和 .halting 配合解决中途翻页的问题
+    dir       - (Num) 当dir=1时，向下翻页页码数+1；当dir=-1时，向上翻页页码数-1
+    direct      - (Bool) 和 .halting 配合解决中途翻页的问题
     */
     slidePage : function (dir,direct){
       var pg = this,
@@ -1263,7 +1262,7 @@
     /*
     @说明：对应子页翻页
     @参数：
-    dir				- (Num) 当dir=1时，向下翻页页码数+1；当dir=-1时，向上翻页页码数-1
+    dir       - (Num) 当dir=1时，向下翻页页码数+1；当dir=-1时，向上翻页页码数-1
     */
     slideSubPage : function (dir){
       var pg = this,
@@ -1441,11 +1440,11 @@
     /*
     @说明：获取分页数据
     @参数：
-    cp				- (Num) 分页页码数
-    sub				- (Bool) 加载subpage 中
-    direct			- (Bool) 中断之前的请求处理，直接进入下一次请求
-    prepare			- (Bool) 是否启动后一页预加载
-    clear			- (Bool) 是否内容容器被清空了
+    cp        - (Num) 分页页码数
+    sub       - (Bool) 加载subpage 中
+    direct      - (Bool) 中断之前的请求处理，直接进入下一次请求
+    prepare     - (Bool) 是否启动后一页预加载
+    clear     - (Bool) 是否内容容器被清空了
     */
     _requestData : function (cp,sub,direct,prepare,clear){
       var pg = this,
@@ -1657,8 +1656,8 @@
     /*
     @说明：url hash定位 只在firstSub 时改变hash
     @参数：
-    idt				- (Str) pagine 对象的标识字符串
-    upg				- (Num) pagine 对象的 currentUpperpage
+    idt       - (Str) pagine 对象的标识字符串
+    upg       - (Num) pagine 对象的 currentUpperpage
     */
     changeHashOnFirstLoad : function (idt,upg){
       var pg = this,
@@ -1714,7 +1713,7 @@
     /*
     @说明：是否触底
     @参数
-    wt				- 传入的 window scrollTop 数值
+    wt        - 传入的 window scrollTop 数值
     */
     hasTouchedBottom : function (wt){
       var pg = this,
@@ -1767,8 +1766,8 @@
     /*
     @说明：Masn 类初始化方法
     @参数：
-    $cont			- (Str) Masn 主容器，可以是dom selector or jquery对象
-    opts			- (Dic) 参数说明详见类实例化的相关代码
+    $cont     - (Str) Masn 主容器，可以是dom selector or jquery对象
+    opts      - (Dic) 参数说明详见类实例化的相关代码
     */
     init: function ($cont,opts){
       this.opts = $.extend({}, opts)
@@ -1844,7 +1843,7 @@
 
       masn.$dom.data('colY',colY);
     },
-		/*
+    /*
     @desc： is unit visible
     @param：
     wt      - current scroll top
@@ -2005,7 +2004,7 @@
     /*
     @说明：预先置入的内容通过此方法排列
     @参数：
-    all				- (Bool) 为真则一次性排列所有预置内容，否则只排列一部分，其它的延迟处理
+    all       - (Bool) 为真则一次性排列所有预置内容，否则只排列一部分，其它的延迟处理
     */
     arrangeContents : function (all){
       var masn = this,
@@ -2051,13 +2050,13 @@
     /*
     @说明：分批依次处理数组数据
     @参数：
-    $data			- (Obj) 带处理的 jQuery 数据
-    htmlp			- (Str) html 字符串，将被加入到 $data
-    indom			- (Bool) 为真表示待添加的 $data 已经在dom中，不需要重新append，同时htmlp 强制设为空
-    resize			- (Bool) 是否resize 中
-    addfirst		- (Num) 是否要在左侧(右侧)第一个位置添加占位区块
-    nm				- (Num) 分批添加功能开启条件下，每批次的单元个数
-    callback		- (Fun) 分批添加功能开启条件下，递归结束后执行的方法
+    $data     - (Obj) 带处理的 jQuery 数据
+    htmlp     - (Str) html 字符串，将被加入到 $data
+    indom     - (Bool) 为真表示待添加的 $data 已经在dom中，不需要重新append，同时htmlp 强制设为空
+    resize      - (Bool) 是否resize 中
+    addfirst    - (Num) 是否要在左侧(右侧)第一个位置添加占位区块
+    nm        - (Num) 分批添加功能开启条件下，每批次的单元个数
+    callback    - (Fun) 分批添加功能开启条件下，递归结束后执行的方法
     */
     appendContents : function ($data,htmlp,indom,resize,addfirst,nm,callback){
       var masn = this,
