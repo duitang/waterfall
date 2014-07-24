@@ -876,6 +876,7 @@
 
 
             if( emp && MASN[n] ){
+              MASN[n].clearColY(),
               addfirst = true;
             }
 
@@ -944,7 +945,7 @@
           PAGINE[n].scrollLoading = true,
 
           MASN[n].setCols(),
-          MASN[n].clearColY(),
+          masn.unitCount = 0;
           // 第二次点击时重新取得数据，保证数据得到及时更新，默认刷新当前页
           PAGINE[n].refreshPage(gtoupg);
         }
