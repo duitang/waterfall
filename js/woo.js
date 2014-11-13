@@ -360,7 +360,8 @@
         var mx = Math.max.apply(Math,dacol);
 
         // 重新设置高度，将新的 colY 保存到data 数据中
-        $masn.data('colY',dacol).css({"height":mx})
+        Woo._setDataColY($masn,dacol);
+        $masn.css({"height":mx})
 
         $HOLDER.find('div.co'+co).each(function (i,e){
           var ttp = parseInt(e.style.top);
@@ -1104,9 +1105,40 @@
       })
     },
 
+    getVisibleIdx : function (masn){
+      var visibleunits = [];
+      for ( var i=0; i<masn.colCount; i++ ) {
+        var ranget = masn.columnVisibleRange[0][i],
+            rangeb = masn.columnVisibleRange[1][i];
+
+        for ( var j=ranget; j<=rangeb;) {
+          visibleunits.push(j);
+          if ( masn.posCoordination[""+j] ) {
+            j = masn.posCoordination[""+j][4];
+          }else{
+            break;
+          }
+        }
+      }
+      visibleunits.sort(function (a,b){
+        if( a < b ){
+          return -1;
+        }else{
+          return 1;
+        }
+      });
+      return visibleunits;
+    },
+
+    _setDataColY : function ($dom, colY){
+      $dom.attr('data-colY',colY.join(','));
+    },
     _getDataColY : function ($dom){
-      var colY = $dom.data('colY');
-      // return typeof colY === 'string' ? colY.split(',') : colY;
+      var colY = $dom.attr('data-colY').split(',');
+      $(colY).each(function(i,e){
+        colY[i] = parseInt(e) || 0;
+      });
+
       return colY;
     }
   });
@@ -1843,7 +1875,7 @@
         }
       }
 
-      masn.$dom.data('colY',colY);
+      Woo._setDataColY(masn.$dom,colY);
     },
     /*
     @desc： is unit visible
@@ -1877,9 +1909,15 @@
 
     exRecycleInvisibleUnits : function(wt, domtp, rangeNum, posNum, isvNum){
       var masn = this,
+          $dom = masn.$dom,
           startPos = 0,
           endPos = 0,
-          nextRange;
+          nextRange,
+          toBeAdd = [],
+          toBeDel = [];
+
+
+      
 
       for( var i=0; i<masn.colCount; i++ ){
         nextRange = masn.columnVisibleRange[1 & rangeNum][i];
@@ -1905,6 +1943,7 @@
           if( isv === 0 && !posInfo[5] ){
             // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
             masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+            // toBeAdd.push(startPos);
 
             // change visible status in posCoordination
             posInfo[5] = 1;
@@ -1939,6 +1978,7 @@
           if( posInfo[5] ){
             masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
             // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+            // toBeDel.push(endPos);
 
             // change visible status in posCoordination
             posInfo[5] = 0;
@@ -1957,6 +1997,50 @@
         }
       }
 
+      // var visibleIdx = Woo.getVisibleIdx(masn);
+      // var indom = []
+      // $dom.children().each(function(i,e){
+      //   var $t = $(e),
+      //       tid = parseInt($t.data('idx'));
+
+      //   if( $.inArray(tid,visibleIdx) == -1 ){
+      //       // console.log(visibleIdx);
+      //       // console.log('-removetid:'+(tid));
+
+      //     masn.unitCache[""+tid] && masn.unitCache[""+tid].remove();
+      //   }else{
+      //     // console.log('--indom---:'+tid)
+      //     indom.push(tid);
+      //   }
+      // });
+
+      //   // console.log("vis:"+visibleIdx.join());
+      // if(toBeAdd.length>0){
+      //   console.log("tobeadd:"+toBeAdd.join());
+      // }
+
+      // if(toBeDel.length>0){
+      //   // console.log("toBeDel:"+toBeDel.join());
+      // }
+
+
+      // if(indom.length>0){
+      //   console.log("indom:"+indom.join());
+      // }
+      // if(visibleIdx.length>0){
+      //   console.log("visibleIdx:"+visibleIdx.join());
+      // }
+
+      // for(var j=0; j<toBeAdd.length; j++){
+      //   var startPos = toBeAdd[j];
+      //   if( $.inArray(startPos,indom) == -1 ){
+      //                 console.log(visibleIdx);
+
+      //                 console.log("------startPos;"+startPos);
+      //     masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+      //   }
+      // }
+
     },
 
     setContHeight : function (){
@@ -1966,8 +2050,9 @@
       masn.$dom
       .css({
         "height" : Math.max.apply(Math, colY.concat(WH - masn.domtop0))
-      })
-      .data('colY',colY)
+      });
+
+      Woo._setDataColY(masn.$dom,colY);
     },
 
     /*
@@ -2324,7 +2409,7 @@
       })
 
       // 遍历结束后保存最终的 colY
-      $d.data('colY',colY);
+      Woo._setDataColY($d,colY);
 
       // 如果不是在resize 并且在第一个位置预留了空间做 sink
       if( !resf && f ){
@@ -2358,4 +2443,8 @@
 
   $.Woo = Woo;
 })(window)
+
+
+
+
 
