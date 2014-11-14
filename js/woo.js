@@ -1142,7 +1142,13 @@
         for ( var j=ranget; j<=rangeb;) {
           visibleunits.push(j);
           if ( masn.posCoordination[""+j] ) {
-            j = masn.posCoordination[""+j][4];
+            var nx = masn.posCoordination[""+j][4];
+
+            if( j!=nx ){
+              j = nx
+            }else{
+              break;
+            }
           }else{
             break;
           }
