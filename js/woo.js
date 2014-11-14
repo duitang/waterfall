@@ -97,6 +97,10 @@
       "batchnum" : 2,
 
 
+      // 翻页方式 0 ?page=cp  1  ?start=parseInt(cp*unitsnum)
+      "pageflips": 0,
+
+
 
 
       // 当前页码前后显示的页码数
@@ -1540,7 +1544,7 @@
             type : 'GET',
             dataType : c.ajaxDataType,
             cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxCache,
-            url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : Woo.getFormAction($form) +  cp  + arrurl[1],
+            url: typeof DEBUG !== 'undefined' && DEBUG ? '?page=' + cp : Woo.conf.pageflips === 0 ? Woo.getFormAction($form) + cp + arrurl[1] : Woo.getFormAction($form) + (cp - 1) * Woo.conf.unitsnum + arrurl[1],
             data : Woo.paramForm($form),
             timeout : 20000,
             success : function(h){
