@@ -34,7 +34,7 @@ This example shows how to set a special column(different column width) in your w
 This example shows a Messup Mode of waterfall in which column covers each other.<br/><a href="http://www.duitang.com/app/woo/examples/messup.html" target="_blank">Click me to have a look!</a>
 
 ### Example Auto-Recycle Mode:
-This example shows how to auto-recycle invisible units during scrolling.<br/><a href="http://www.duitang.com/app/woo/examples/recycledemo1.html" target="_blank">Click me to have a look!</a>
+This example shows how to auto-recycle invisible units during scrolling.<br/><a href="http://www.duitang.com/app/woo/examples/recyclefinal.html" target="_blank">Click me to have a look!</a>
 
 ### Example simplest demo:
 This example shows how to build a simple waterfall page without any other data request.<br/><a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">Click me to have a look!</a>
@@ -86,7 +86,7 @@ data.blogs must be an array which contains waterfall units. The unit length in o
 * <a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">纯静态demo演示——sink开启</a>
 * <a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">纯静态demo演示——specialcol开启</a>
 * <a href="http://www.duitang.com/app/woo/examples/messup.html" target="_blank">纯静态demo演示——Messup 混乱模式</a>
-* <a href="http://www.duitang.com/app/woo/examples/recycledemo1.html" target="_blank">纯静态demo演示——自动回收模式</a>
+* <a href="http://www.duitang.com/app/woo/examples/recyclefinal.html" target="_blank">纯静态demo演示——自动回收模式</a>
 * <a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">纯静态demo演示——mobile模拟</a>
 * <a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
 * <a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>

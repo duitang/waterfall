@@ -777,11 +777,11 @@
               PAGINE[n].$data = $c;
             }
 
-            // _onscroll 总控
+            // onscroll 总控
             if( TIMERINTERVAL ){
               window.clearTimeout(TIMERINTERVAL)
             }
-            Woo._onscroll()
+            Woo.onscroll()
           },
           initAppendCounts : unitsnum,
           sinkWhat : sink,
@@ -1014,13 +1014,16 @@
       return fcn;
     },
 
+    cancelScroll : function(){
+      window.clearTimeout(TIMERINTERVAL);
+    },
 
     /*
     @说明：scroll 相关
     */
-    _onscroll : function(){
+    onscroll : function(){
       var tp = $W.scrollTop();
-      // 如果是正在回顶部的过程中，则不执行_onscroll
+      // 如果是正在回顶部的过程中，则不执行onscroll
       if( !SCROLLINGTOTOP && !PAGEOVER ){
         // 如果已经确认scrollbar 拉到底部了
         if( PAGINE[IDX] && PAGINE[IDX].hasTouchedBottom() ){
@@ -1054,16 +1057,41 @@
             $dom = MASN[IDX].$dom,
             domtp = $dom.position().top;
 
-        // if( isRollingDown ){
-          // params rangNum, posNum, isvNum
-          masn.exRecycleInvisibleUnits(tp, domtp, 1,4,-1);
-        // }else{
-          masn.exRecycleInvisibleUnits(tp, domtp, 0,3,1);
-        // }
+          var toBeDel = [],
+              toBeAdd = [];
+          masn.exRecycleInvisibleUnits(toBeDel, toBeAdd, tp, domtp, 1,4,-1);
+          masn.exRecycleInvisibleUnits(toBeDel, toBeAdd, tp, domtp, 0,3,1);
+
+
+          var visibleIdx = Woo.getVisibleIdx(masn);
+          var indom = [];
+          $dom.children().each(function(i,e){
+            var $t = $(e),
+                tid = parseInt($t.data('idx'));
+
+            if( $.inArray(tid,visibleIdx) === -1 ){
+              masn.unitCache[""+tid] && masn.unitCache[""+tid].remove();
+            }else{
+              indom.push(tid);
+            }
+          });
+
+          // if(visibleIdx.length>0){
+          //   console.log("domlen:"+$dom.children().length);
+          //   console.log("visibleIdx:"+visibleIdx.join());
+          // }
+
+          for(var j=0; j<visibleIdx.length; j++){
+            var addPos = visibleIdx[j];
+            var $cach = masn.unitCache[""+addPos];
+            if($cach && $.inArray(addPos,indom) === -1 ){
+              $cach.appendTo(masn.$dom);
+            }
+          }
       }
 
       window.clearTimeout(TIMERINTERVAL),
-      TIMERINTERVAL = window.setTimeout(Woo._onscroll,100);
+      TIMERINTERVAL = window.setTimeout(Woo.onscroll,100);
     },
 
 
@@ -1464,7 +1492,7 @@
           window.clearTimeout(TIMERINTERVAL)
         }
 
-        Woo._onscroll()
+        Woo.onscroll()
       }else{
         $loadingsm.css('visibility','visible')
       }
@@ -1907,14 +1935,12 @@
       return isVisible;    
     },
 
-    exRecycleInvisibleUnits : function(wt, domtp, rangeNum, posNum, isvNum){
+    exRecycleInvisibleUnits : function(toBeDel, toBeAdd, wt, domtp, rangeNum, posNum, isvNum){
       var masn = this,
           $dom = masn.$dom,
           startPos = 0,
           endPos = 0,
-          nextRange,
-          toBeAdd = [],
-          toBeDel = [];
+          nextRange;
 
 
       
@@ -1942,8 +1968,8 @@
           // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
           if( isv === 0 && !posInfo[5] ){
             // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
-            masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
-            // toBeAdd.push(startPos);
+            // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+            toBeAdd.push(startPos);
 
             // change visible status in posCoordination
             posInfo[5] = 1;
@@ -1976,9 +2002,9 @@
 
           // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
           if( posInfo[5] ){
-            masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
+            // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
             // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
-            // toBeDel.push(endPos);
+            toBeDel.push(endPos);
 
             // change visible status in posCoordination
             posInfo[5] = 0;
@@ -1996,50 +2022,6 @@
           endPos = masn.columnVisibleRange[1 ^ rangeNum][i] = posInfo[posNum];
         }
       }
-
-      // var visibleIdx = Woo.getVisibleIdx(masn);
-      // var indom = []
-      // $dom.children().each(function(i,e){
-      //   var $t = $(e),
-      //       tid = parseInt($t.data('idx'));
-
-      //   if( $.inArray(tid,visibleIdx) == -1 ){
-      //       // console.log(visibleIdx);
-      //       // console.log('-removetid:'+(tid));
-
-      //     masn.unitCache[""+tid] && masn.unitCache[""+tid].remove();
-      //   }else{
-      //     // console.log('--indom---:'+tid)
-      //     indom.push(tid);
-      //   }
-      // });
-
-      //   // console.log("vis:"+visibleIdx.join());
-      // if(toBeAdd.length>0){
-      //   console.log("tobeadd:"+toBeAdd.join());
-      // }
-
-      // if(toBeDel.length>0){
-      //   // console.log("toBeDel:"+toBeDel.join());
-      // }
-
-
-      // if(indom.length>0){
-      //   console.log("indom:"+indom.join());
-      // }
-      // if(visibleIdx.length>0){
-      //   console.log("visibleIdx:"+visibleIdx.join());
-      // }
-
-      // for(var j=0; j<toBeAdd.length; j++){
-      //   var startPos = toBeAdd[j];
-      //   if( $.inArray(startPos,indom) == -1 ){
-      //                 console.log(visibleIdx);
-
-      //                 console.log("------startPos;"+startPos);
-      //     masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
-      //   }
-      // }
 
     },
 
