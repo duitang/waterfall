@@ -1066,13 +1066,11 @@
             $dom = MASN[IDX].$dom,
             domtp = $dom.position().top;
 
-          var toBeDel = [],
-              toBeAdd = [];
-          masn.exRecycleInvisibleUnits(toBeDel, toBeAdd, tp, domtp, 1,4,-1);
-          masn.exRecycleInvisibleUnits(toBeDel, toBeAdd, tp, domtp, 0,3,1);
-
+          masn.exRecycleInvisibleUnits(tp, domtp, 1,4,-1);
+          masn.exRecycleInvisibleUnits(tp, domtp, 0,3,1);
 
           var visibleIdx = Woo.getVisibleIdx(masn);
+
           var indom = [];
           $dom.children().each(function(i,e){
             var $t = $(e),
@@ -1152,8 +1150,8 @@
             rangeb = masn.columnVisibleRange[1][i];
 
         for ( var j=ranget; j<=rangeb;) {
-          visibleunits.push(j);
           if ( masn.posCoordination[""+j] ) {
+            visibleunits.push(j);
             var nx = masn.posCoordination[""+j][4];
 
             if( j!=nx ){
@@ -1953,7 +1951,7 @@
       return isVisible;    
     },
 
-    exRecycleInvisibleUnits : function(toBeDel, toBeAdd, wt, domtp, rangeNum, posNum, isvNum){
+    exRecycleInvisibleUnits : function(wt, domtp, rangeNum, posNum, isvNum){
       var masn = this,
           $dom = masn.$dom,
           startPos = 0,
@@ -1983,15 +1981,14 @@
             break;
           }
 
-          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
-          if( isv === 0 && !posInfo[5] ){
-            // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
-            // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
-            toBeAdd.push(startPos);
+          // // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
+          // if( isv === 0 && !posInfo[5] ){
+          //   // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+          //   // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
 
-            // change visible status in posCoordination
-            posInfo[5] = 1;
-          }
+          //   // change visible status in posCoordination
+          //   posInfo[5] = 1;
+          // }
 
 
           masn.columnVisibleRange[1 & rangeNum][i] = startPos;
@@ -2018,15 +2015,13 @@
           }
 
 
-          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
-          if( posInfo[5] ){
-            // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
-            // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
-            toBeDel.push(endPos);
-
-            // change visible status in posCoordination
-            posInfo[5] = 0;
-          }
+          // // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
+          // if( posInfo[5] ){
+          //   // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
+          //   // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+          //   // change visible status in posCoordination
+          //   posInfo[5] = 0;
+          // }
 
           
           if( posInfo[posNum] == -1 ){
