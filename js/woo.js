@@ -648,7 +648,7 @@
 
       // 使用tabswitch 组件
       // a 表示当前序号 pre 表示前一个序号 c 表示是点击或自动播放触发的tabswitch
-      $trigs.unbind('click.woo').tabswitch(function ($l,$c,a,pre,c){ 
+      $trigs.unbind('click.woo,tap.woo').tabswitch(function ($l,$c,a,pre,c){ 
 
         var $ndym = $l.eq(a),
           // 每次切换都重置到第1大页
@@ -688,7 +688,7 @@
           PAGINE[pre].$data = $(null)
         }
         Woo._pageInit($conts,a,upg);
-      },{"event":"click.woo","focus":"woo-cur","cont":frame[2],"index":Woo._getFocusIdx($trigs)});
+      },{"event":"click.woo,tap.woo","focus":"woo-cur","cont":frame[2],"index":Woo._getFocusIdx($trigs)});
     },
 
 
