@@ -160,6 +160,11 @@
 
       },
 
+      // executed before loading img
+      "beforeImageLoad" : function (imgsrc){
+        return imgsrc;
+      },
+
       // 每次请求后都要执行的方法
       "requestAlways" : function (pg, idx){
         // pg 为 Pagine 实例，pg.$pager 为底部翻页容器
@@ -1111,6 +1116,9 @@
         var $e = $(e),
           or = $e.attr('srcd');
 
+        if($.isFunction($.Woo.conf.beforeImageLoad)){
+          or = $.Woo.conf.beforeImageLoad(or);
+        }
         //如果事先设置了 srcd 取代图片 src
         if( or ){
           $e.css("display","none")
