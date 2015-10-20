@@ -108,7 +108,7 @@
 
 
       // ajax 请求返回数据的默认类型
-      "ajaxdatatype" : "text",
+      "ajaxdatatype" : "*/*",
 
       // ajax 请求是否缓存
       "ajaxcache" : false,
@@ -834,7 +834,9 @@
           // 每页的单元数
           unitsPerSub : unitsnum,
 
-
+          firstColumnWidth : fwdt,
+          columnMessWidth : mwdt,
+          columnWidth : wdt,
 
 
           // 当前大页码数
@@ -909,7 +911,7 @@
             // 这里生成的jonhtml 可能是 string 类型
             // 也可能是 [<jQuery对象>] 数组
             // 这两种情况均需要 $() 后再使用
-            var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
+            var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd,c.columnWidth) : imadd;
             MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (){
 //             End = new Date().getTime()
 
@@ -1570,7 +1572,7 @@
 
               // resp = [cont, hasnext, totalcount]
               // 前两个数值必须有，最后的totalcount 可选
-              var resp =  c.analyzeResponse(h);
+              var resp =  c.analyzeResponse(h,c.columnWidth);
 
 
               if(prepare){
@@ -2316,7 +2318,7 @@
       if( !haspre || haspre && !$pre.hasClass('woo-tmpmasn') ){
         var frame = Woo.conf.frame,
           clss = (frame[3].indexOf(0) == '.' ? frame[3].substr(1) : '') +' '+(frame[5].indexOf(0) == '.' ? frame[5].substr(1) : '')+' woo-loading';
-        $pre = $('<div class="woo-tmpmasn '+$d.attr('class')+'" style="position:relative;height:0;overflow:hidden;margin:0;padding:0;"></div>').removeClass(clss),
+        $pre = $('<div class="woo-tmpmasn '+$d.attr('class')+'" style="position:relative;width:'+(c.columnWidth-c.columnMargin)+'px;height:0;overflow:hidden;margin:0;padding:0;"></div>').removeClass(clss),
         $d.before($pre);
       }
 
@@ -2379,7 +2381,7 @@
         colwf = ars[4],
 
 
-        strwrap += '<div class="'+c.unit.substr(1)+' co'+minI+(colwf?' woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
+        strwrap += '<div class="'+c.unit.substr(1)+' co'+minI+(colwf?' woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="top:'+minY+'px;left:'+left+'px;width:'+(c.columnWidth-c.columnMargin)+'px;"></div>';
 
 
         $e.css({
