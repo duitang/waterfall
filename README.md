@@ -25,31 +25,31 @@ version: 1.1.1
 
 ## Included examples
 ### Example Sink Mode:
-This example shows how to insert an outside block into waterfall either on the left side or on the right side. <br/><a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">Click me to have a look!</a>
+This example shows how to insert an outside block into waterfall either on the left side or on the right side. <br/><a href="http://woo-53422.onmodulus.net/examples/sinkleft.html" target="_blank">Click me to have a look!</a>
 
 ### Example Special-Column Mode:
-This example shows how to set a special column(different column width) in your waterfall.<br/><a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">Click me to have a look!</a>
+This example shows how to set a special column(different column width) in your waterfall.<br/><a href="http://woo-53422.onmodulus.net/examples/specialcol.html" target="_blank">Click me to have a look!</a>
 
 ### Example Messup Mode:
-This example shows a Messup Mode of waterfall in which column covers each other.<br/><a href="http://www.duitang.com/app/woo/examples/messup.html" target="_blank">Click me to have a look!</a>
+This example shows a Messup Mode of waterfall in which column covers each other.<br/><a href="http://woo-53422.onmodulus.net/examples/messup.html" target="_blank">Click me to have a look!</a>
 
 ### Example Auto-Recycle Mode:
-This example shows how to auto-recycle invisible units during scrolling.<br/><a href="http://www.duitang.com/app/woo/examples/recycledemo1.html" target="_blank">Click me to have a look!</a>
+This example shows how to auto-recycle invisible units during scrolling.<br/><a href="http://woo-53422.onmodulus.net/examples/recyclefinal.html" target="_blank">Click me to have a look!</a>
 
 ### Example simplest demo:
-This example shows how to build a simple waterfall page without any other data request.<br/><a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">Click me to have a look!</a>
+This example shows how to build a simple waterfall page without any other data request.<br/><a href="http://woo-53422.onmodulus.net/examples/norequest.html" target="_blank">Click me to have a look!</a>
 
 ### Example mobile demo:
-This example shows how to build a waterfall page which is running in mobile phone.<br/><a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">Click me to have a look!</a>
+This example shows how to build a waterfall page which is running in mobile phone.<br/><a href="http://woo-53422.onmodulus.net/examples/mobile.html" target="_blank">Click me to have a look!</a>
 
 ### Example order:
-This example shows how to deal with unit datas with order operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">Click me to have a look!</a>
+This example shows how to deal with unit datas with order operation.<br/><a href="http://woo-53422.onmodulus.net/example-operate/order.html" target="_blank">Click me to have a look!</a>
 
 ### Example delete:
-This example shows how to deal with unit datas with delete operation.<br/><a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">Click me to have a look!</a>
+This example shows how to deal with unit datas with delete operation.<br/><a href="http://woo-53422.onmodulus.net/example-operate/delete.html" target="_blank">Click me to have a look!</a>
 
 ### Example zeptojs:
-This example shows how zeptojs works.<br/><a href="http://www.duitang.com/app/woo/examples/zeptomain.html" target="_blank">Click me to have a look!</a>
+This example shows how zeptojs works.<br/><a href="http://woo-53422.onmodulus.net/examples/zeptomain.html" target="_blank">Click me to have a look!</a>
 
 ## Response data structure recommended:
 {"data":{"blogs":[${unit},...,${unit}],"has_next":true,"totalcount":202},"success":true}
@@ -82,16 +82,16 @@ data.blogs must be an array which contains waterfall units. The unit length in o
 1. 可轻松通过 "exrecycle" : true 参数开启超出屏幕范围的单元块回收功能，极大的减少了dom节点数。
 1. 支持zeptojs
 
-* <a href="http://www.duitang.com/app/woo/examples/main.html" target="_blank">纯静态demo演示——主功能</a>
-* <a href="http://www.duitang.com/app/woo/examples/sinkleft.html" target="_blank">纯静态demo演示——sink开启</a>
-* <a href="http://www.duitang.com/app/woo/examples/specialcol.html" target="_blank">纯静态demo演示——specialcol开启</a>
-* <a href="http://www.duitang.com/app/woo/examples/messup.html" target="_blank">纯静态demo演示——Messup 混乱模式</a>
-* <a href="http://www.duitang.com/app/woo/examples/recycledemo1.html" target="_blank">纯静态demo演示——自动回收模式</a>
-* <a href="http://www.duitang.com/app/woo/examples/mobile.html" target="_blank">纯静态demo演示——mobile模拟</a>
-* <a href="http://www.duitang.com/app/woo/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
-* <a href="http://www.duitang.com/app/woo/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>
-* <a href="http://www.duitang.com/app/woo/example-operate/delete.html" target="_blank">纯静态demo演示——单元删除</a>
-* <a href="http://www.duitang.com/app/woo/examples/zeptomain.html" target="_blank">纯静态demo演示——zeptojs</a>
+* <a href="http://woo-53422.onmodulus.net/examples/main.html" target="_blank">纯静态demo演示——主功能</a>
+* <a href="http://woo-53422.onmodulus.net/examples/sinkleft.html" target="_blank">纯静态demo演示——sink开启</a>
+* <a href="http://woo-53422.onmodulus.net/examples/specialcol.html" target="_blank">纯静态demo演示——specialcol开启</a>
+* <a href="http://woo-53422.onmodulus.net/examples/messup.html" target="_blank">纯静态demo演示——Messup 混乱模式</a>
+* <a href="http://woo-53422.onmodulus.net/examples/recyclefinal.html" target="_blank">纯静态demo演示——自动回收模式</a>
+* <a href="http://woo-53422.onmodulus.net/examples/mobile.html" target="_blank">纯静态demo演示——mobile模拟</a>
+* <a href="http://woo-53422.onmodulus.net/examples/norequest.html" target="_blank">纯静态demo演示——简版无请求</a>
+* <a href="http://woo-53422.onmodulus.net/example-operate/order.html" target="_blank">纯静态demo演示——单元排序</a>
+* <a href="http://woo-53422.onmodulus.net/example-operate/delete.html" target="_blank">纯静态demo演示——单元删除</a>
+* <a href="http://woo-53422.onmodulus.net/examples/zeptomain.html" target="_blank">纯静态demo演示——zeptojs</a>
 
 
 ## 一些保留命名 >>

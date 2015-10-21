@@ -97,6 +97,10 @@
       "batchnum" : 2,
 
 
+      // 翻页方式 0 ?page=cp  1  ?start=parseInt(cp*unitsnum)
+      "pageflips": 0,
+
+
 
 
       // 当前页码前后显示的页码数
@@ -104,7 +108,7 @@
 
 
       // ajax 请求返回数据的默认类型
-      "ajaxdatatype" : "text",
+      "ajaxdatatype" : "*/*",
 
       // ajax 请求是否缓存
       "ajaxcache" : false,
@@ -154,6 +158,11 @@
         // $swconts tabswitch 内容区块
         // a 表示当前序号 pre 表示前一个序号 c 表示是点击或自动播放触发的tabswitch
 
+      },
+
+      // executed before loading img
+      "beforeImageLoad" : function (imgsrc){
+        return imgsrc;
       },
 
       // 每次请求后都要执行的方法
@@ -360,7 +369,8 @@
         var mx = Math.max.apply(Math,dacol);
 
         // 重新设置高度，将新的 colY 保存到data 数据中
-        $masn.data('colY',dacol).css({"height":mx})
+        Woo._setDataColY($masn,dacol);
+        $masn.css({"height":mx})
 
         $HOLDER.find('div.co'+co).each(function (i,e){
           var ttp = parseInt(e.style.top);
@@ -638,7 +648,7 @@
 
       // 使用tabswitch 组件
       // a 表示当前序号 pre 表示前一个序号 c 表示是点击或自动播放触发的tabswitch
-      $trigs.unbind('click.woo').tabswitch(function ($l,$c,a,pre,c){ 
+      $trigs.unbind('click.woo,tap.woo').tabswitch(function ($l,$c,a,pre,c){ 
 
         var $ndym = $l.eq(a),
           // 每次切换都重置到第1大页
@@ -678,7 +688,7 @@
           PAGINE[pre].$data = $(null)
         }
         Woo._pageInit($conts,a,upg);
-      },{"event":"click.woo","focus":"woo-cur","cont":frame[2],"index":Woo._getFocusIdx($trigs)});
+      },{"event":"click.woo,tap.woo","focus":"woo-cur","cont":frame[2],"index":Woo._getFocusIdx($trigs)});
     },
 
 
@@ -776,11 +786,11 @@
               PAGINE[n].$data = $c;
             }
 
-            // _onscroll 总控
+            // onscroll 总控
             if( TIMERINTERVAL ){
               window.clearTimeout(TIMERINTERVAL)
             }
-            Woo._onscroll()
+            Woo.onscroll()
           },
           initAppendCounts : unitsnum,
           sinkWhat : sink,
@@ -824,7 +834,9 @@
           // 每页的单元数
           unitsPerSub : unitsnum,
 
-
+          firstColumnWidth : fwdt,
+          columnMessWidth : mwdt,
+          columnWidth : wdt,
 
 
           // 当前大页码数
@@ -899,7 +911,7 @@
             // 这里生成的jonhtml 可能是 string 类型
             // 也可能是 [<jQuery对象>] 数组
             // 这两种情况均需要 $() 后再使用
-            var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd) : imadd;
+            var jonhtml = WOOTEMP && WOOTEMP.render[np] ? WOOTEMP.render[np](imadd,c.columnWidth) : imadd;
             MASN[n].appendContents($madd,jonhtml,false,false,addfirst,Woo.conf.batchnum,function (){
 //             End = new Date().getTime()
 
@@ -1013,13 +1025,16 @@
       return fcn;
     },
 
+    cancelScroll : function(){
+      window.clearTimeout(TIMERINTERVAL);
+    },
 
     /*
     @说明：scroll 相关
     */
-    _onscroll : function(){
+    onscroll : function(){
       var tp = $W.scrollTop();
-      // 如果是正在回顶部的过程中，则不执行_onscroll
+      // 如果是正在回顶部的过程中，则不执行onscroll
       if( !SCROLLINGTOTOP && !PAGEOVER ){
         // 如果已经确认scrollbar 拉到底部了
         if( PAGINE[IDX] && PAGINE[IDX].hasTouchedBottom() ){
@@ -1053,16 +1068,39 @@
             $dom = MASN[IDX].$dom,
             domtp = $dom.position().top;
 
-        // if( isRollingDown ){
-          // params rangNum, posNum, isvNum
           masn.exRecycleInvisibleUnits(tp, domtp, 1,4,-1);
-        // }else{
           masn.exRecycleInvisibleUnits(tp, domtp, 0,3,1);
-        // }
+
+          var visibleIdx = Woo.getVisibleIdx(masn);
+
+          var indom = [];
+          $dom.children().each(function(i,e){
+            var $t = $(e),
+                tid = parseInt($t.data('idx'));
+
+            if( $.inArray(tid,visibleIdx) === -1 ){
+              masn.unitCache[""+tid] && masn.unitCache[""+tid].remove();
+            }else{
+              indom.push(tid);
+            }
+          });
+
+          // if(visibleIdx.length>0){
+          //   console.log("domlen:"+$dom.children().length);
+          //   console.log("visibleIdx:"+visibleIdx.join());
+          // }
+
+          for(var j=0; j<visibleIdx.length; j++){
+            var addPos = visibleIdx[j];
+            var $cach = masn.unitCache[""+addPos];
+            if($cach && $.inArray(addPos,indom) === -1 ){
+              $cach.appendTo(masn.$dom);
+            }
+          }
       }
 
       window.clearTimeout(TIMERINTERVAL),
-      TIMERINTERVAL = window.setTimeout(Woo._onscroll,100);
+      TIMERINTERVAL = window.setTimeout(Woo.onscroll,100);
     },
 
 
@@ -1078,6 +1116,9 @@
         var $e = $(e),
           or = $e.attr('srcd');
 
+        if($.isFunction($.Woo.conf.beforeImageLoad)){
+          or = $.Woo.conf.beforeImageLoad(or);
+        }
         //如果事先设置了 srcd 取代图片 src
         if( or ){
           $e.css("display","none")
@@ -1104,9 +1145,46 @@
       })
     },
 
+    getVisibleIdx : function (masn){
+      var visibleunits = [];
+      for ( var i=0; i<masn.colCount; i++ ) {
+        var ranget = masn.columnVisibleRange[0][i],
+            rangeb = masn.columnVisibleRange[1][i];
+
+        for ( var j=ranget; j<=rangeb;) {
+          if ( masn.posCoordination[""+j] ) {
+            visibleunits.push(j);
+            var nx = masn.posCoordination[""+j][4];
+
+            if( j!=nx ){
+              j = nx
+            }else{
+              break;
+            }
+          }else{
+            break;
+          }
+        }
+      }
+      visibleunits.sort(function (a,b){
+        if( a < b ){
+          return -1;
+        }else{
+          return 1;
+        }
+      });
+      return visibleunits;
+    },
+
+    _setDataColY : function ($dom, colY){
+      $dom.attr('data-colY',colY.join(','));
+    },
     _getDataColY : function ($dom){
-      var colY = $dom.data('colY');
-      // return typeof colY === 'string' ? colY.split(',') : colY;
+      var colY = $dom.attr('data-colY').split(',');
+      $(colY).each(function(i,e){
+        colY[i] = parseInt(e) || 0;
+      });
+
       return colY;
     }
   });
@@ -1432,7 +1510,7 @@
           window.clearTimeout(TIMERINTERVAL)
         }
 
-        Woo._onscroll()
+        Woo.onscroll()
       }else{
         $loadingsm.css('visibility','visible')
       }
@@ -1474,7 +1552,7 @@
             type : 'GET',
             dataType : c.ajaxDataType,
             cache : typeof DEBUG !== 'undefined' && DEBUG ? false : !!c.ajaxCache,
-            url : typeof DEBUG !== 'undefined' && DEBUG  ? '?page='+cp : Woo.getFormAction($form) +  cp  + arrurl[1],
+            url: typeof DEBUG !== 'undefined' && DEBUG ? '?page=' + cp : Woo.conf.pageflips === 0 ? Woo.getFormAction($form) + cp + arrurl[1] : Woo.getFormAction($form) + (cp - 1) * Woo.conf.unitsnum + arrurl[1],
             data : Woo.paramForm($form),
             timeout : 20000,
             success : function(h){
@@ -1494,7 +1572,7 @@
 
               // resp = [cont, hasnext, totalcount]
               // 前两个数值必须有，最后的totalcount 可选
-              var resp =  c.analyzeResponse(h);
+              var resp =  c.analyzeResponse(h,c.columnWidth);
 
 
               if(prepare){
@@ -1843,7 +1921,7 @@
         }
       }
 
-      masn.$dom.data('colY',colY);
+      Woo._setDataColY(masn.$dom,colY);
     },
     /*
     @desc： is unit visible
@@ -1877,9 +1955,13 @@
 
     exRecycleInvisibleUnits : function(wt, domtp, rangeNum, posNum, isvNum){
       var masn = this,
+          $dom = masn.$dom,
           startPos = 0,
           endPos = 0,
           nextRange;
+
+
+      
 
       for( var i=0; i<masn.colCount; i++ ){
         nextRange = masn.columnVisibleRange[1 & rangeNum][i];
@@ -1901,14 +1983,14 @@
             break;
           }
 
-          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
-          if( isv === 0 && !posInfo[5] ){
-            // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
-            masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
+          // // posInfo[5] indicate the visible status of this unit, do nothing if it's already been visible
+          // if( isv === 0 && !posInfo[5] ){
+          //   // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].css("background","white")
+          //   // masn.unitCache[""+startPos] && masn.unitCache[""+startPos].appendTo(masn.$dom);
 
-            // change visible status in posCoordination
-            posInfo[5] = 1;
-          }
+          //   // change visible status in posCoordination
+          //   posInfo[5] = 1;
+          // }
 
 
           masn.columnVisibleRange[1 & rangeNum][i] = startPos;
@@ -1935,14 +2017,13 @@
           }
 
 
-          // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
-          if( posInfo[5] ){
-            masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
-            // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
-
-            // change visible status in posCoordination
-            posInfo[5] = 0;
-          }
+          // // posInfo[5] indicate the visible status of this unit, do nothing if it's already been invisible
+          // if( posInfo[5] ){
+          //   // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].remove();
+          //   // masn.unitCache[""+endPos] && masn.unitCache[""+endPos].css("background","red")
+          //   // change visible status in posCoordination
+          //   posInfo[5] = 0;
+          // }
 
           
           if( posInfo[posNum] == -1 ){
@@ -1966,8 +2047,9 @@
       masn.$dom
       .css({
         "height" : Math.max.apply(Math, colY.concat(WH - masn.domtop0))
-      })
-      .data('colY',colY)
+      });
+
+      Woo._setDataColY(masn.$dom,colY);
     },
 
     /*
@@ -2236,7 +2318,7 @@
       if( !haspre || haspre && !$pre.hasClass('woo-tmpmasn') ){
         var frame = Woo.conf.frame,
           clss = (frame[3].indexOf(0) == '.' ? frame[3].substr(1) : '') +' '+(frame[5].indexOf(0) == '.' ? frame[5].substr(1) : '')+' woo-loading';
-        $pre = $('<div class="woo-tmpmasn '+$d.attr('class')+'" style="position:relative;height:0;overflow:hidden;margin:0;padding:0;"></div>').removeClass(clss),
+        $pre = $('<div class="woo-tmpmasn '+$d.attr('class')+'" style="position:relative;width:'+(c.columnWidth-c.columnMargin)+'px;height:0;overflow:hidden;margin:0;padding:0;"></div>').removeClass(clss),
         $d.before($pre);
       }
 
@@ -2299,7 +2381,7 @@
         colwf = ars[4],
 
 
-        strwrap += '<div class="'+c.unit.substr(1)+' co'+minI+(colwf?' woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="top:'+minY+'px;left:'+left+'px;"></div>';
+        strwrap += '<div class="'+c.unit.substr(1)+' co'+minI+(colwf?' woo-spcol':'')+'" '+ (id?'data-id="'+id+'"':'')+' data-ht="'+ht+'" data-idx="'+masn.unitCount+'" style="top:'+minY+'px;left:'+left+'px;width:'+(c.columnWidth-c.columnMargin)+'px;"></div>';
 
 
         $e.css({
@@ -2324,7 +2406,7 @@
       })
 
       // 遍历结束后保存最终的 colY
-      $d.data('colY',colY);
+      Woo._setDataColY($d,colY);
 
       // 如果不是在resize 并且在第一个位置预留了空间做 sink
       if( !resf && f ){
@@ -2358,4 +2440,8 @@
 
   $.Woo = Woo;
 })(window)
+
+
+
+
 
