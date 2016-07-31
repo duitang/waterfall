@@ -108,7 +108,7 @@
 
 
       // ajax 请求返回数据的默认类型
-      "ajaxdatatype" : "*/*",
+      "ajaxdatatype" : "text",
 
       // ajax 请求是否缓存
       "ajaxcache" : false,
