@@ -253,7 +253,7 @@ $(function (){
 	function orderCall(desc){
 		var masn = $.Woo.masn[0],
 			colc = masn.colCount,
-			colY = masn.$dom.data('colY'),
+			colY = masn.$dom.data('coly').split(','),
 			minY, minI, left,
 			munits = $.Woo.WooTemp.masnUnits,
 			el,
