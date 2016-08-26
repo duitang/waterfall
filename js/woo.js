@@ -1177,10 +1177,10 @@
     },
 
     _setDataColY : function ($dom, colY){
-      $dom.attr('data-colY',colY.join(','));
+      $dom.attr('data-coly',colY.join(','));
     },
     _getDataColY : function ($dom){
-      var colY = $dom.attr('data-colY').split(',');
+      var colY = $dom.attr('data-coly').split(',');
       $(colY).each(function(i,e){
         colY[i] = parseInt(e) || 0;
       });
