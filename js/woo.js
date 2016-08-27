@@ -1319,6 +1319,7 @@
       var pg = this,
         upg = n || pg.currentUpperPage;
 
+      PAGEOVER = false;
       pg.$data = $(null),
       pg.idata = [],
       pg.caching = 0,
